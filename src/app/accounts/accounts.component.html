@@ -1,0 +1,140 @@
+<button type="button" class="btn btn-success" data-toggle="modal" data-target="#addNewAccountModal">
+    Add New Account
+</button>
+<div class="container">
+    <div class="row">
+        <ul class="list-group">
+            <li *ngFor="let a of accounts" class="list-group-item"
+                [ngClass]="{'active': (selectedAccount && a.IBAN === selectedAccount.IBAN)}"
+                (click)="onAccountSelected(a)">
+                <div class="container">
+                    {{a.name}}
+                    <button [disabled]="(!selectedAccount || a.IBAN !== selectedAccount.IBAN)" class="btn btn-info"
+                        data-toggle="modal" data-target="#editAccountModal">
+                        Edit
+                    </button>
+                    <button [disabled]="(!selectedAccount || a.IBAN !== selectedAccount.IBAN)" class="btn btn-danger"
+                        data-toggle="modal" data-target="#removeAccountModal">
+                        Remove
+                    </button>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- Add new Account Modal -->
+<div class="modal fade" id="addNewAccountModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form #addForm="ngForm">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Account</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="IBAN">IBAN</label>
+                        <input type="text" class="form-control" ngModel name="IBAN" placeholder="IBAN">
+                    </div>
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" class="form-control" ngModel name="fullName" placeholder="Full Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" ngModel name="name" placeholder="Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Bank Name</label>
+                        <input type="text" class="form-control" ngModel name="bankName" placeholder="Bank Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Currency</label>
+                        <select class="form-control" ngModel name="currency">
+                            <option *ngFor="let c of currencies" [value]="c.value">{{c.symbol}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" data-dismiss="modal"
+                        (click)="onSubmitNewAccount(addForm)">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Account Modal -->
+<div class="modal fade" id="editAccountModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form #editForm="ngForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Edit Account</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="IBAN">IBAN</label>
+                        <input type="text" class="form-control" name="IBAN" placeholder="IBAN"
+                            [ngModel]="selectedAccount && selectedAccount.IBAN || ''">
+                    </div>
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" class="form-control" name="fullName" placeholder="Full Name"
+                            [ngModel]="selectedAccount && selectedAccount.fullName || ''">
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" name="name" placeholder="Name"
+                            [ngModel]="selectedAccount && selectedAccount.name || ''">
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Bank Name</label>
+                        <input type="text" class="form-control" placeholder="Bank Name"
+                            [ngModel]="selectedAccount && selectedAccount.bankName || ''" name="bankName">
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Currency</label>
+                        <select [ngModel]="selectedAccount && selectedAccount.currency" name="currency"
+                            class="form-control">
+                            <option *ngFor="let c of currencies" [value]="c.value">{{c.symbol}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal"
+                        (click)="onEditAccountClick(editForm)">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Remove Confirmation Modal -->
+<div class="modal fade" id="removeAccountModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Are you sure?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="onRemoveAccountClick()">Yes,
+                    Remove!</button>
+            </div>
+        </div>
+    </div>
+</div>

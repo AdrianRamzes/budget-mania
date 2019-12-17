@@ -1,0 +1,14 @@
+<p>Import Component</p>
+
+<app-select-file></app-select-file>
+<app-select-account></app-select-account>
+<div class="container">
+    <button [disabled]="!(checkedTransactionsCount>0)" class="btn btn-outline-primary" 
+        (click)="onImportClick()">
+        Import ({{checkedTransactionsCount}})
+    </button>
+    <div *ngIf="duplicateTransactionsCount" class="alert alert-danger" role="alert">
+        Found {{duplicateTransactionsCount}} potential duplicates!
+    </div>
+</div>
+<app-transactions-list *ngIf="showTransactionsList"></app-transactions-list>

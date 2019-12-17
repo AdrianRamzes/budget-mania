@@ -1,0 +1,13 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" [routerLink]="['/dashboard']" routerLinkActive="router-link-active">Dashboard</a>
+    <a class="navbar-brand" [routerLink]="['/import']" routerLinkActive="router-link-active">Import</a>
+    <a class="navbar-brand" [routerLink]="['/accounts']" routerLinkActive="router-link-active">Accounts</a>
+    <a class="navbar-brand" [routerLink]="['/categories']" routerLinkActive="router-link-active">Categories</a>
+    <div class="form-inline">
+        <div class="custom-file col-sm-7">
+            <input type="file" class="custom-file-input" (change)="loadFile($event)">
+            <label class="custom-file-label">Choose file</label>
+        </div>
+        <button class="btn btn-outline-primary" (click)="onSave()">Save to file</button>
+    </div>
+</nav>

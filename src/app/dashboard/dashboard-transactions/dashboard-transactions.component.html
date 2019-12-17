@@ -1,0 +1,18 @@
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Amount</th>
+            <th scope="col">Title</th>
+            <th scope="col">Category</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="table" *ngFor="let t of transactions">
+            <td>{{t.date | date: 'yyyy-MM-dd' }}</td>
+            <td [ngStyle]="{color: t.amount < 0 ? 'red' : 'black'}">{{t.amount | number: '1.2'}}</td>
+            <td>{{t.title}}</td>
+            <td>{{t.category}}</td>
+        </tr>
+    </tbody>
+</table>
