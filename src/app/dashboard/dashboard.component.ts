@@ -3,18 +3,17 @@ import { Transaction } from '../models/transaction.model';
 import { DataService } from '../data/data.service';
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html'
+    selector: 'app-dashboard',
+    templateUrl: './dashboard.component.html'
 })
 export class DashboardComponent implements OnInit {
 
-  transactions: Transaction[] = [];
+    transactions: Transaction[] = [];
 
-  constructor(private dataService: DataService) { }
+    constructor(private dataService: DataService) { }
 
-  ngOnInit() {
-    this.dataService.transactionsChanged.subscribe((e) => this.transactions = e)
-    this.transactions = this.dataService.getTransactions();
-  }
-
+    ngOnInit() {
+        this.dataService.transactionsChanged.subscribe((e) => this.transactions = e)
+        this.transactions = this.dataService.getTransactions();
+    }
 }

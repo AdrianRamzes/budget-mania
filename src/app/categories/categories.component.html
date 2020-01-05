@@ -1,1 +1,26 @@
-<p>categories works!</p>
+<input type="text" placeholder="search..." class="form-control" [(ngModel)]="filter" (ngModelChange)="onFilterChange($event)"/>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Select</th>
+            <th scope="col">Date</th>
+            <th scope="col">Amount</th>
+            <th scope="col">Title</th>
+            <th scope="col">Category</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="table" *ngFor="let t of filteredTransactions">
+            <td><input type="checkbox"/></td>
+            <td>{{t.date | date: 'yyyy-MM-dd' }}</td>
+            <td [ngStyle]="{color: t.amount < 0 ? 'red' : 'black'}">{{t.amount | number: '1.2'}}</td>
+            <td>{{t.title}}</td>
+            <td>
+                <select [ngModel]="t.categoryName" name="category" class="form-control" (ngModelChange)="onCategoryChange(t, $event)">
+                    <option [ngValue]="null">No Category</option>
+                    <option *ngFor="let c of categories" [ngValue]="c.name">{{c.name}}</option>
+                </select>
+            </td>
+        </tr>
+    </tbody>
+</table>

@@ -5,6 +5,7 @@ import { Transaction } from '../models/transaction.model';
 import { UserAccount } from '../models/user-account.model';
 import { StorageService } from './storage/storage.service';
 import { EventEmitter } from '@angular/core';
+import { Guid } from "guid-typescript";
 
 export class DataService {
 
@@ -34,6 +35,17 @@ export class DataService {
     addTransactions(arr: Transaction[]) {
         let transactions = this.getTransactions();
         transactions.push(...arr);
+        this.setTransactions(transactions);
+    }
+    editTransaction(t: Transaction) {
+        let transactions = this.getTransactions();
+        let i = _.findIndex(transactions, {guid: t.guid});
+        transactions[i] = t;
+        this.setTransactions(transactions);
+    }
+    removeTransaction(t: Transaction) {
+        let transactions = this.getTransactions();
+        _.remove(transactions, (x) => x.guid === t.guid);
         this.setTransactions(transactions);
     }
 
@@ -80,15 +92,25 @@ export class DataService {
         if (deserialized) {
             return {
                 transactions: deserialized.transactions.map((t) => {
-                    return {
-                        ...t,
-                        date: new Date(t.date)
-                    } as Transaction;
+                    let transaction = new Transaction();
+                    transaction.guid = t.guid || Guid.create().toString();
+                    transaction.title = t.title;
+                    transaction.IBAN = t.IBAN;
+                    transaction.amount = t.amount;
+                    transaction.currency = t.currency;
+                    transaction.date = new Date(t.date);
+                    transaction.categoryName = t.categoryName || null;
+                    return transaction;
                 }),
                 accounts: deserialized.accounts.map(a => {
-                    return {
-                        ...a
-                    } as Account;
+                    let acc = new UserAccount();
+                    acc.guid = a.guid || Guid.create().toString();
+                    acc.IBAN = a.IBAN;
+                    acc.bankName = a.bankName;
+                    acc.currency = a.currency;
+                    acc.fullName = a.fullName;
+                    acc.name = a.name;
+                    return acc;;
                 })
             };
         }
