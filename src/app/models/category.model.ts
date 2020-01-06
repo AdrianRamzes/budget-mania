@@ -1,5 +1,5 @@
 export class Category {
     name: string;
     color: string;
-    parent: Category;
+    parentName: string;
 }

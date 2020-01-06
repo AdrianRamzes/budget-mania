@@ -8,6 +8,7 @@ export class Transaction {
     currency: Currency;
     categoryName: string;
     IBAN: string;
+    accountGuid: string;
 
     //TODO: equals with guid
     static equals(t1: Transaction, t2: Transaction): boolean {

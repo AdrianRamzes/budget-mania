@@ -6,6 +6,7 @@ import { UserAccount } from '../models/user-account.model';
 import { StorageService } from './storage/storage.service';
 import { EventEmitter } from '@angular/core';
 import { Guid } from "guid-typescript";
+import { Category } from '../models/category.model';
 
 export class DataService {
 
@@ -77,6 +78,31 @@ export class DataService {
         this.setAccounts(accounts);
     }
 
+    private _categories: Category[] = [
+        { name: "Entertainment", color: "#FF0000" } as Category,
+            { name: "Arts", color: "#FF9900", parentName: "Entertainment" } as Category,
+            { name: "Music", color: "#FF9900", parentName: "Entertainment" } as Category,
+            { name: "Movies & DVDs", color: "#FF9900", parentName: "Entertainment" } as Category,
+            { name: "Books (Entertainment)", color: "#FF9900", parentName: "Entertainment" } as Category,
+            { name: "Newspaper & Magazines", color: "#FF9900", parentName: "Entertainment" } as Category,
+        { name: "Education", color: "#FF0000" } as Category,
+            { name: "Tuition", color: "#FF9900", parentName: "Education" } as Category,
+            { name: "Student Loan", color: "#FF9900", parentName: "Education" } as Category,
+            { name: "Books & Supplies", color: "#FF9900", parentName: "Education" } as Category,
+        { name: "Shopping", color: "#FF0000" } as Category,
+            { name: "Clothing", color: "#FF9900", parentName: "Shopping" } as Category,
+            { name: "Electronics & Software", color: "#FF9900", parentName: "Shopping" } as Category,
+            { name: "Hobbies", color: "#FF9900", parentName: "Shopping" } as Category,
+            { name: "Sporting Goods", color: "#FF9900", parentName: "Shopping" } as Category,
+        { name: "Transport", color: "#FF0000" } as Category,
+            { name: "Car", color: "#FF9900", parentName: "Transport" } as Category,
+        { name: "Home", color: "#00FF00" } as Category,
+        { name: "Food", color: "#0000FF" } as Category,
+    ];
+    getCategories(): Category[] {
+        return this._categories;
+    }
+
     serialize(): string {
         return JSON.stringify(this._data);
     }
@@ -92,25 +118,26 @@ export class DataService {
         if (deserialized) {
             return {
                 transactions: deserialized.transactions.map((t) => {
-                    let transaction = new Transaction();
-                    transaction.guid = t.guid || Guid.create().toString();
-                    transaction.title = t.title;
-                    transaction.IBAN = t.IBAN;
-                    transaction.amount = t.amount;
-                    transaction.currency = t.currency;
-                    transaction.date = new Date(t.date);
-                    transaction.categoryName = t.categoryName || null;
-                    return transaction;
+                    let newTransaction = new Transaction();
+                    newTransaction.guid = t.guid || Guid.create().toString();
+                    newTransaction.title = t.title;
+                    newTransaction.IBAN = t.IBAN;
+                    newTransaction.amount = t.amount;
+                    newTransaction.currency = t.currency;
+                    newTransaction.date = new Date(t.date);
+                    newTransaction.categoryName = t.categoryName || null;
+                    newTransaction.accountGuid = t.accountGuid || null;
+                    return newTransaction;
                 }),
                 accounts: deserialized.accounts.map(a => {
-                    let acc = new UserAccount();
-                    acc.guid = a.guid || Guid.create().toString();
-                    acc.IBAN = a.IBAN;
-                    acc.bankName = a.bankName;
-                    acc.currency = a.currency;
-                    acc.fullName = a.fullName;
-                    acc.name = a.name;
-                    return acc;;
+                    let newAcc = new UserAccount();
+                    newAcc.guid = a.guid || Guid.create().toString();
+                    newAcc.IBAN = a.IBAN;
+                    newAcc.bankName = a.bankName;
+                    newAcc.currency = a.currency;
+                    newAcc.fullName = a.fullName;
+                    newAcc.name = a.name;
+                    return newAcc;;
                 })
             };
         }

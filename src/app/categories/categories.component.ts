@@ -9,11 +9,7 @@ import { Category } from '../models/category.model';
 })
 export class CategoriesComponent implements OnInit {
 
-    categories: Category[] = [
-        { name: "Transport", color: "#FF0000" } as Category,
-        { name: "Home", color: "#00FF00" } as Category,
-        { name: "Food", color: "#0000FF" } as Category,
-    ];
+    categories: Category[] = [];
 
     filteredTransactions: Transaction[] = [];
     filter: string = "";
@@ -23,6 +19,8 @@ export class CategoriesComponent implements OnInit {
     ngOnInit() {
         this.dataService.transactionsChanged.subscribe((e) => { this.filteredTransactions = this.filterTransactions(e, this.filter) });
         this.filteredTransactions = this.filterTransactions(this.dataService.getTransactions(), this.filter);
+
+        this.categories = this.dataService.getCategories();
     }
 
     onFilterChange(f: string) {
