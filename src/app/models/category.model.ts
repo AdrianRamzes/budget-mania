@@ -1,5 +1,5 @@
 export class Category {
-    name: string;
+    name: string;//must be unique
     color: string;
     parentName: string;
 }

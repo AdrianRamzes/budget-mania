@@ -6,17 +6,23 @@
             <th scope="col">Date</th>
             <th scope="col">Amount</th>
             <th scope="col">Title</th>
+            <th scope="col">Suggested</th>
             <th scope="col">Category</th>
         </tr>
     </thead>
     <tbody>
-        <tr class="table" *ngFor="let t of filteredTransactions">
-            <td><input type="checkbox"/></td>
-            <td>{{t.date | date: 'yyyy-MM-dd' }}</td>
-            <td [ngStyle]="{color: t.amount < 0 ? 'red' : 'black'}">{{t.amount | number: '1.2'}}</td>
-            <td>{{t.title}}</td>
+        <tr class="table" *ngFor="let t of filteredTransactions" 
+            [ngClass]="{
+                'table-primary': t.suggestedCategoryName,
+                'table-success': t.transaction.categoryName
+            }">
+            <td><input [(ngModel)]="t.selected" type="checkbox"/></td>
+            <td>{{t.transaction.date | date: 'yyyy-MM-dd' }}</td>
+            <td [ngStyle]="{color: t.transaction.amount < 0 ? 'red' : 'black'}">{{t.transaction.amount | number: '1.2'}}</td>
+            <td>{{t.transaction.title}}</td>
+            <td>{{t.suggestedCategoryName}}</td>
             <td>
-                <select [ngModel]="t.categoryName" name="category" class="form-control" (ngModelChange)="onCategoryChange(t, $event)">
+                <select [ngModel]="t.transaction.categoryName" name="category" class="form-control" (ngModelChange)="onCategoryChange(t.transaction, $event)">
                     <option [ngValue]="null">No Category</option>
                     <option *ngFor="let c of categories" [ngValue]="c.name">{{c.name}}</option>
                 </select>

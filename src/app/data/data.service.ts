@@ -99,6 +99,7 @@ export class DataService {
         { name: "Home", color: "#00FF00" } as Category,
         { name: "Food", color: "#0000FF" } as Category,
     ];
+    
     getCategories(): Category[] {
         return this._categories;
     }
