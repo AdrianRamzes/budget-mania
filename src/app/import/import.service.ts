@@ -82,7 +82,14 @@ export class ImportService {
         this.dataService.addTransactions(
             this.stagedTransactions
                 .filter(t => t.checked)
-                .map((t) => t.transaction)
+                .map((t) => {
+                    let trans = t.transaction;
+                    if(this.selectedAccount) {
+                        trans.accountGuid = this.selectedAccount 
+                            ? this.selectedAccount.guid : trans.accountGuid;
+                    }
+                    return trans;
+                })
         );
         this.stagedTransactions = [];
     }

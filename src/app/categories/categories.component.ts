@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Transaction } from '../models/transaction.model';
 import { DataService } from '../data/data.service';
 import { Category } from '../models/category.model';
+import { UserAccount } from '../models/user-account.model';
 
 @Component({
   selector: 'app-categories',
@@ -65,22 +66,28 @@ export class CategoriesComponent implements OnInit {
             return words.every((w) => {
                 return false
                     ||  (t.transaction.title && t.transaction.title.toLowerCase().includes(w))
-                    ||  (t.transaction.categoryName && t.transaction.categoryName.toLowerCase().includes(w));
+                    ||  (t.transaction.categoryName && t.transaction.categoryName.toLowerCase().includes(w))
+                    ||  (t.account && t.account.name.toLowerCase().includes(w));
             });
         });
     }
 
     getTransactionDisplayItems(transactions: Transaction[]) {
-        return transactions.map((t) => new TransactionDisplayItem(t));
+        let accounts = this.dataService.getAccounts();
+        return transactions.map((t) => {
+            let trans = new TransactionDisplayItem();
+            trans.transaction = t;
+            if(t.accountGuid) {
+                trans.account = accounts.find(a => a.guid === t.accountGuid) || null;
+            }
+            return trans;
+        });
     }
 }
 
 export class TransactionDisplayItem {
     transaction: Transaction;
+    account: UserAccount = null;
     suggestedCategoryName: string = null;
     selected: boolean = false;
-
-    constructor(t: Transaction) {
-        this.transaction = t;
-    }
 }
