@@ -33,12 +33,12 @@ export class MBankPolskaParser extends TransactionParserBase implements Transact
             let result = Papa.parse(prepared, this.config);
 
             return result.data.map((t, i) => {
-                return {
-                    amount: Number.parseFloat(t[6].replace(',', '.')),
-                    date: moment(t[0], "YYYY-MM-DD").toDate(),
-                    title: t[3],
-                    currency: Currency.PLN
-                } as Transaction;
+                let trans = new Transaction();
+                trans.amount = Number.parseFloat(t[6].replace(',', '.'));
+                trans.date = moment(t[0], "YYYY-MM-DD").toDate();
+                trans.title = t[3];
+                trans.currency = Currency.PLN;
+                return trans;
             });
         };
 

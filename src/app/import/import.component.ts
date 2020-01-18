@@ -13,6 +13,7 @@ export class ImportComponent implements OnInit {
     showTransactionsList: boolean = false;
     checkedTransactionsCount: number = 0;
     duplicateTransactionsCount: number = 0;
+    isAccountSelected: boolean = false;
 
     constructor(private importService: ImportService) { }
 
@@ -23,12 +24,14 @@ export class ImportComponent implements OnInit {
 
     private subscribe(): void {
         this.importService.stagedTransactionsChanged.subscribe(data => this.onStagedTransactionsChanged(data));
+        this.importService.selectedAccountChanged.subscribe(data => this.isAccountSelected = !!data)
     }
 
     private initialize(): void {
         this.showTransactionsList = this.importService.stagedTransactions.length > 0;
         this.checkedTransactionsCount = this.importService.stagedTransactions.length;
         this.duplicateTransactionsCount = 0
+        this.isAccountSelected = !!this.importService.selectedAccount;
     }
 
     onStagedTransactionsChanged(data, context: ImportComponent = this) {

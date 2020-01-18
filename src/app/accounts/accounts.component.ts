@@ -34,13 +34,21 @@ export class AccountsComponent implements OnInit {
 
     onSubmitNewAccount(form: NgForm) {
         let v = form.value;
-        this.dataService.addAccount({
-            IBAN: v.IBAN,
-            name: v.name,
-            fullName: v.fullName,
-            currency: v.currency && parseInt(v.currency),
-            bankName: v.bankName,
-        } as UserAccount);
+
+        if(form.invalid) {
+            //TODO: SET ERROR; migrate to reactive forms https://angular.io/guide/reactive-forms
+            return;
+        }
+        
+        let acc = new UserAccount();
+        acc.IBAN = v.IBAN;
+        acc.name = v.name;
+        acc.fullName = v.fullName;
+        acc.currency = v.currency && parseInt(v.currency);
+        acc.bankName = v.bankName;
+
+        this.dataService.addAccount(acc);
+
         form.resetForm();
     }
 

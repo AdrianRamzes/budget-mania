@@ -68,14 +68,20 @@ export class DataService {
     }
     editAccount(a: UserAccount) {
         let accounts = this.getAccounts();
-        let i = _.findIndex(accounts, { IBAN: a.IBAN });
+        let i = _.findIndex(accounts, { guid: a.guid });
         accounts[i] = a;
         this.setAccounts(accounts);
     }
     removeAccount(a: UserAccount) {
         let accounts = this.getAccounts();
-        _.remove(accounts, (x) => x.IBAN === a.IBAN);
+        _.remove(accounts, (x) => x.guid === a.guid);
         this.setAccounts(accounts);
+        let transactions = this.getTransactions().map((x) => {
+            if(x.accountGuid == a.guid)
+                x.accountGuid = null;
+            return x;
+        });
+        this.setTransactions(transactions);
     }
 
     private _categories: Category[] = [

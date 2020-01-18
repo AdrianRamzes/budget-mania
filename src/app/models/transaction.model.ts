@@ -1,4 +1,5 @@
 import { Currency } from "./currency.enum";
+import { Guid } from 'guid-typescript';
 
 export class Transaction {
     guid: string;
@@ -6,9 +7,13 @@ export class Transaction {
     date: Date;
     amount: number;
     currency: Currency;
-    categoryName: string;
-    IBAN: string;
-    accountGuid: string;
+    categoryName: string = null;
+    IBAN: string = null;
+    accountGuid: string = null;
+
+    constructor() {
+        this.guid = Guid.create().toString();
+    }
 
     //TODO: equals with guid
     static equals(t1: Transaction, t2: Transaction): boolean {

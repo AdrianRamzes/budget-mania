@@ -38,13 +38,13 @@ export class SantanderBankPolskaParser extends TransactionParserBase implements 
             let result = Papa.parse(prepared, this.config);
 
             return result.data.map((t, i) => {
-                return {
-                    amount: Number.parseFloat(t[5].replace(',', '.')),
-                    date: moment(t[0], "DD-MM-YYYY").toDate(),
-                    title: t[2],
-                    currency: currency,
-                    IBAN: iban,
-                } as Transaction;
+                let trans = new Transaction();
+                trans.amount = Number.parseFloat(t[5].replace(',', '.'));
+                trans.date = moment(t[0], "DD-MM-YYYY").toDate();
+                trans.title = t[2];
+                trans.currency = currency;
+                trans.IBAN = iban;
+                return trans;
             });
         };
 
