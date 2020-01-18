@@ -6,10 +6,12 @@ import { StagedTransaction } from '../import/stagedTransaction.model';
 import * as _ from 'lodash';
 
 import { TransactionParser } from './parsers/transactionParser';
-import { SantanderBankPolskaParser } from './parsers/santanderPolskaParser';
-import { MBankPolskaParser } from './parsers/mbankPolskaParser';
 import { UserAccount } from '../models/user-account.model';
 import { Subject } from 'rxjs';
+
+import { SantanderBankPolskaParser } from './parsers/santanderPolskaParser';
+import { MBankPolskaParser } from './parsers/mbankPolskaParser';
+import { INGLuxembourgParser } from './parsers/ingLuxembourgParser';
 
 export class ImportService {
 
@@ -46,7 +48,8 @@ export class ImportService {
 
     private parsers: TransactionParser[] = [
         new SantanderBankPolskaParser(),
-        new MBankPolskaParser()
+        new MBankPolskaParser(),
+        new INGLuxembourgParser(),
     ];
 
     constructor(private dataService: DataService) {
