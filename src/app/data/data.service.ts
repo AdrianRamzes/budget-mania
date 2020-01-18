@@ -7,6 +7,7 @@ import { StorageService } from './storage/storage.service';
 import { EventEmitter } from '@angular/core';
 import { Guid } from "guid-typescript";
 import { Category } from '../models/category.model';
+import { environment } from 'src/environments/environment';
 
 export class DataService {
 
@@ -25,7 +26,7 @@ export class DataService {
     getTransactions(): Transaction[] {
         return this._data.transactions.slice();
     }
-    setTransactions(value: Transaction[]) {
+    private setTransactions(value: Transaction[]) {
         this._data = {
             ...this._data,
             transactions: value.slice(),
@@ -49,11 +50,16 @@ export class DataService {
         _.remove(transactions, (x) => x.guid === t.guid);
         this.setTransactions(transactions);
     }
+    removeTransactions(trans: Transaction[]) {
+        let transactions = this.getTransactions();
+        _.remove(transactions, (x) => !!_.find(trans, (t) => t.guid === x.guid));
+        this.setTransactions(transactions);
+    }
 
     getAccounts(): UserAccount[] {
         return this._data.accounts.slice();
     }
-    setAccounts(value: UserAccount[]) {
+    private setAccounts(value: UserAccount[]) {
         this._data = {
             ...this._data,
             accounts: value.slice(),
@@ -153,6 +159,11 @@ export class DataService {
             transactions: [],
             accounts: []
         };
+    }
+
+    dump(): void {
+        if(!environment.production)
+            console.log(this._data);
     }
 
     private updateStorage(): void {

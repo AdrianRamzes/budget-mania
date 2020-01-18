@@ -3,6 +3,7 @@ import { Transaction } from '../models/transaction.model';
 import { DataService } from '../data/data.service';
 import { Category } from '../models/category.model';
 import { UserAccount } from '../models/user-account.model';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-categories',
@@ -16,6 +17,7 @@ export class CategoriesComponent implements OnInit {
     allTransactionDisplayItems: TransactionDisplayItem[] = [];
     filteredTransactions: TransactionDisplayItem[] = [];
     filter: string = "";
+    isProduction: boolean = true;
 
     constructor(private dataService: DataService) { }
 
@@ -32,10 +34,7 @@ export class CategoriesComponent implements OnInit {
         this.filteredTransactions = this.filterTransactions(this.allTransactionDisplayItems, this.filter);
 
         this.categories = this.dataService.getCategories();
-    }
-
-    log(t: TransactionDisplayItem) {
-        console.log(t);
+        this.isProduction = environment.production;
     }
 
     onFilterChange(f: string) {
@@ -82,6 +81,16 @@ export class CategoriesComponent implements OnInit {
             }
             return trans;
         });
+    }
+
+    onRemoveAllTransactionsClick(): void {
+        if(!this.isProduction)
+            this.dataService.removeTransactions(this.dataService.getTransactions());
+    }
+
+    onDumpAllDataClick(): void {
+        if(!this.isProduction)
+            this.dataService.dump();
     }
 }
 

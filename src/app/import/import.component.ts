@@ -41,6 +41,7 @@ export class ImportComponent implements OnInit {
     }
 
     onImportClick() {
-        this.importService.import();
+        if(this.isAccountSelected && this.checkedTransactionsCount > 0)
+            this.importService.import();
     }
 }
