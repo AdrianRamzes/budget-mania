@@ -33,7 +33,9 @@ export class CategoriesComponent implements OnInit {
         this.allTransactionDisplayItems = this.getTransactionDisplayItems(this.allTransactions);
         this.filteredTransactions = this.filterTransactions(this.allTransactionDisplayItems, this.filter);
 
+        this.dataService.categoriesChanged.subscribe(c => this.categories = c);
         this.categories = this.dataService.getCategories();
+
         this.isProduction = environment.production;
     }
 
@@ -42,17 +44,17 @@ export class CategoriesComponent implements OnInit {
     }
 
     onCategoryChange(t: Transaction, e: string) {
-        t.categoryName = e;
+        t.categoryGuid = e;
         this.dataService.editTransaction(t);
         this.updateSuggestedCategories(t);
     }
 
     updateSuggestedCategories(changedTransaction: Transaction) {
-        if(!changedTransaction.categoryName) return;
+        if(!changedTransaction.categoryGuid) return;
         this.filteredTransactions.forEach(t => {
-            if(t.transaction.guid != changedTransaction.guid && !t.transaction.categoryName) {
+            if(t.transaction.guid != changedTransaction.guid && !t.transaction.categoryGuid) {
                 if(t.transaction.title == changedTransaction.title) {
-                    t.suggestedCategoryName = changedTransaction.categoryName;
+                    t.suggestedCategory = this.dataService.getCategory(changedTransaction.categoryGuid);
                 }
             }
         });
@@ -65,19 +67,21 @@ export class CategoriesComponent implements OnInit {
             return words.every((w) => {
                 return false
                     ||  (t.transaction.title && t.transaction.title.toLowerCase().includes(w))
-                    ||  (t.transaction.categoryName && t.transaction.categoryName.toLowerCase().includes(w))
+                    ||  (t.category && t.category.name.toLowerCase().includes(w))
                     ||  (t.account && t.account.name.toLowerCase().includes(w));
             });
         });
     }
 
     getTransactionDisplayItems(transactions: Transaction[]) {
-        let accounts = this.dataService.getAccounts();
         return transactions.map((t) => {
             let trans = new TransactionDisplayItem();
             trans.transaction = t;
             if(t.accountGuid) {
-                trans.account = accounts.find(a => a.guid === t.accountGuid) || null;
+                trans.account = this.dataService.getAccount(t.accountGuid);
+            }
+            if(t.categoryGuid) {
+                trans.category = this.dataService.getCategory(t.categoryGuid);
             }
             return trans;
         });
@@ -96,7 +100,8 @@ export class CategoriesComponent implements OnInit {
 
 export class TransactionDisplayItem {
     transaction: Transaction;
+    category: Category = null;
     account: UserAccount = null;
-    suggestedCategoryName: string = null;
+    suggestedCategory: Category = null;
     selected: boolean = false;
 }

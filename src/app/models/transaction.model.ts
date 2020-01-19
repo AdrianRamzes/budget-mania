@@ -7,8 +7,8 @@ export class Transaction {
     date: Date;
     amount: number;
     currency: Currency;
-    categoryName: string = null;
     IBAN: string = null;
+    categoryGuid: string = null;
     accountGuid: string = null;
 
     constructor() {

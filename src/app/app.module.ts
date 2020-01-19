@@ -12,6 +12,7 @@ import { ImportService } from './import/import.service';
 import { HeaderComponent } from './header/header.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { CategoriesComponent } from './categories/categories.component';
+import { ManageCategoriesComponent } from './categories/manage-categories/manage-categories.component';
 import { DashboardTransactionsComponent } from './dashboard/dashboard-transactions/dashboard-transactions.component';
 import { SelectAccountComponent } from './import/select-account/select-account.component';
 import { StorageService } from './data/storage/storage.service';
@@ -29,7 +30,8 @@ import { HttpClientModule } from '@angular/common/http';
     CategoriesComponent,
     DashboardTransactionsComponent,
     SelectAccountComponent,
-    AccountsComponent
+    AccountsComponent,
+    ManageCategoriesComponent
   ],
   imports: [
     BrowserModule,

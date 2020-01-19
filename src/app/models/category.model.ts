@@ -1,5 +1,12 @@
+import { Guid } from 'guid-typescript';
+
 export class Category {
-    name: string;//must be unique
+    guid: string;
+    name: string;
     color: string;
     parentName: string;
+
+    constructor() {
+        this.guid = Guid.create().toString();
+    }
 }

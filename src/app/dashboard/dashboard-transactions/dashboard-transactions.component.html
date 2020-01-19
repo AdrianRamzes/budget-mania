@@ -12,7 +12,8 @@
             <td>{{t.date | date: 'yyyy-MM-dd' }}</td>
             <td [ngStyle]="{color: t.amount < 0 ? 'red' : 'black'}">{{t.amount | number: '1.2'}}</td>
             <td>{{t.title}}</td>
-            <td>{{t.categoryName}}</td>
+            <!-- TODO: DisplayItems -->
+            <td>{{t.categoryGuid}}</td>
         </tr>
     </tbody>
 </table>

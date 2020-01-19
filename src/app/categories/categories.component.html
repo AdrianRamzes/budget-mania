@@ -15,19 +15,19 @@
     <tbody>
         <tr class="table" *ngFor="let t of filteredTransactions" 
             [ngClass]="{
-                'table-primary': t.suggestedCategoryName,
-                'table-success': t.transaction.categoryName
+                'table-primary': !!t.suggestedCategory,
+                'table-success': !!t.category
             }">
             <td><input [(ngModel)]="t.selected" type="checkbox"/></td>
             <td>{{t.transaction.date | date: 'yyyy-MM-dd' }}</td>
             <td [ngStyle]="{color: t.transaction.amount < 0 ? 'red' : 'black'}">{{t.transaction.amount | number: '1.2'}}</td>
             <td>{{t.transaction.title}}</td>
             <td>{{t.account ? t.account.name : ''}}</td>
-            <td>{{t.suggestedCategoryName}}</td>
+            <td>{{t.suggestedCategory ? t.suggestedCategory.name : ''}}</td>
             <td>
-                <select [ngModel]="t.transaction.categoryName" name="category" class="form-control" (ngModelChange)="onCategoryChange(t.transaction, $event)">
+                <select [ngModel]="t.transaction.categoryGuid" name="category" class="form-control" (ngModelChange)="onCategoryChange(t.transaction, $event)">
                     <option [ngValue]="null">No Category</option>
-                    <option *ngFor="let c of categories" [ngValue]="c.name">{{c.name}}</option>
+                    <option *ngFor="let c of categories" [ngValue]="c.guid">{{c.name}}</option>
                 </select>
             </td>
         </tr>

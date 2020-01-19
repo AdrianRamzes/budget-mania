@@ -1,0 +1,99 @@
+<button type="button" class="btn btn-success" data-toggle="modal" data-target="#addNewCategoryModal">
+    Add New Category
+</button>
+<div class="container">
+    <div class="row">
+        <ul class="list-group">
+            <li *ngFor="let c of categories" class="list-group-item"
+                [ngClass]="{'active': (selectedCategory && c.guid === selectedCategory.guid)}"
+                (click)="onCategorySelected(c)">
+                <div class="container">
+                    {{c.name}}
+                    <button [disabled]="(!selectedCategory || c.guid !== selectedCategory.guid)" class="btn btn-info"
+                        data-toggle="modal" data-target="#editCategoryModal">
+                        Edit
+                    </button>
+                    <button [disabled]="(!selectedCategory || c.guid !== selectedCategory.guid)" class="btn btn-danger"
+                        data-toggle="modal" data-target="#removeCategoryModal">
+                        Remove
+                    </button>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- Add new Category Modal -->
+<div class="modal fade" id="addNewCategoryModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form #addForm="ngForm">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Category</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" required ngModel name="name" placeholder="Name">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" data-dismiss="modal"
+                        (click)="onSubmitNewCategory(addForm)">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Category Modal -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form #editForm="ngForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Edit Category</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" name="name" placeholder="Name"
+                            [ngModel]="selectedCategory && selectedCategory.name || ''">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal"
+                        (click)="onEditCategoryClick(editForm)">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Remove Confirmation Modal -->
+<div class="modal fade" id="removeCategoryModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Are you sure?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="onRemoveCategoryClick()">Yes, Remove!</button>
+            </div>
+        </div>
+    </div>
+</div>
