@@ -145,7 +145,7 @@ export class DataService {
         let deserialized = JSON.parse(serialized);
         if (deserialized) {
             return {
-                transactions: deserialized.transactions.map((t) => {
+                transactions: (deserialized.transactions || []) .map((t) => {
                     let newTransaction = new Transaction();
                     newTransaction.guid = t.guid || Guid.create().toString();
                     newTransaction.title = t.title;
@@ -157,7 +157,7 @@ export class DataService {
                     newTransaction.accountGuid = t.accountGuid || null;
                     return newTransaction;
                 }),
-                accounts: deserialized.accounts.map(a => {
+                accounts: (deserialized.accounts || []).map(a => {
                     let newAcc = new UserAccount();
                     newAcc.guid = a.guid || Guid.create().toString();
                     newAcc.IBAN = a.IBAN;
@@ -167,7 +167,7 @@ export class DataService {
                     newAcc.name = a.name;
                     return newAcc;
                 }),
-                categories: deserialized.categories.map(c => {
+                categories: (deserialized.categories || []).map(c => {
                     let cat = new Category();
                     cat.guid = c.guid || Guid.create().toString();
                     cat.color = c.color;
