@@ -12,6 +12,7 @@ import { Subject } from 'rxjs';
 import { SantanderBankPolskaParser } from './parsers/santanderPolskaParser';
 import { MBankPolskaParser } from './parsers/mbankPolskaParser';
 import { INGLuxembourgParser } from './parsers/ingLuxembourgParser';
+import { RevolutParser } from './parsers/revolutParser';
 
 export class ImportService {
 
@@ -50,6 +51,7 @@ export class ImportService {
         new SantanderBankPolskaParser(),
         new MBankPolskaParser(),
         new INGLuxembourgParser(),
+        new RevolutParser()
     ];
 
     constructor(private dataService: DataService) {

@@ -33,7 +33,7 @@ export class INGLuxembourgParser extends TransactionParserBase implements Transa
 
             let result = Papa.parse(prepared, this.config);
 
-            console.log(result.data);
+            //console.log(result.data);
 
             return result.data.map((t, i) => {
                 let trans = new Transaction();
