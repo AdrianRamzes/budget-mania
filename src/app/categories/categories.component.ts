@@ -60,6 +60,13 @@ export class CategoriesComponent implements OnInit {
         });
     }
 
+    onSuggestedCategoryClick(t: TransactionDisplayItem) {
+        if(!t.transaction.categoryGuid) {
+            t.transaction.categoryGuid = t.suggestedCategory.guid;
+            this.dataService.editTransaction(t.transaction);
+        }
+    }
+
     filterTransactions(transactions: TransactionDisplayItem[], filter: string): TransactionDisplayItem[] {
         if(filter.length == 0) return transactions;
         return transactions.filter((t) => { // TODO: filter logic

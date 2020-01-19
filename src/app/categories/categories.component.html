@@ -23,7 +23,7 @@
             <td [ngStyle]="{color: t.transaction.amount < 0 ? 'red' : 'black'}">{{t.transaction.amount | number: '1.2'}}</td>
             <td>{{t.transaction.title}}</td>
             <td>{{t.account ? t.account.name : ''}}</td>
-            <td>{{t.suggestedCategory ? t.suggestedCategory.name : ''}}</td>
+            <td><button *ngIf="!!t.suggestedCategory" class="btn btn-link" (click)="onSuggestedCategoryClick(t)">{{t.suggestedCategory.name}}</button></td>
             <td>
                 <select [ngModel]="t.transaction.categoryGuid" name="category" class="form-control" (ngModelChange)="onCategoryChange(t.transaction, $event)">
                     <option [ngValue]="null">No Category</option>
