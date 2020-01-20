@@ -1,3 +1,5 @@
+import * as _ from "lodash";
+
 import { Component, OnInit } from '@angular/core';
 import { Transaction } from '../models/transaction.model';
 import { DataService } from '../data/data.service';
@@ -37,6 +39,8 @@ export class CategoriesComponent implements OnInit {
         this.categories = this.dataService.getCategories();
 
         this.isProduction = environment.production;
+
+        this.updateSuggestedCategories();
     }
 
     onFilterChange(f: string) {
@@ -46,18 +50,7 @@ export class CategoriesComponent implements OnInit {
     onCategoryChange(t: Transaction, e: string) {
         t.categoryGuid = e;
         this.dataService.editTransaction(t);
-        this.updateSuggestedCategories(t);
-    }
-
-    updateSuggestedCategories(changedTransaction: Transaction) {
-        if(!changedTransaction.categoryGuid) return;
-        this.filteredTransactions.forEach(t => {
-            if(t.transaction.guid != changedTransaction.guid && !t.transaction.categoryGuid) {
-                if(t.transaction.title == changedTransaction.title) {
-                    t.suggestedCategory = this.dataService.getCategory(changedTransaction.categoryGuid);
-                }
-            }
-        });
+        this.updateSuggestedCategories();
     }
 
     onSuggestedCategoryClick(t: TransactionDisplayItem) {
@@ -102,6 +95,19 @@ export class CategoriesComponent implements OnInit {
     onDumpAllDataClick(): void {
         if(!this.isProduction)
             this.dataService.dump();
+    }
+
+    private updateSuggestedCategories() {
+        let withCategory = _.filter(this.allTransactions, x => !!x.categoryGuid);
+        this.allTransactionDisplayItems.forEach(t => {
+            if(!t.transaction.categoryGuid) {
+                let candidate = _.find(withCategory, x => x.title == t.transaction.title)
+                if(candidate) {
+                    t.suggestedCategory = this.dataService.getCategory(candidate.categoryGuid);
+                }
+            }
+        });
+        return;
     }
 }
 
