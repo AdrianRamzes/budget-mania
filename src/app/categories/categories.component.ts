@@ -20,6 +20,7 @@ export class CategoriesComponent implements OnInit {
     filteredTransactions: TransactionDisplayItem[] = [];
     filter: string = "";
     isProduction: boolean = true;
+    withoutCategory: boolean = false;
 
     constructor(private dataService: DataService) { }
 
@@ -28,7 +29,8 @@ export class CategoriesComponent implements OnInit {
         this.dataService.transactionsChanged.subscribe((e) => { 
             self.allTransactions = e;
             self.allTransactionDisplayItems = this.getTransactionDisplayItems(e);
-            self.filteredTransactions = self.filterTransactions(this.allTransactionDisplayItems, self.filter)
+            self.filteredTransactions = self.filterTransactions(this.allTransactionDisplayItems, self.filter);
+            this.updateSuggestedCategories();
         });
 
         this.allTransactions = this.dataService.getTransactions();
@@ -50,19 +52,28 @@ export class CategoriesComponent implements OnInit {
     onCategoryChange(t: Transaction, e: string) {
         t.categoryGuid = e;
         this.dataService.editTransaction(t);
-        this.updateSuggestedCategories();
     }
 
     onSuggestedCategoryClick(t: TransactionDisplayItem) {
-        if(!t.transaction.categoryGuid) {
-            t.transaction.categoryGuid = t.suggestedCategory.guid;
-            this.dataService.editTransaction(t.transaction);
-        }
+        this.acceptSuggestedCategory(t);
+    }
+
+    onAcceptAllSugestionsClick() {
+        this.filteredTransactions.forEach(t => this.acceptSuggestedCategory(t));
+    }
+
+    onCheckboxChange() {
+        this.filteredTransactions = this.filterTransactions(this.allTransactionDisplayItems, this.filter);
     }
 
     filterTransactions(transactions: TransactionDisplayItem[], filter: string): TransactionDisplayItem[] {
+        transactions = transactions
+            .filter(t => this.withoutCategory ? !t.category : true);
+
         if(filter.length == 0) return transactions;
-        return transactions.filter((t) => { // TODO: filter logic
+
+        return transactions
+        .filter((t) => { // TODO: filter logic
             let words = filter.toLocaleLowerCase().split(/\s+/);
             return words.every((w) => {
                 return false
@@ -95,6 +106,13 @@ export class CategoriesComponent implements OnInit {
     onDumpAllDataClick(): void {
         if(!this.isProduction)
             this.dataService.dump();
+    }
+
+    private acceptSuggestedCategory(t: TransactionDisplayItem) {
+        if(!t.transaction.categoryGuid) {
+            t.transaction.categoryGuid = t.suggestedCategory.guid;
+            this.dataService.editTransaction(t.transaction);
+        }
     }
 
     private updateSuggestedCategories() {

@@ -1,5 +1,10 @@
 <input type="text" placeholder="search..." class="form-control" [(ngModel)]="filter" (ngModelChange)="onFilterChange($event)"/>
 <p>result: {{filteredTransactions.length}}</p>
+<div class="form-check">
+    <input class="form-check-input" type="checkbox" [(ngModel)]="withoutCategory" (change)="onCheckboxChange($event)">
+    <label class="form-check-label">Only without category</label>
+</div>
+<button class="btn btn-success" (click)="onAcceptAllSugestionsClick()">Accept All Suggestions</button>
 <table class="table">
     <thead>
         <tr>
