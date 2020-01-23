@@ -59,7 +59,10 @@ export class CategoriesComponent implements OnInit {
     }
 
     onAcceptAllSugestionsClick() {
-        this.filteredTransactions.forEach(t => this.acceptSuggestedCategory(t));
+        this.filteredTransactions.forEach(t => {
+            if(!!t.suggestedCategory)
+                this.acceptSuggestedCategory(t);
+        });
     }
 
     onCheckboxChange() {
