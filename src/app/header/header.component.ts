@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { saveAs } from 'file-saver'
 import { DataService } from '../data/data.service';
 import * as moment from 'moment';
@@ -7,11 +7,21 @@ import * as moment from 'moment';
     selector: 'app-header',
     templateUrl: './header.component.html'
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
+
+    isDirty: boolean = false;
 
     private _filenamePrefix = "budget_mania_";
 
     constructor(private dataService: DataService) {
+    }
+
+    ngOnInit() {
+        this.dataService.accountsChanged.subscribe(e => this.isDirty = true);
+        this.dataService.categoriesChanged.subscribe(e => this.isDirty = true);
+        this.dataService.transactionsChanged.subscribe(e => this.isDirty = true);
+
+        this.isDirty = false;
     }
 
     onSave() {
@@ -29,6 +39,7 @@ export class HeaderComponent {
         saveAs(new Blob([data], 
             { type: "text/plain;charset=utf-8" }),
             this._filenamePrefix + moment().format("YYYY-MM-DD-HH-mm-ss"));
+        this.isDirty = false;
     }
 
     private load(file: File) {

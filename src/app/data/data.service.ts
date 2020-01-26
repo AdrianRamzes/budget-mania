@@ -135,10 +135,13 @@ export class DataService {
         return JSON.stringify(this._data);
     }
 
-    setDataFromString(jsonString: string): void {
+    setDataFromString(jsonString: string, emitChanges = false): void {
         this._data = this.deserialize(jsonString);
-        this.accountsChanged.next(this._data.accounts);
-        this.transactionsChanged.next(this._data.transactions);
+        if(emitChanges) {
+            this.accountsChanged.emit(this._data.accounts);
+            this.transactionsChanged.emit(this._data.transactions);
+            this.categoriesChanged.emit(this._data.categories);
+        }
     }
 
     private deserialize(serialized: string): Data {
