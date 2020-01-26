@@ -25,11 +25,11 @@ export class CategoriesComponent implements OnInit {
     constructor(private dataService: DataService) { }
 
     ngOnInit() {
-        let self = this;
         this.dataService.transactionsChanged.subscribe((e) => { 
-            self.allTransactions = e;
-            self.allTransactionDisplayItems = this.getTransactionDisplayItems(e);
-            self.filteredTransactions = self.filterTransactions(this.allTransactionDisplayItems, self.filter);
+            this.allTransactions = e;
+            this.categories = this.dataService.getCategories();
+            this.allTransactionDisplayItems = this.getTransactionDisplayItems(e);
+            this.filteredTransactions = this.filterTransactions(this.allTransactionDisplayItems, this.filter);
             this.updateSuggestedCategories();
         });
 

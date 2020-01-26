@@ -8,6 +8,12 @@ export class Transaction {
     amount: number;
     currency: Currency;
     IBAN: string = null;
+    sourceIBAN: string = null;
+    destinationIBAN: string = null;
+    importDate: Date;
+    importGuid: string = null;
+    rawData: string = null;
+
     categoryGuid: string = null;
     accountGuid: string = null;
 

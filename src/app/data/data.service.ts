@@ -150,9 +150,14 @@ export class DataService {
                     newTransaction.guid = t.guid || Guid.create().toString();
                     newTransaction.title = t.title;
                     newTransaction.IBAN = t.IBAN;
+                    newTransaction.sourceIBAN = t.sourceIBAN || null;
+                    newTransaction.destinationIBAN = t.destinationIBAN || null;
                     newTransaction.amount = t.amount;
                     newTransaction.currency = t.currency;
                     newTransaction.date = new Date(t.date);
+                    newTransaction.importDate = t.importDate || null;
+                    newTransaction.importGuid = t.importGuid || null;
+                    newTransaction.rawData = t.rawData || null;
                     newTransaction.categoryGuid = t.categoryGuid || null;
                     newTransaction.accountGuid = t.accountGuid || null;
                     return newTransaction;
