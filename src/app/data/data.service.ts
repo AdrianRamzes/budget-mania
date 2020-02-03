@@ -144,6 +144,10 @@ export class DataService {
         }
     }
 
+    getDataJSON(): Data {
+        return this._data;
+    }
+
     private deserialize(serialized: string): Data {
         let deserialized = JSON.parse(serialized);
         if (deserialized) {

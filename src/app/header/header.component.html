@@ -12,4 +12,5 @@
         <button *ngIf="!isDirty" class="btn btn-outline-primary" (click)="onSave()">Save to file</button>
         <button *ngIf="isDirty" class="btn btn-danger" (click)="onSave()">Save to file</button>
     </div>
+    <button class="btn btn-outline-primary" (click)="onExportToCSVClick()">Export to CSV</button>
 </nav>
