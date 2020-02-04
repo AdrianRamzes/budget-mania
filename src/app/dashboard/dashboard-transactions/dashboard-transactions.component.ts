@@ -15,6 +15,7 @@ export class DashboardTransactionsComponent implements OnInit {
 
     filterText: string = "";
     displayCount: number = 10;
+    totalSum: number = 0;
 
     constructor(private dataService: DataService) {
     }
@@ -56,6 +57,10 @@ export class DashboardTransactionsComponent implements OnInit {
                 });
             });
         }
+
+        this.totalSum = this.filteredTransactions
+            .map(t => Math.round(t.transaction.amount*100))
+            .reduce((acc, t) => acc + t)/100;
     }
 
     private getTransactionDisplayItem(t: Transaction): TransactionDisplayItem {

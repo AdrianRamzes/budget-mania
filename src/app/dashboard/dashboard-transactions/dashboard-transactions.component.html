@@ -1,5 +1,6 @@
 <input type="text" placeholder="search..." class="form-control" [(ngModel)]="filterText" (ngModelChange)="onFilterChange($event)"/>
 <p>result: {{displayCount}}/{{filteredTransactions.length}} total: {{allTransactions.length}}</p>
+<p>sum: {{totalSum | number: '1.2'}}</p> 
 <table class="table">
     <thead>
         <tr>
