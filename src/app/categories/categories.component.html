@@ -1,5 +1,5 @@
 <input type="text" placeholder="search..." class="form-control" [(ngModel)]="filter" (ngModelChange)="onFilterChange($event)"/>
-<p>result: {{filteredTransactions.length}}</p>
+<p>shown: {{displayCount}} result: {{filteredTransactions.length}} total: {{allTransactionDisplayItems.length}}</p>
 <div class="form-check">
     <input class="form-check-input" type="checkbox" [(ngModel)]="withoutCategory" (change)="onCheckboxChange($event)">
     <label class="form-check-label">Only without category</label>
@@ -18,7 +18,7 @@
         </tr>
     </thead>
     <tbody>
-        <tr class="table" *ngFor="let t of filteredTransactions" 
+        <tr class="table" *ngFor="let t of filteredTransactions.slice(0, displayCount)" 
             [ngClass]="{
                 'table-primary': !!t.suggestedCategory,
                 'table-success': !!t.category
@@ -38,6 +38,7 @@
         </tr>
     </tbody>
 </table>
+<button class="btn btn-info" (click)="onLoadMoreClick()">Show more...</button>
 <div *ngIf="!isProduction">
     <button class="btn btn-danger" (click)="onRemoveAllTransactionsClick()">Remove all transactions</button>
     <button class="btn btn-success" (click)="onDumpAllDataClick()">Data Dumper</button>

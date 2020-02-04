@@ -15,26 +15,28 @@ export class CategoriesComponent implements OnInit {
 
     categories: Category[] = [];
 
-    allTransactions: Transaction[] = [];
+    //allTransactions: Transaction[] = [];
     allTransactionDisplayItems: TransactionDisplayItem[] = [];
     filteredTransactions: TransactionDisplayItem[] = [];
     filter: string = "";
     isProduction: boolean = true;
     withoutCategory: boolean = false;
 
+    displayCount: number = 10;
+
     constructor(private dataService: DataService) { }
 
     ngOnInit() {
         this.dataService.transactionsChanged.subscribe((e) => { 
-            this.allTransactions = e;
+            //this.allTransactions = e;
             this.categories = this.dataService.getCategories();
             this.allTransactionDisplayItems = this.getTransactionDisplayItems(e);
             this.filteredTransactions = this.filterTransactions(this.allTransactionDisplayItems, this.filter);
             this.updateSuggestedCategories();
         });
 
-        this.allTransactions = this.dataService.getTransactions();
-        this.allTransactionDisplayItems = this.getTransactionDisplayItems(this.allTransactions);
+        //this.allTransactions = this.dataService.getTransactions();
+        this.allTransactionDisplayItems = this.getTransactionDisplayItems(this.dataService.getTransactions());
         this.filteredTransactions = this.filterTransactions(this.allTransactionDisplayItems, this.filter);
 
         this.dataService.categoriesChanged.subscribe(c => this.categories = c);
@@ -69,25 +71,31 @@ export class CategoriesComponent implements OnInit {
         this.filteredTransactions = this.filterTransactions(this.allTransactionDisplayItems, this.filter);
     }
 
-    filterTransactions(transactions: TransactionDisplayItem[], filter: string): TransactionDisplayItem[] {
+    onLoadMoreClick(): void {
+        this.displayCount = Math.min(this.displayCount+10, this.filteredTransactions.length);
+    }
+
+    private filterTransactions(transactions: TransactionDisplayItem[], filter: string): TransactionDisplayItem[] {
         transactions = transactions
             .filter(t => this.withoutCategory ? !t.category : true);
 
-        if(filter.length == 0) return transactions;
-
-        return transactions
-        .filter((t) => { // TODO: filter logic
-            let words = filter.toLocaleLowerCase().split(/\s+/);
-            return words.every((w) => {
-                return false
-                    ||  (t.transaction.title && t.transaction.title.toLowerCase().includes(w))
-                    ||  (t.category && t.category.name.toLowerCase().includes(w))
-                    ||  (t.account && t.account.name.toLowerCase().includes(w));
+        if(filter.length > 0) {
+            transactions = transactions
+            .filter((t) => { // TODO: filter logic
+                let words = filter.toLocaleLowerCase().split(/\s+/);
+                return words.every((w) => {
+                    return false
+                        ||  (t.transaction.title && t.transaction.title.toLowerCase().includes(w))
+                        ||  (t.category && t.category.name.toLowerCase().includes(w))
+                        ||  (t.account && t.account.name.toLowerCase().includes(w));
+                });
             });
-        });
+        }
+
+        return transactions;
     }
 
-    getTransactionDisplayItems(transactions: Transaction[]) {
+    private getTransactionDisplayItems(transactions: Transaction[]) {
         return transactions.map((t) => {
             let trans = new TransactionDisplayItem();
             trans.transaction = t;
@@ -119,7 +127,7 @@ export class CategoriesComponent implements OnInit {
     }
 
     private updateSuggestedCategories() {
-        let withCategory = _.filter(this.allTransactions, x => !!x.categoryGuid);
+        let withCategory = _.filter(this.dataService.getTransactions(), x => !!x.categoryGuid);
         this.allTransactionDisplayItems.forEach(t => {
             if(!t.transaction.categoryGuid) {
                 let candidate = _.find(withCategory, x => x.title == t.transaction.title)

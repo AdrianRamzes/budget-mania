@@ -1,3 +1,5 @@
+<input type="text" placeholder="search..." class="form-control" [(ngModel)]="filterText" (ngModelChange)="onFilterChange($event)"/>
+<p>result: {{displayCount}}/{{filteredTransactions.length}} total: {{allTransactions.length}}</p>
 <table class="table">
     <thead>
         <tr>
@@ -8,12 +10,13 @@
         </tr>
     </thead>
     <tbody>
-        <tr class="table" *ngFor="let t of transactions">
-            <td>{{t.date | date: 'yyyy-MM-dd' }}</td>
-            <td [ngStyle]="{color: t.amount < 0 ? 'red' : 'black'}">{{t.amount | number: '1.2'}}</td>
-            <td>{{t.title}}</td>
+        <tr class="table" *ngFor="let t of filteredTransactions.slice(0, displayCount)">
+            <td>{{t.transaction.date | date: 'yyyy-MM-dd' }}</td>
+            <td [ngStyle]="{color: t.transaction.amount < 0 ? 'red' : 'black'}">{{t.transaction.amount | number: '1.2'}}</td>
+            <td>{{t.transaction.title}}</td>
             <!-- TODO: DisplayItems -->
-            <td>{{t.categoryGuid}}</td>
+            <td>{{t.category ? t.category.name : ""}}</td>
         </tr>
     </tbody>
 </table>
+<button class="btn btn-info" (click)="onLoadMoreClick()">Show more...</button>
