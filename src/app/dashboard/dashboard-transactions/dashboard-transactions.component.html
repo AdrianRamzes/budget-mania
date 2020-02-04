@@ -19,4 +19,4 @@
         </tr>
     </tbody>
 </table>
-<button class="btn btn-info" (click)="onLoadMoreClick()">Show more...</button>
+<button class="btn btn-info" (click)="onLoadMoreClick()" [disabled]="displayCount >= filteredTransactions.length">Show more...</button>

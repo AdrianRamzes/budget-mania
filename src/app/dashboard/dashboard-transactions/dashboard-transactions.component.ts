@@ -29,7 +29,7 @@ export class DashboardTransactionsComponent implements OnInit {
     }
 
     onLoadMoreClick() {
-        this.displayCount = Math.min(this.displayCount+10, this.allTransactions.length);
+        this.displayCount = Math.min(this.displayCount+10, this.filteredTransactions.length);
         this.updateFilteredTransactions();
     }
 
@@ -39,10 +39,23 @@ export class DashboardTransactionsComponent implements OnInit {
     }
 
     private updateFilteredTransactions(): void {
-        //count = Math.min(count, this.allTransactions.length);
+        //TODO: refactor this => similar to categories/transactions list
         this.filteredTransactions = this.allTransactions.filter(t => {
             return true;
         });
+        
+        if(this.filterText.length > 0) {
+            this.filteredTransactions = this.filteredTransactions
+            .filter((t) => { // TODO: filter logic
+                let words = this.filterText.toLocaleLowerCase().split(/\s+/);
+                return words.every((w) => {
+                    return false
+                        ||  (t.transaction.title && t.transaction.title.toLowerCase().includes(w))
+                        ||  (t.category && t.category.name.toLowerCase().includes(w))
+                        ||  (t.account && t.account.name.toLowerCase().includes(w));
+                });
+            });
+        }
     }
 
     private getTransactionDisplayItem(t: Transaction): TransactionDisplayItem {

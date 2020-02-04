@@ -38,7 +38,7 @@
         </tr>
     </tbody>
 </table>
-<button class="btn btn-info" (click)="onLoadMoreClick()">Show more...</button>
+<button class="btn btn-info" (click)="onLoadMoreClick()" [disabled]="displayCount >= filteredTransactions.length">Show more...</button>
 <div *ngIf="!isProduction">
     <button class="btn btn-danger" (click)="onRemoveAllTransactionsClick()">Remove all transactions</button>
     <button class="btn btn-success" (click)="onDumpAllDataClick()">Data Dumper</button>
