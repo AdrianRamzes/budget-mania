@@ -1,12 +1,13 @@
 <input type="text" placeholder="search..." class="form-control" [(ngModel)]="filterText" (ngModelChange)="onFilterChange($event)"/>
 <p>result: {{displayCount}}/{{filteredTransactions.length}} total: {{allTransactions.length}}</p>
-<p>sum: {{totalSum | number: '1.2'}}</p> 
+<p>sum: {{totalSum | number: '1.2'}} avg: {{filteredAvg | number: '1.2'}} min: {{filteredMin | number: '1.2'}} max: {{filteredMax | number: '1.2'}}</p> 
 <table class="table">
     <thead>
         <tr>
             <th scope="col">Date</th>
             <th scope="col">Amount</th>
             <th scope="col">Title</th>
+            <th scope="col">Account</th>
             <th scope="col">Category</th>
         </tr>
     </thead>
@@ -15,6 +16,7 @@
             <td>{{t.transaction.date | date: 'yyyy-MM-dd' }}</td>
             <td [ngStyle]="{color: t.transaction.amount < 0 ? 'red' : 'black'}">{{t.transaction.amount | number: '1.2'}}</td>
             <td>{{t.transaction.title}}</td>
+            <td>{{t.account.name}}</td>
             <!-- TODO: DisplayItems -->
             <td>{{t.category ? t.category.name : ""}}</td>
         </tr>

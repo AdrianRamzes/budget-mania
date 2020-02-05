@@ -16,6 +16,9 @@ export class DashboardTransactionsComponent implements OnInit {
     filterText: string = "";
     displayCount: number = 10;
     totalSum: number = 0;
+    filteredAvg: number = 0;
+    filteredMin: number = 0;
+    filteredMax: number = 0;
 
     constructor(private dataService: DataService) {
     }
@@ -41,12 +44,9 @@ export class DashboardTransactionsComponent implements OnInit {
 
     private updateFilteredTransactions(): void {
         //TODO: refactor this => similar to categories/transactions list
-        this.filteredTransactions = this.allTransactions.filter(t => {
-            return true;
-        });
-        
+        this.filteredTransactions = this.allTransactions;
         if(this.filterText.length > 0) {
-            this.filteredTransactions = this.filteredTransactions
+            this.filteredTransactions = this.allTransactions
             .filter((t) => { // TODO: filter logic
                 let words = this.filterText.toLocaleLowerCase().split(/\s+/);
                 return words.every((w) => {
@@ -60,7 +60,14 @@ export class DashboardTransactionsComponent implements OnInit {
 
         this.totalSum = this.filteredTransactions
             .map(t => Math.round(t.transaction.amount*100))
-            .reduce((acc, t) => acc + t)/100;
+            .reduce((acc, t) => acc + t, 0)/100;
+
+        let count = this.filteredTransactions.length;
+
+        this.filteredAvg = count ? (this.totalSum / count) : 0;
+
+        this.filteredMin = count ? Math.min(...this.filteredTransactions.map(t => t.transaction.amount)) : 0;
+        this.filteredMax = count ? Math.max(...this.filteredTransactions.map(t => t.transaction.amount)) : 0;
     }
 
     private getTransactionDisplayItem(t: Transaction): TransactionDisplayItem {
