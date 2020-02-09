@@ -9,8 +9,16 @@
             <input type="file" class="custom-file-input" (change)="loadFile($event)">
             <label class="custom-file-label">Choose file</label>
         </div>
-        <button *ngIf="!isDirty" class="btn btn-outline-primary" (click)="onSave()">Save to file</button>
-        <button *ngIf="isDirty" class="btn btn-danger" (click)="onSave()">Save to file</button>
+        <button class="btn btn-outline-primary" (click)="onSave()">Save to file</button>
+        <!-- <button *ngIf="isDirty" class="btn btn-danger" (click)="onSave()">Save to file</button> -->
     </div>
     <button class="btn btn-outline-primary" (click)="onExportToCSVClick()">Export to CSV</button>
+    <div class="dropdown">
+        <button class="btn btn-link dropdown-toggle" type="button"data-toggle="dropdown">
+            {{selectedCurrency.symbol}}
+        </button>
+        <div class="dropdown-menu">
+            <a class="dropdown-item" *ngFor="let c of currencies" (click)="onCurrencyChanged(c)">{{c.symbol}}</a>
+        </div>
+    </div>
 </nav>

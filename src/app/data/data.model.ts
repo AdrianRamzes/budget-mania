@@ -6,4 +6,5 @@ export class Data {
     transactions: Transaction[] = [];
     accounts: UserAccount[] = [];
     categories: Category[] = [];
+    settings: any = {};
 }

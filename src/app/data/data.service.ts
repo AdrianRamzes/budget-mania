@@ -8,12 +8,14 @@ import { EventEmitter } from '@angular/core';
 import { Guid } from "guid-typescript";
 import { Category } from '../models/category.model';
 import { environment } from 'src/environments/environment';
+import { Currency } from '../models/currency.enum';
 
 export class DataService {
 
     accountsChanged = new EventEmitter<UserAccount[]>();
     transactionsChanged = new EventEmitter<Transaction[]>();
     categoriesChanged = new EventEmitter<Category[]>();
+    selectedCurrencyChanged = new EventEmitter<Currency>();
 
     constructor(private storageService: StorageService) {
         storageService.load().then(
@@ -131,21 +133,29 @@ export class DataService {
         this.setTransactions(transactions);
     }
 
-    serialize(): string {
+    getSelectedCurrency(): Currency {
+        return this._data.settings && this._data.settings.selectedCurrency || Currency.EUR;
+    }
+    setSelectedCurrency(c: Currency) {
+        if(!this._data.settings) {
+            this._data.settings = {};
+        }
+        this._data.settings.selectedCurrency = c;
+        this.updateStorage();
+        this.selectedCurrencyChanged.emit(this._data.settings.selectedCurrency);
+    }
+
+    getSerializedData(): string {
         return JSON.stringify(this._data);
     }
 
-    setDataFromString(jsonString: string, emitChanges = false): void {
+    setDataFromString(jsonString: string): void {
         this._data = this.deserialize(jsonString);
-        if(emitChanges) {
-            this.accountsChanged.emit(this._data.accounts);
-            this.transactionsChanged.emit(this._data.transactions);
-            this.categoriesChanged.emit(this._data.categories);
-        }
-    }
 
-    getDataJSON(): Data {
-        return this._data;
+        this.accountsChanged.emit(this._data.accounts);
+        this.transactionsChanged.emit(this._data.transactions);
+        this.categoriesChanged.emit(this._data.categories);
+        this.selectedCurrencyChanged.emit(this._data.settings && this._data.settings.selectedCurrency);
     }
 
     private deserialize(serialized: string): Data {
@@ -186,14 +196,16 @@ export class DataService {
                     cat.name = c.name;
                     cat.parentName = c.parentName;
                     return cat;
-                })
+                }),
+                settings: deserialized.settings || {},
             };
         }
 
         return {
             transactions: [],
             accounts: [],
-            categories: []
+            categories: [],
+            settings: {}
         };
     }
 
@@ -203,7 +215,7 @@ export class DataService {
     }
 
     private updateStorage(): void {
-        this.storageService.save(this.serialize()).then(
+        this.storageService.save(this.getSerializedData()).then(
             (success) => {
                 console.log(success);
             },

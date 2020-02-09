@@ -1,6 +1,6 @@
 export enum Currency {
-    PLN,
+    EUR,//default
     USD,
-    EUR,
+    PLN,
     CHF
 }

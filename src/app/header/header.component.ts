@@ -11,7 +11,11 @@ import * as Papa from 'papaparse';
 })
 export class HeaderComponent implements OnInit {
 
-    isDirty: boolean = false;
+    //TODO: fix isDirty => whole concept and design
+    //isDirty: boolean = false;
+
+    currencies: { symbol: string, value: number }[] = [];
+    selectedCurrency: any = null;
 
     private _filenamePrefix = "budget_mania_";
 
@@ -21,23 +25,30 @@ export class HeaderComponent implements OnInit {
     ngOnInit() {
         this.subscribe();
 
-        this.isDirty = false;
+        //this.isDirty = false;
+
+        Object.keys(Currency).forEach(k => {
+            if (typeof (Currency[k]) === "number") {
+                this.currencies.push({ symbol: k, value: Currency[k] });
+            }
+        });
+
+        let c = this.dataService.getSelectedCurrency();
+        this.selectedCurrency = { symbol: Currency[c], value: c };
     }
 
     private subscribe(): void {
-        this.dataService.accountsChanged.subscribe(e => this.isDirty = true);
-        this.dataService.categoriesChanged.subscribe(e => this.isDirty = true);
-        this.dataService.transactionsChanged.subscribe(e => this.isDirty = true);
-    }
-
-    private unsubscribe() {
-        this.dataService.accountsChanged.unsubscribe();
-        this.dataService.categoriesChanged.unsubscribe();
-        this.dataService.transactionsChanged.unsubscribe();
+        // this.dataService.accountsChanged.subscribe(e => this.isDirty = true);
+        // this.dataService.categoriesChanged.subscribe(e => this.isDirty = true);
+        // this.dataService.transactionsChanged.subscribe(e => this.isDirty = true);
+        this.dataService.selectedCurrencyChanged.subscribe(e => {
+            //this.isDirty = true;
+            this.selectedCurrency = { symbol: Currency[e], value: e };
+        })
     }
 
     onSave() {
-        this.save(this.dataService.serialize());
+        this.save(this.dataService.getSerializedData());
     }
 
     loadFile(event: EventTarget) {
@@ -74,24 +85,28 @@ export class HeaderComponent implements OnInit {
 
         let unparsed = Papa.unparse(transactions, config);
 
-        saveAs(new Blob([unparsed], 
+        saveAs(new Blob([unparsed],
             { type: "text/csv;charset=utf-8" }),
             this._filenamePrefix + moment().format("YYYY-MM-DD-HH-mm-ss"));
     }
 
+    onCurrencyChanged(c) {
+        this.dataService.setSelectedCurrency(c.value);
+    }
+
     private save(data: string) {
-        saveAs(new Blob([data], 
+        saveAs(new Blob([data],
             { type: "text/plain;charset=utf-8" }),
             this._filenamePrefix + moment().format("YYYY-MM-DD-HH-mm-ss"));
-        this.isDirty = false;
+        //this.isDirty = false;
     }
 
     private load(file: File) {
         let fr: FileReader = new FileReader();
         fr.onload = (data) => {
             let jsonString = fr.result as string;
-            this.dataService.setDataFromString(jsonString, true);
-            this.isDirty = false;
+            this.dataService.setDataFromString(jsonString);
+            //this.isDirty = false;
         }
         fr.readAsText(file, "utf-8");
     }
