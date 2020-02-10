@@ -25,6 +25,10 @@ export class DashboardTransactionsComponent implements OnInit {
 
     ngOnInit() {
         this.dataService.transactionsChanged.subscribe(e => this.updateDisplayedTransactions(e));
+        this.dataService.selectedCurrencyChanged.subscribe(e => {
+            this.updateDisplayedTransactions(this.dataService.getTransactions());
+        });
+
         this.updateDisplayedTransactions(this.dataService.getTransactions());
     }
 
@@ -59,20 +63,22 @@ export class DashboardTransactionsComponent implements OnInit {
         }
 
         this.totalSum = this.filteredTransactions
-            .map(t => Math.round(t.transaction.amount*100))
+            .map(t => Math.round(t.amount*100))
             .reduce((acc, t) => acc + t, 0)/100;
 
         let count = this.filteredTransactions.length;
 
         this.filteredAvg = count ? (this.totalSum / count) : 0;
 
-        this.filteredMin = count ? Math.min(...this.filteredTransactions.map(t => t.transaction.amount)) : 0;
-        this.filteredMax = count ? Math.max(...this.filteredTransactions.map(t => t.transaction.amount)) : 0;
+        this.filteredMin = count ? Math.min(...this.filteredTransactions.map(t => t.amount)) : 0;
+        this.filteredMax = count ? Math.max(...this.filteredTransactions.map(t => t.amount)) : 0;
     }
 
     private getTransactionDisplayItem(t: Transaction): TransactionDisplayItem {
         let x = new TransactionDisplayItem();
         x.transaction = t;
+        let rate = this.dataService.getExchangeRate(t.currency, this.dataService.getSelectedCurrency());
+        x.amount = t.amount * (rate ? rate : 1);
         x.account = this.dataService.getAccount(t.accountGuid);
         x.category = this.dataService.getCategory(t.categoryGuid);
         return x;
@@ -88,4 +94,5 @@ export class TransactionDisplayItem {
     category: Category = null;
     account: UserAccount = null;
     selected: boolean = false;
+    amount: number = 0;
 }

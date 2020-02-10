@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { saveAs } from 'file-saver'
 import { DataService } from '../data/data.service';
 import { Currency } from '../models/currency.enum';
+import { HttpClient } from '@angular/common/http';
 import * as moment from 'moment';
 import * as Papa from 'papaparse';
 
@@ -19,7 +20,7 @@ export class HeaderComponent implements OnInit {
 
     private _filenamePrefix = "budget_mania_";
 
-    constructor(private dataService: DataService) {
+    constructor(private dataService: DataService, private http: HttpClient) {
     }
 
     ngOnInit() {
@@ -35,6 +36,16 @@ export class HeaderComponent implements OnInit {
 
         let c = this.dataService.getSelectedCurrency();
         this.selectedCurrency = { symbol: Currency[c], value: c };
+
+        this.http.get("https://api.exchangeratesapi.io/latest").subscribe(
+            (data) => {
+                let exchange = this.dataService.getExchangeRates();
+                if(!!exchange || exchange.date < data["date"]) {
+                    this.dataService.setExchangeRates(data);
+                }
+            },
+            (error) => { console.log(error); }
+        );
     }
 
     private subscribe(): void {

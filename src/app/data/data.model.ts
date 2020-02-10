@@ -7,4 +7,5 @@ export class Data {
     accounts: UserAccount[] = [];
     categories: Category[] = [];
     settings: any = {};
+    exchange: any = {};
 }

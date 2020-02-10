@@ -16,6 +16,7 @@ export class DataService {
     transactionsChanged = new EventEmitter<Transaction[]>();
     categoriesChanged = new EventEmitter<Category[]>();
     selectedCurrencyChanged = new EventEmitter<Currency>();
+    exchangeChanged =  new EventEmitter<any>();
 
     constructor(private storageService: StorageService) {
         storageService.load().then(
@@ -145,6 +146,25 @@ export class DataService {
         this.selectedCurrencyChanged.emit(this._data.settings.selectedCurrency);
     }
 
+    getExchangeRate(a: Currency, b: Currency): number {
+        if(this._data.exchange) {
+            if(this._data.exchange) {
+                let aEUR = a !== Currency.EUR ? this._data.exchange["rates"][Currency[a]] : 1;
+                let bEUR = b !== Currency.EUR ? this._data.exchange["rates"][Currency[b]] : 1;
+                return bEUR/aEUR;
+            }
+        }
+        return -1;
+    }
+    getExchangeRates() {
+        return this._data.exchange;
+    }
+    setExchangeRates(x: any) {
+        this._data.exchange = x;
+        this.updateStorage();
+        this.exchangeChanged.emit(this._data.exchange);
+    }
+
     getSerializedData(): string {
         return JSON.stringify(this._data);
     }
@@ -198,6 +218,7 @@ export class DataService {
                     return cat;
                 }),
                 settings: deserialized.settings || {},
+                exchange: deserialized.exchange || {}
             };
         }
 
@@ -205,7 +226,8 @@ export class DataService {
             transactions: [],
             accounts: [],
             categories: [],
-            settings: {}
+            settings: {},
+            exchange: {}
         };
     }
 

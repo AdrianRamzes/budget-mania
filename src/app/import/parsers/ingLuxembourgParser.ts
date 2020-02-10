@@ -40,7 +40,7 @@ export class INGLuxembourgParser extends TransactionParserBase implements Transa
                 trans.amount = Number.parseFloat(t[6].replace(',', '.'));
                 trans.date = moment(t[3], "DD/MM/YY").toDate();
                 trans.title = t[2];
-                trans.currency = Currency[Currency[t[7]]];
+                trans.currency = Currency[t[7] as string] ;
                 //trans.raw = rawLines[i];
                 return trans;
             });
