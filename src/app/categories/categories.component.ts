@@ -6,6 +6,7 @@ import { DataService } from '../data/data.service';
 import { Category } from '../models/category.model';
 import { UserAccount } from '../models/user-account.model';
 import { environment } from 'src/environments/environment';
+import { Currency } from '../models/currency.enum';
 
 @Component({
   selector: 'app-categories',
@@ -99,6 +100,7 @@ export class CategoriesComponent implements OnInit {
         return transactions.map((t) => {
             let trans = new TransactionDisplayItem();
             trans.transaction = t;
+            trans.currencyCode = Currency[t.currency];
             if(t.accountGuid) {
                 trans.account = this.dataService.getAccount(t.accountGuid);
             }
@@ -142,6 +144,7 @@ export class CategoriesComponent implements OnInit {
 
 export class TransactionDisplayItem {
     transaction: Transaction;
+    currencyCode: string = null;
     category: Category = null;
     account: UserAccount = null;
     suggestedCategory: Category = null;

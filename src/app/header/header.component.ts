@@ -15,7 +15,7 @@ export class HeaderComponent implements OnInit {
     //TODO: fix isDirty => whole concept and design
     //isDirty: boolean = false;
 
-    currencies: { symbol: string, value: number }[] = [];
+    currencies: CurrencyDisplayItem[] = [];
     selectedCurrency: any = null;
 
     private _filenamePrefix = "budget_mania_";
@@ -30,12 +30,12 @@ export class HeaderComponent implements OnInit {
 
         Object.keys(Currency).forEach(k => {
             if (typeof (Currency[k]) === "number") {
-                this.currencies.push({ symbol: k, value: Currency[k] });
+                this.currencies.push(new CurrencyDisplayItem(k, Currency[k]));
             }
         });
 
         let c = this.dataService.getSelectedCurrency();
-        this.selectedCurrency = { symbol: Currency[c], value: c };
+        this.selectedCurrency = new CurrencyDisplayItem(Currency[c], c);
 
         this.http.get("https://api.exchangeratesapi.io/latest").subscribe(
             (data) => {
@@ -54,7 +54,7 @@ export class HeaderComponent implements OnInit {
         // this.dataService.transactionsChanged.subscribe(e => this.isDirty = true);
         this.dataService.selectedCurrencyChanged.subscribe(e => {
             //this.isDirty = true;
-            this.selectedCurrency = { symbol: Currency[e], value: e };
+            this.selectedCurrency = new CurrencyDisplayItem(Currency[e], e);
         })
     }
 
@@ -101,7 +101,7 @@ export class HeaderComponent implements OnInit {
             this._filenamePrefix + moment().format("YYYY-MM-DD-HH-mm-ss"));
     }
 
-    onCurrencyChanged(c) {
+    onCurrencyChanged(c: CurrencyDisplayItem) {
         this.dataService.setSelectedCurrency(c.value);
     }
 
@@ -120,5 +120,15 @@ export class HeaderComponent implements OnInit {
             //this.isDirty = false;
         }
         fr.readAsText(file, "utf-8");
+    }
+}
+
+class CurrencyDisplayItem {
+    code: string;
+    value: number;
+
+    constructor(code: string, value: number) {
+        this.code = code;
+        this.value = value;
     }
 }

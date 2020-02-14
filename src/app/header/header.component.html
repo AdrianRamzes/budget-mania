@@ -15,10 +15,10 @@
     <button class="btn btn-outline-primary" (click)="onExportToCSVClick()">Export to CSV</button>
     <div class="dropdown">
         <button class="btn btn-link dropdown-toggle" type="button"data-toggle="dropdown">
-            {{selectedCurrency.symbol}}
+            {{selectedCurrency.code}}
         </button>
         <div class="dropdown-menu">
-            <a class="dropdown-item" *ngFor="let c of currencies" (click)="onCurrencyChanged(c)">{{c.symbol}}</a>
+            <a class="dropdown-item" *ngFor="let c of currencies" (click)="onCurrencyChanged(c)">{{c.code}}</a>
         </div>
     </div>
 </nav>

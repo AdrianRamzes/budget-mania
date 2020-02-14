@@ -3,6 +3,7 @@ import { Transaction } from 'src/app/models/transaction.model';
 import { Category } from 'src/app/models/category.model';
 import { UserAccount } from 'src/app/models/user-account.model';
 import { DataService } from 'src/app/data/data.service';
+import { Currency } from 'src/app/models/currency.enum';
 
 @Component({
     selector: 'app-dashboard-transactions',
@@ -63,24 +64,38 @@ export class DashboardTransactionsComponent implements OnInit {
         }
 
         this.totalSum = this.filteredTransactions
-            .map(t => Math.round(t.amount*100))
+            .map(t => Math.round(t.displayAmount*100))
             .reduce((acc, t) => acc + t, 0)/100;
 
         let count = this.filteredTransactions.length;
 
         this.filteredAvg = count ? (this.totalSum / count) : 0;
 
-        this.filteredMin = count ? Math.min(...this.filteredTransactions.map(t => t.amount)) : 0;
-        this.filteredMax = count ? Math.max(...this.filteredTransactions.map(t => t.amount)) : 0;
+        this.filteredMin = count ? Math.min(...this.filteredTransactions.map(t => t.displayAmount)) : 0;
+        this.filteredMax = count ? Math.max(...this.filteredTransactions.map(t => t.displayAmount)) : 0;
     }
 
     private getTransactionDisplayItem(t: Transaction): TransactionDisplayItem {
         let x = new TransactionDisplayItem();
         x.transaction = t;
-        let rate = this.dataService.getExchangeRate(t.currency, this.dataService.getSelectedCurrency());
-        x.amount = t.amount * (rate ? rate : 1);
         x.account = this.dataService.getAccount(t.accountGuid);
         x.category = this.dataService.getCategory(t.categoryGuid);
+
+        x.transactionCurrencyCode = Currency[t.currency];
+        x.displayAmount = t.amount;
+        x.displayCurrencyCode = Currency[t.currency];
+
+        let selectedCurrency = this.dataService.getSelectedCurrency();
+        if(selectedCurrency != t.currency) {
+            let rate = this.dataService.getExchangeRate(t.currency, selectedCurrency);
+            if(rate) {
+                x.displayAmount = t.amount * rate;
+                x.displayCurrencyCode = Currency[selectedCurrency];
+            } else {
+                console.log(`ERROR: Cannot find rate between currencies: ${t.currency} => ${selectedCurrency}`);
+            }
+        }
+
         return x;
     }
 
@@ -94,5 +109,7 @@ export class TransactionDisplayItem {
     category: Category = null;
     account: UserAccount = null;
     selected: boolean = false;
-    amount: number = 0;
+    transactionCurrencyCode: string = null;
+    displayAmount: number = 0;
+    displayCurrencyCode: string = null;
 }

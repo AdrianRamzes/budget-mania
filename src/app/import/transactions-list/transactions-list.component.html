@@ -13,7 +13,7 @@
             *ngFor="let t of stagedTransactions">
             <th>{{t.foundDuplicate ? 'Duplicate' : 'New'}}</th>
             <td>{{t.transaction.date | date: 'yyyy-MM-dd' }}</td>
-            <td [ngStyle]="{color: t.amount < 0 ? 'red' : 'black'}">{{t.transaction.amount | number: '1.2'}}</td>
+            <td [ngStyle]="{color: t.amount < 0 ? 'red' : 'black'}">{{t.transaction.amount | number: '1.2-2'}}</td>
             <td>{{t.transaction.title}}</td>
             <td><input type="checkbox" class="form-check-input" [(ngModel)]="t.checked" (change)="onCheckChange()"/></td>
         </tr>

@@ -13,7 +13,7 @@ export class AccountsComponent implements OnInit {
     accounts: UserAccount[] = [];
     selectedAccount: UserAccount;
 
-    currencies: { symbol: string, value: number }[] = [];
+    currencies: CurrencyDisplayItem[] = [];
 
     constructor(private dataService: DataService) { }
 
@@ -23,7 +23,7 @@ export class AccountsComponent implements OnInit {
 
         Object.keys(Currency).forEach(k => {
             if (typeof (Currency[k]) === "number") {
-                this.currencies.push({ symbol: k, value: Currency[k] });
+                this.currencies.push(new CurrencyDisplayItem(k, Currency[k]));
             }
         });
     }
@@ -67,7 +67,17 @@ export class AccountsComponent implements OnInit {
         this.dataService.removeAccount(this.selectedAccount);
     }
 
-    currencyToSelectOption(c: Currency): { symbol: string, value: number } {
-        return { symbol: Currency[c], value: c };
+    currencyToSelectOption(c: Currency): CurrencyDisplayItem {
+        return new CurrencyDisplayItem(Currency[c], c);
+    }
+}
+
+class CurrencyDisplayItem {
+    code: string;
+    value: number;
+
+    constructor(code: string, value: number) {
+        this.code = code;
+        this.value = value;
     }
 }

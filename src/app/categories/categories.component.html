@@ -25,7 +25,7 @@
             }">
             <td><input [(ngModel)]="t.selected" type="checkbox"/></td>
             <td>{{t.transaction.date | date: 'yyyy-MM-dd' }}</td>
-            <td [ngStyle]="{color: t.transaction.amount < 0 ? 'red' : 'black'}">{{t.transaction.amount | number: '1.2'}}</td>
+            <td [ngStyle]="{color: t.transaction.amount < 0 ? 'red' : 'black'}" class="text-right">{{t.transaction.amount | number: '1.2-2'}} {{t.currencyCode}}</td>
             <td>{{t.transaction.title}}</td>
             <td>{{t.account ? t.account.name : ''}}</td>
             <td><button *ngIf="!!t.suggestedCategory" class="btn btn-link" (click)="onSuggestedCategoryClick(t)">{{t.suggestedCategory.name}}</button></td>
