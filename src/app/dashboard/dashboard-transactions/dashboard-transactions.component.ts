@@ -1,3 +1,5 @@
+import * as $ from 'jquery';
+
 import { Component, OnInit } from '@angular/core';
 import { Transaction } from 'src/app/models/transaction.model';
 import { Category } from 'src/app/models/category.model';
@@ -31,15 +33,21 @@ export class DashboardTransactionsComponent implements OnInit {
         });
 
         this.updateDisplayedTransactions(this.dataService.getTransactions());
+        window.addEventListener('scroll', this.onScroll.bind(this));
     }
 
     onFilterChange(text) {
         this.updateFilteredTransactions();
     }
 
-    onLoadMoreClick() {
+    onScroll(e: any) {
+        if($(window).scrollTop() + $(window).height() == $(document).height()) {
+            this.loadMoreTransactions();
+        }
+    }
+
+    private loadMoreTransactions(): void {
         this.displayCount = Math.min(this.displayCount+10, this.filteredTransactions.length);
-        this.updateFilteredTransactions();
     }
 
     private updateDisplayedTransactions(transactions: Transaction[]): void {

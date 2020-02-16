@@ -1,4 +1,5 @@
-import * as _ from "lodash";
+import * as _ from 'lodash';
+import * as $ from 'jquery';
 
 import { Component, OnInit } from '@angular/core';
 import { Transaction } from '../models/transaction.model';
@@ -9,8 +10,8 @@ import { environment } from 'src/environments/environment';
 import { Currency } from '../models/currency.enum';
 
 @Component({
-  selector: 'app-categories',
-  templateUrl: './categories.component.html'
+    selector: 'app-categories',
+    templateUrl: './categories.component.html'
 })
 export class CategoriesComponent implements OnInit {
 
@@ -28,7 +29,7 @@ export class CategoriesComponent implements OnInit {
     constructor(private dataService: DataService) { }
 
     ngOnInit() {
-        this.dataService.transactionsChanged.subscribe((e) => { 
+        this.dataService.transactionsChanged.subscribe((e) => {
             //this.allTransactions = e;
             this.categories = this.dataService.getCategories();
             this.allTransactionDisplayItems = this.getTransactionDisplayItems(e);
@@ -46,6 +47,8 @@ export class CategoriesComponent implements OnInit {
         this.isProduction = environment.production;
 
         this.updateSuggestedCategories();
+
+        window.addEventListener('scroll', this.onScroll.bind(this));
     }
 
     onFilterChange(f: string) {
@@ -63,7 +66,7 @@ export class CategoriesComponent implements OnInit {
 
     onAcceptAllSugestionsClick() {
         this.filteredTransactions.forEach(t => {
-            if(!!t.suggestedCategory)
+            if (!!t.suggestedCategory)
                 this.acceptSuggestedCategory(t);
         });
     }
@@ -72,25 +75,32 @@ export class CategoriesComponent implements OnInit {
         this.filteredTransactions = this.filterTransactions(this.allTransactionDisplayItems, this.filter);
     }
 
-    onLoadMoreClick(): void {
-        this.displayCount = Math.min(this.displayCount+10, this.filteredTransactions.length);
+
+    onScroll(e: any) {
+        if ($(window).scrollTop() + $(window).height() == $(document).height()) {
+            this.loadMoreTransactions();
+        }
+    }
+
+    private loadMoreTransactions(): void {
+        this.displayCount = Math.min(this.displayCount + 10, this.filteredTransactions.length);
     }
 
     private filterTransactions(transactions: TransactionDisplayItem[], filter: string): TransactionDisplayItem[] {
         transactions = transactions
             .filter(t => this.withoutCategory ? !t.category : true);
 
-        if(filter.length > 0) {
+        if (filter.length > 0) {
             transactions = transactions
-            .filter((t) => { // TODO: filter logic
-                let words = filter.toLocaleLowerCase().split(/\s+/);
-                return words.every((w) => {
-                    return false
-                        ||  (t.transaction.title && t.transaction.title.toLowerCase().includes(w))
-                        ||  (t.category && t.category.name.toLowerCase().includes(w))
-                        ||  (t.account && t.account.name.toLowerCase().includes(w));
+                .filter((t) => { // TODO: filter logic
+                    let words = filter.toLocaleLowerCase().split(/\s+/);
+                    return words.every((w) => {
+                        return false
+                            || (t.transaction.title && t.transaction.title.toLowerCase().includes(w))
+                            || (t.category && t.category.name.toLowerCase().includes(w))
+                            || (t.account && t.account.name.toLowerCase().includes(w));
+                    });
                 });
-            });
         }
 
         return transactions;
@@ -101,10 +111,10 @@ export class CategoriesComponent implements OnInit {
             let trans = new TransactionDisplayItem();
             trans.transaction = t;
             trans.currencyCode = Currency[t.currency];
-            if(t.accountGuid) {
+            if (t.accountGuid) {
                 trans.account = this.dataService.getAccount(t.accountGuid);
             }
-            if(t.categoryGuid) {
+            if (t.categoryGuid) {
                 trans.category = this.dataService.getCategory(t.categoryGuid);
             }
             return trans;
@@ -112,17 +122,17 @@ export class CategoriesComponent implements OnInit {
     }
 
     onRemoveAllTransactionsClick(): void {
-        if(!this.isProduction)
+        if (!this.isProduction)
             this.dataService.removeTransactions(this.dataService.getTransactions());
     }
 
     onDumpAllDataClick(): void {
-        if(!this.isProduction)
+        if (!this.isProduction)
             this.dataService.dump();
     }
 
     private acceptSuggestedCategory(t: TransactionDisplayItem) {
-        if(!t.transaction.categoryGuid) {
+        if (!t.transaction.categoryGuid) {
             t.transaction.categoryGuid = t.suggestedCategory.guid;
             this.dataService.editTransaction(t.transaction);
         }
@@ -131,9 +141,9 @@ export class CategoriesComponent implements OnInit {
     private updateSuggestedCategories() {
         let withCategory = _.filter(this.dataService.getTransactions(), x => !!x.categoryGuid);
         this.allTransactionDisplayItems.forEach(t => {
-            if(!t.transaction.categoryGuid) {
+            if (!t.transaction.categoryGuid) {
                 let candidate = _.find(withCategory, x => x.title == t.transaction.title)
-                if(candidate) {
+                if (candidate) {
                     t.suggestedCategory = this.dataService.getCategory(candidate.categoryGuid);
                 }
             }

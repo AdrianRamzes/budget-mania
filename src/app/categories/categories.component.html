@@ -5,6 +5,10 @@
     <label class="form-check-label">Only without category</label>
 </div>
 <button class="btn btn-success" (click)="onAcceptAllSugestionsClick()">Accept All Suggestions</button>
+<div *ngIf="!isProduction">
+    <button class="btn btn-danger" (click)="onRemoveAllTransactionsClick()">Remove all transactions</button>
+    <button class="btn btn-success" (click)="onDumpAllDataClick()">Data Dumper</button>
+</div>
 <table class="table">
     <thead>
         <tr>
@@ -24,8 +28,8 @@
                 'table-success': !!t.category
             }">
             <td><input [(ngModel)]="t.selected" type="checkbox"/></td>
-            <td>{{t.transaction.date | date: 'yyyy-MM-dd' }}</td>
-            <td [ngStyle]="{color: t.transaction.amount < 0 ? 'red' : 'black'}" class="text-right">{{t.transaction.amount | number: '1.2-2'}} {{t.currencyCode}}</td>
+            <td nowrap>{{t.transaction.date | date: 'yyyy-MM-dd' }}</td>
+            <td nowrap [ngStyle]="{color: t.transaction.amount < 0 ? 'red' : 'black'}" class="text-right">{{t.transaction.amount | number: '1.2-2'}} {{t.currencyCode}}</td>
             <td>{{t.transaction.title}}</td>
             <td>{{t.account ? t.account.name : ''}}</td>
             <td><button *ngIf="!!t.suggestedCategory" class="btn btn-link" (click)="onSuggestedCategoryClick(t)">{{t.suggestedCategory.name}}</button></td>
@@ -38,8 +42,6 @@
         </tr>
     </tbody>
 </table>
-<button class="btn btn-info" (click)="onLoadMoreClick()" [disabled]="displayCount >= filteredTransactions.length">Show more...</button>
-<div *ngIf="!isProduction">
-    <button class="btn btn-danger" (click)="onRemoveAllTransactionsClick()">Remove all transactions</button>
-    <button class="btn btn-success" (click)="onDumpAllDataClick()">Data Dumper</button>
+<div *ngIf="displayCount < filteredTransactions.length" class="alert alert-primary" role="alert">
+    Scroll down to load more...
 </div>
