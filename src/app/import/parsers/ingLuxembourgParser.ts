@@ -37,7 +37,7 @@ export class INGLuxembourgParser extends TransactionParserBase implements Transa
 
             return result.data.map((t, i) => {
                 let trans = new Transaction();
-                trans.amount = Number.parseFloat(t[6].replace(',', '.'));
+                trans.amount = Number.parseFloat(t[6].replace(/\s/g, '').replace(',', '.'));
                 trans.date = moment(t[3], "DD/MM/YY").toDate();
                 trans.title = t[2];
                 trans.currency = Currency[t[7] as string] ;

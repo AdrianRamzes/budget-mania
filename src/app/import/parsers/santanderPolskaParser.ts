@@ -39,7 +39,7 @@ export class SantanderBankPolskaParser extends TransactionParserBase implements 
 
             return result.data.map((t, i) => {
                 let trans = new Transaction();
-                trans.amount = Number.parseFloat(t[5].replace(',', '.'));
+                trans.amount = Number.parseFloat(t[5].replace(/\s/g, '').replace(',', '.'));
                 trans.date = moment(t[0], "DD-MM-YYYY").toDate();
                 trans.title = t[2];
                 trans.currency = currency;

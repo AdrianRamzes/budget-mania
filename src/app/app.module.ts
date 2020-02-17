@@ -18,6 +18,7 @@ import { SelectAccountComponent } from './import/select-account/select-account.c
 import { StorageService } from './data/storage/storage.service';
 import { AccountsComponent } from './accounts/accounts.component';
 import { HttpClientModule } from '@angular/common/http';
+import { DashboardCashFlowComponent } from './dashboard/dashboard-cash-flow/dashboard-cash-flow.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { HttpClientModule } from '@angular/common/http';
     DashboardTransactionsComponent,
     SelectAccountComponent,
     AccountsComponent,
-    ManageCategoriesComponent
+    ManageCategoriesComponent,
+    DashboardCashFlowComponent
   ],
   imports: [
     BrowserModule,

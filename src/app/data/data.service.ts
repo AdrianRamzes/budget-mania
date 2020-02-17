@@ -146,12 +146,12 @@ export class DataService {
         this.selectedCurrencyChanged.emit(this._data.settings.selectedCurrency);
     }
 
-    getExchangeRate(a: Currency, b: Currency): number {
+    getExchangeRate(from: Currency, to: Currency): number {
         if(this._data.exchange) {
             if(this._data.exchange) {
-                let aEUR = a !== Currency.EUR ? this._data.exchange["rates"][Currency[a]] : 1;
-                let bEUR = b !== Currency.EUR ? this._data.exchange["rates"][Currency[b]] : 1;
-                return bEUR/aEUR;
+                let fromEUR = from !== Currency.EUR ? this._data.exchange["rates"][Currency[from]] : 1;
+                let toEUR = to !== Currency.EUR ? this._data.exchange["rates"][Currency[to]] : 1;
+                return toEUR/fromEUR;
             }
         }
         return -1;
@@ -172,10 +172,10 @@ export class DataService {
     setDataFromString(jsonString: string): void {
         this._data = this.deserialize(jsonString);
 
-        this.accountsChanged.emit(this._data.accounts);
-        this.transactionsChanged.emit(this._data.transactions);
-        this.categoriesChanged.emit(this._data.categories);
-        this.selectedCurrencyChanged.emit(this._data.settings && this._data.settings.selectedCurrency);
+        this.accountsChanged.emit(this.getAccounts());
+        this.transactionsChanged.emit(this.getTransactions());
+        this.categoriesChanged.emit(this.getCategories());
+        this.selectedCurrencyChanged.emit(this.getSelectedCurrency());
     }
 
     private deserialize(serialized: string): Data {

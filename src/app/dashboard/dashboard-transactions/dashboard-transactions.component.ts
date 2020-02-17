@@ -1,4 +1,5 @@
 import * as $ from 'jquery';
+import * as _ from 'lodash';
 
 import { Component, OnInit } from '@angular/core';
 import { Transaction } from 'src/app/models/transaction.model';
@@ -51,7 +52,7 @@ export class DashboardTransactionsComponent implements OnInit {
     }
 
     private updateDisplayedTransactions(transactions: Transaction[]): void {
-        this.allTransactions = this.getTransactionDisplayItems(transactions);
+        this.allTransactions = _.sortBy(this.getTransactionDisplayItems(transactions), [(o) => o.transaction.date]);
         this.updateFilteredTransactions();
     }
 

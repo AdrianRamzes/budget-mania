@@ -34,7 +34,7 @@ export class MBankPolskaParser extends TransactionParserBase implements Transact
 
             return result.data.map((t, i) => {
                 let trans = new Transaction();
-                trans.amount = Number.parseFloat(t[6].replace(',', '.'));
+                trans.amount = Number.parseFloat(t[6].replace(/\s/g, '').replace(',', '.'));
                 trans.date = moment(t[0], "YYYY-MM-DD").toDate();
                 trans.title = t[3];
                 trans.currency = Currency.PLN;
