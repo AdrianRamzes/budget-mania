@@ -1,3 +1,11 @@
 <div>
-    <canvas id="chart" height="120"></canvas>
+    Resolution: 
+    <select [ngModel]="resolution" [value]="resolution" name="resolution" class="form-control" (ngModelChange)="onResolutionChange($event)">
+        <option value="YYYY">Year</option>
+        <option value="YYYY-MM" selected>Month</option>
+        <option value="YYYY-MM-DD">Day</option>
+    </select>
+</div>
+<div>
+    <canvas id="chart" height="100"></canvas>
 </div>

@@ -12,10 +12,12 @@ import { Transaction } from 'src/app/models/transaction.model';
 })
 export class DashboardCashFlowComponent implements OnInit {
 
+    resolution: string = 'YYYY-MM';
+
     chart = null;
 
     constructor(private dataService: DataService) { }
-    
+
     ngOnInit() {
 
         this.dataService.transactionsChanged.subscribe(e => this.reloadChart());
@@ -24,54 +26,64 @@ export class DashboardCashFlowComponent implements OnInit {
         this.reloadChart();
     }
 
-    private reloadChart() {
-        let XY = this.getChartData(this.dataService.getTransactions());
-        this.updateChart(XY[0], XY[1]);
+    onResolutionChange(r: string) {
+        this.resolution = r;
+        this.reloadChart();
     }
 
-    private getChartData(transactions: Transaction[]) {
+    private reloadChart() {
+        let XY = this.getChartData(this.dataService.getTransactions(), this.resolution);
+        this.drawChart(XY[0], XY[1]);
+    }
+
+    private getChartData(transactions: Transaction[], resolution: string) {
         let selectedCurrency = this.dataService.getSelectedCurrency();
         let narmalized = transactions.map(t => {
             let rate = this.dataService.getExchangeRate(t.currency, selectedCurrency);
-            return {date: t.date, amount: Math.round(t.amount*rate*100)/100 }
+            return { date: t.date, amount: Math.round(t.amount * rate * 100) / 100 }
         })
 
-        let groups = _.groupBy(narmalized, t => moment(t.date).format("YYYY-MM"));
-        //let groups = _.groupBy(transactions, t => moment(t.date).format("YYYY-MM"));
-        
+        let groups = _.groupBy(narmalized, t => moment(t.date).format(resolution));
+
         let XY = _.unzip(Object.keys(groups).sort().map(k => [k, _.sumBy(groups[k], t => t.amount)]));
-        
+
         let dataX = XY[0];
-        
-        let dataY = [0];
+
         let sum = 0
-        dataY.push(...XY[1].map(a => {
+        let dataY = XY[1].map(a => {
             sum += a as number;
-            return Math.round(sum*100)/100;
-        }));
+            return Math.round(sum * 100) / 100;
+        });
 
         return [dataX, dataY];
     }
 
-    private updateChart(labels, data) {
-        this.chart = new Chart('chart', {
-            // The type of chart we want to create
-            type: 'line',
-        
-            // The data for our dataset
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'My First dataset',
-                    lineTension: 0,
-                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                    borderColor: 'rgb(255, 99, 132)',
-                    data: data
-                }]
-            },
-        
-            // Configuration options go here
-            options: {}
-        });
+    private drawChart(labels, data) {
+        if(this.chart) {
+            this.chart.data.labels = labels;
+            this.chart.data.datasets[0].data = data;
+            this.chart.update(0);
+        } else {
+            this.chart = new Chart('chart', {
+                // The type of chart we want to create
+                type: 'line',
+    
+                // The data for our dataset
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'All Accounts',
+                        lineTension: 0,
+                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                        borderColor: 'rgb(255, 99, 132)',
+                        data: data
+                    }]
+                },
+    
+                // Configuration options go here
+                options: {}
+            });
+        }
+
     }
 }
