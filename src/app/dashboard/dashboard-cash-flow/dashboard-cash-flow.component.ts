@@ -141,7 +141,7 @@ export class DashboardCashFlowComponent implements OnInit {
         datasets.push({
             label: "Total",
             lineTension: 0,
-            backgroundColor: 'rgba(255, 0, 0, 0.5)',
+            backgroundColor: 'rgba(255, 0, 0, 0)',
             borderColor: 'rgb(255, 0, 0)',
             data: Object.values(total).map(v => Math.round((v as number) * 100) / 100)
         });

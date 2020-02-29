@@ -71,7 +71,7 @@ export class CategoriesComponent implements OnInit {
         });
     }
 
-    onCheckboxChange() {
+    onCheckboxChange(e) {
         this.filteredTransactions = this.filterTransactions(this.allTransactionDisplayItems, this.filter);
     }
 
