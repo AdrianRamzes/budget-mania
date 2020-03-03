@@ -1,4 +1,4 @@
-import { EventEmitter } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { DataService } from '../data/data.service';
 import { Transaction } from '../models/transaction.model';
 import { StagedTransaction } from '../import/stagedTransaction.model';
@@ -14,6 +14,7 @@ import { MBankPolskaParser } from './parsers/mbankPolskaParser';
 import { INGLuxembourgParser } from './parsers/ingLuxembourgParser';
 import { RevolutParser } from './parsers/revolutParser';
 
+@Injectable()
 export class ImportService {
 
     stagedTransactionsChanged = new EventEmitter<StagedTransaction[]>();

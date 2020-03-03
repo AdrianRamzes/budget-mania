@@ -4,7 +4,9 @@ import { StorageHelper } from './storageHelper';
 import { environment } from 'src/environments/environment';
 import { HttpStorageHelper } from './httpStorage';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from "@angular/core";
 
+@Injectable()
 export class StorageService implements StorageHelper {
 
     private _service: StorageHelper;

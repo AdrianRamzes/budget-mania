@@ -4,12 +4,13 @@ import { Data } from "./data.model";
 import { Transaction } from '../models/transaction.model';
 import { UserAccount } from '../models/user-account.model';
 import { StorageService } from './storage/storage.service';
-import { EventEmitter } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { Guid } from "guid-typescript";
 import { Category } from '../models/category.model';
 import { environment } from 'src/environments/environment';
 import { Currency } from '../models/currency.enum';
 
+@Injectable()
 export class DataService {
 
     accountsChanged = new EventEmitter<UserAccount[]>();
