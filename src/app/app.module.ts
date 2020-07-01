@@ -19,6 +19,9 @@ import { StorageService } from './data/storage/storage.service';
 import { AccountsComponent } from './accounts/accounts.component';
 import { HttpClientModule } from '@angular/common/http';
 import { DashboardCashFlowComponent } from './dashboard/dashboard-cash-flow/dashboard-cash-flow.component';
+import { AuthService } from './auth/auth.service';
+import { AuthComponent } from './auth/auth.component';
+import { AmplifyUIAngularModule } from '@aws-amplify/ui-angular';
 
 @NgModule({
   declarations: [
@@ -33,18 +36,21 @@ import { DashboardCashFlowComponent } from './dashboard/dashboard-cash-flow/dash
     SelectAccountComponent,
     AccountsComponent,
     ManageCategoriesComponent,
-    DashboardCashFlowComponent
+    DashboardCashFlowComponent,
+    AuthComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    AmplifyUIAngularModule
   ],
   providers: [
     DataService,
     ImportService,
-    StorageService
+    StorageService,
+    AuthService
   ],
   bootstrap: [AppComponent]
 })

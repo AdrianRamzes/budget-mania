@@ -68,8 +68,12 @@ export class DashboardCashFlowComponent implements OnInit {
             changePerDay[t.accountGuid][dayKey] += t.amount;
         });
 
-        this.minDate = moment(_.minBy(transactions, t => t.date).date) || moment();
-        this.maxDate = moment(_.maxBy(transactions, t => t.date).date) || moment();
+        this.minDate = moment();
+        this.maxDate = moment();
+        if(transactions.length > 0) {
+            this.minDate = moment(_.minBy(transactions, t => t.date).date) || moment();
+            this.maxDate = moment(_.maxBy(transactions, t => t.date).date) || moment();
+        }
 
         let accounts = this.dataService.getAccounts();
         let allDays = this.getAllDaysBetween(this.minDate, this.maxDate);

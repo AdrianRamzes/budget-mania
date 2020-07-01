@@ -5,6 +5,7 @@ import { Currency } from '../models/currency.enum';
 import { HttpClient } from '@angular/common/http';
 import * as moment from 'moment';
 import * as Papa from 'papaparse';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
     selector: 'app-header',
@@ -15,12 +16,16 @@ export class HeaderComponent implements OnInit {
     //TODO: fix isDirty => whole concept and design
     //isDirty: boolean = false;
 
+    username: string = "";
     currencies: CurrencyDisplayItem[] = [];
     selectedCurrency: any = null;
 
     private _filenamePrefix = "budget_mania_";
 
-    constructor(private dataService: DataService, private http: HttpClient) {
+    constructor(
+        private dataService: DataService,
+        private http: HttpClient,
+        private authService: AuthService) {
     }
 
     ngOnInit() {
@@ -103,6 +108,10 @@ export class HeaderComponent implements OnInit {
 
     onCurrencyChanged(c: CurrencyDisplayItem) {
         this.dataService.setSelectedCurrency(c.value);
+    }
+
+    logout(): void {
+        this.authService.logout();
     }
 
     private save(data: string) {
