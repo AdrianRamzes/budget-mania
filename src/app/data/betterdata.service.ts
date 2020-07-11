@@ -12,9 +12,7 @@ export class BetterDataService {
     private _data: {[key: string]: any} = {};
 
     constructor(private storageService: StorageService) {
-        storageService.load()
-            .then(data => this.loadFromString(data))
-            .catch(err => console.log(err))
+        this.load();
     }
 
     containsKey(key: string): boolean {

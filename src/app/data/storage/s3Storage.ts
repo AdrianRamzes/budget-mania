@@ -41,6 +41,8 @@ export class S3StorageHelper implements StorageHelper {
     }
 
     save(data: string): Promise<any> {
+        console.log("s3Storage dummy SAVE()");
+        console.log(data);
         return Promise.resolve(true);
         // return Storage.put(this.FILE_NAME, data, this.requestConfig)
         // .then(data => {

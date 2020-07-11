@@ -39,7 +39,7 @@ export class ExchangeRepository {
     private load(): void {
         this.http.get("https://api.exchangeratesapi.io/latest").subscribe(
             (data) => {
-                if(!!this._exchange || this._exchange.date < data["date"]) {
+                if(!this._exchange || this._exchange.date < data["date"]) {
                     this.set(data);
                 }
             },

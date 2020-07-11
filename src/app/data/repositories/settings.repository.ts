@@ -14,13 +14,11 @@ export class SettingsRepository {
     private _settings: { [name: string]: any } = null;
 
     constructor(private betterDataService: BetterDataService) {
-
         this.betterDataService.dataChanged.subscribe(key => {
             if (key == this._KEY) {
                 this.load();
-                this.changed.emit(this._settings);
             }
-        })
+        });
     }
 
     all(): { [name: string]: string } {
@@ -43,21 +41,32 @@ export class SettingsRepository {
     }
 
     getSelectedCurrency(): Currency {
-        return this._settings && parseInt(this._settings[SettingsKeys.SELECTED_CURRENCY]) || Currency.EUR;
+        if(this._settings && SettingsKeys.SELECTED_CURRENCY in this._settings) {
+            return parseInt(this._settings[SettingsKeys.SELECTED_CURRENCY])
+        }
+        return Currency.EUR;
     }
     setSelectedCurrency(c: Currency) {
         if(!this._settings) {
             this._settings = {};
         }
         this._settings[SettingsKeys.SELECTED_CURRENCY] = c;
-        this.betterDataService.set(this._KEY, c)
+        this.save();
         this.changed.emit(SettingsKeys.SELECTED_CURRENCY);
+    }
+
+    private save(): void {
+        this.betterDataService.set(this._KEY, this._settings);
     }
 
     private load(): void {
         if (this.betterDataService.containsKey(this._KEY)) {
-            let jsonStr = this.betterDataService.get(this._KEY);
-            this._settings = this.deserialize(jsonStr);
+            let settings = this.betterDataService.get(this._KEY);
+            this._settings = settings;
+            // TODO: check differentce and emit changes
+            for(let key in this._settings) {
+                this.changed.emit(key);
+            }
         } else {
             this._settings = {};
         }

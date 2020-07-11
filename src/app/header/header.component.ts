@@ -2,11 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { saveAs } from 'file-saver'
 import { DataService } from '../data/data.service';
 import { Currency } from '../models/currency.enum';
-import { HttpClient } from '@angular/common/http';
 import * as moment from 'moment';
 import * as Papa from 'papaparse';
 import { AuthService } from '../auth/auth.service';
-import { BetterDataService } from '../data/betterdata.service';
 import { AccountsRepository } from '../data/repositories/accounts.repository';
 import { TransactionsRepository } from '../data/repositories/transactions.repository';
 import { SettingsRepository, SettingsKeys } from '../data/repositories/settings.repository';
@@ -17,9 +15,6 @@ import { SettingsRepository, SettingsKeys } from '../data/repositories/settings.
 })
 export class HeaderComponent implements OnInit {
 
-    //TODO: fix isDirty => whole concept and design
-    //isDirty: boolean = false;
-
     username: string = "";
     currencies: CurrencyDisplayItem[] = [];
     selectedCurrency: any = null;
@@ -28,18 +23,17 @@ export class HeaderComponent implements OnInit {
 
     constructor(
         private dataService: DataService,
-        private betterDataService: BetterDataService,
+        //private betterDataService: BetterDataService,
         private accountsRepository: AccountsRepository,
         private transactionsRepository: TransactionsRepository,
         private settingsRepository: SettingsRepository,
-        private http: HttpClient,
+        //private exchangeRepository: ExchangeRepository,
+        //private http: HttpClient,
         private authService: AuthService) {
     }
 
     ngOnInit() {
         this.subscribe();
-
-        //this.isDirty = false;
 
         Object.keys(Currency).forEach(k => {
             if (typeof (Currency[k]) === "number") {
@@ -47,29 +41,15 @@ export class HeaderComponent implements OnInit {
             }
         });
 
-        let c = this.dataService.getSelectedCurrency();
-        // let cx = this.settingsRepository.get(SettingsKeys.SELECTED_CURRENCY);
+        let c = this.settingsRepository.getSelectedCurrency();
         this.selectedCurrency = new CurrencyDisplayItem(Currency[c], c);
-
-        this.http.get("https://api.exchangeratesapi.io/latest").subscribe(
-            (data) => {
-                let exchange = this.dataService.getExchangeRates();
-                if(!!exchange || exchange.date < data["date"]) {
-                    this.dataService.setExchangeRates(data);
-                }
-            },
-            (error) => { console.log(error); }
-        );
     }
 
     private subscribe(): void {
-        // this.dataService.accountsChanged.subscribe(e => this.isDirty = true);
-        // this.dataService.categoriesChanged.subscribe(e => this.isDirty = true);
-        // this.dataService.transactionsChanged.subscribe(e => this.isDirty = true);
-        this.dataService.selectedCurrencyChanged.subscribe(e => {
-            //this.isDirty = true;
-            this.selectedCurrency = new CurrencyDisplayItem(Currency[e], e);
-        })
+        this.settingsRepository.changed.subscribe(e => {
+            let c = this.settingsRepository.getSelectedCurrency();
+            this.selectedCurrency = new CurrencyDisplayItem(Currency[c], c);
+        });
     }
 
     onSave() {
@@ -116,7 +96,7 @@ export class HeaderComponent implements OnInit {
     }
 
     onCurrencyChanged(c: CurrencyDisplayItem) {
-        this.dataService.setSelectedCurrency(c.value);
+        this.settingsRepository.setSelectedCurrency(c.value);
     }
 
     logout(): void {

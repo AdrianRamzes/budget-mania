@@ -5,6 +5,8 @@ import * as moment from 'moment'
 import { Component, OnInit } from '@angular/core';
 import { DataService } from 'src/app/data/data.service';
 import { Transaction } from 'src/app/models/transaction.model';
+import { SettingsRepository } from 'src/app/data/repositories/settings.repository';
+import { ExchangeRepository } from 'src/app/data/repositories/exchange.repository';
 
 @Component({
     selector: 'app-dashboard-cash-flow',
@@ -20,7 +22,9 @@ export class DashboardCashFlowComponent implements OnInit {
     private maxDate: moment.Moment = moment();
     private buckets = {};
 
-    constructor(private dataService: DataService) { }
+    constructor(private dataService: DataService,
+                private settingsRepository: SettingsRepository,
+                private exchangeRepository: ExchangeRepository) { }
 
     ngOnInit() {
 
@@ -29,7 +33,12 @@ export class DashboardCashFlowComponent implements OnInit {
             this.reloadChart();
         });
 
-        this.dataService.selectedCurrencyChanged.subscribe(e => {
+        this.exchangeRepository.changed.subscribe(e => {
+            this.updateBuckets(this.dataService.getTransactions());
+            this.reloadChart();
+        })
+
+        this.settingsRepository.changed.subscribe(e => {
             this.reloadChart();
         });
 
@@ -78,12 +87,12 @@ export class DashboardCashFlowComponent implements OnInit {
         let accounts = this.dataService.getAccounts();
         let allDays = this.getAllDaysBetween(this.minDate, this.maxDate);
 
-        let selectedCurrency = this.dataService.getSelectedCurrency();
+        let selectedCurrency = this.settingsRepository.getSelectedCurrency();
         this.buckets = {};
         accounts.forEach(a => {
             this.buckets[a.guid] = {};
             let sum = 0;
-            let rate = this.dataService.getExchangeRate(a.currency, selectedCurrency)
+            let rate = this.exchangeRepository.getRate(a.currency, selectedCurrency)
             allDays.forEach(d => {
                 let dayKey = d.format("YYYY-MM-DD");
                 let monthKey = d.format("YYYY-MM");

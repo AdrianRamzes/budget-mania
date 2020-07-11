@@ -16,8 +16,8 @@ export class DataService {
     accountsChanged = new EventEmitter<UserAccount[]>();
     transactionsChanged = new EventEmitter<Transaction[]>();
     categoriesChanged = new EventEmitter<Category[]>();
-    selectedCurrencyChanged = new EventEmitter<Currency>();
-    exchangeChanged =  new EventEmitter<any>();
+    // selectedCurrencyChanged = new EventEmitter<Currency>();
+    // exchangeChanged =  new EventEmitter<any>();
 
     constructor(private storageService: StorageService) {
         storageService.load().then(
@@ -135,36 +135,36 @@ export class DataService {
         this.setTransactions(transactions);
     }
 
-    getSelectedCurrency(): Currency {
-        return this._data.settings && this._data.settings.selectedCurrency || Currency.EUR;
-    }
-    setSelectedCurrency(c: Currency) {
-        if(!this._data.settings) {
-            this._data.settings = {};
-        }
-        this._data.settings.selectedCurrency = c;
-        this.updateStorage();
-        this.selectedCurrencyChanged.emit(this._data.settings.selectedCurrency);
-    }
+    // getSelectedCurrency(): Currency {
+    //     return this._data.settings && this._data.settings.selectedCurrency || Currency.EUR;
+    // }
+    // setSelectedCurrency(c: Currency) {
+    //     if(!this._data.settings) {
+    //         this._data.settings = {};
+    //     }
+    //     this._data.settings.selectedCurrency = c;
+    //     this.updateStorage();
+    //     this.selectedCurrencyChanged.emit(this._data.settings.selectedCurrency);
+    // }
 
-    getExchangeRate(from: Currency, to: Currency): number {
-        if(this._data.exchange) {
-            if(this._data.exchange) {
-                let fromEUR = from !== Currency.EUR ? this._data.exchange["rates"][Currency[from]] : 1;
-                let toEUR = to !== Currency.EUR ? this._data.exchange["rates"][Currency[to]] : 1;
-                return toEUR/fromEUR;
-            }
-        }
-        return -1;
-    }
-    getExchangeRates() {
-        return this._data.exchange;
-    }
-    setExchangeRates(x: any) {
-        this._data.exchange = x;
-        this.updateStorage();
-        this.exchangeChanged.emit(this._data.exchange);
-    }
+    // getExchangeRate(from: Currency, to: Currency): number {
+    //     if(this._data.exchange) {
+    //         if(this._data.exchange) {
+    //             let fromEUR = from !== Currency.EUR ? this._data.exchange["rates"][Currency[from]] : 1;
+    //             let toEUR = to !== Currency.EUR ? this._data.exchange["rates"][Currency[to]] : 1;
+    //             return toEUR/fromEUR;
+    //         }
+    //     }
+    //     return -1;
+    // }
+    // getExchangeRates() {
+    //     return this._data.exchange;
+    // }
+    // setExchangeRates(x: any) {
+    //     this._data.exchange = x;
+    //     this.updateStorage();
+    //     this.exchangeChanged.emit(this._data.exchange);
+    // }
 
     getSerializedData(): string {
         return JSON.stringify(this._data);
@@ -176,7 +176,7 @@ export class DataService {
         this.accountsChanged.emit(this.getAccounts());
         this.transactionsChanged.emit(this.getTransactions());
         this.categoriesChanged.emit(this.getCategories());
-        this.selectedCurrencyChanged.emit(this.getSelectedCurrency());
+        //this.selectedCurrencyChanged.emit(this.getSelectedCurrency());
     }
 
     private deserialize(serialized: string): Data {

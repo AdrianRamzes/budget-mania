@@ -7,6 +7,8 @@ import { Category } from 'src/app/models/category.model';
 import { UserAccount } from 'src/app/models/user-account.model';
 import { DataService } from 'src/app/data/data.service';
 import { Currency } from 'src/app/models/currency.enum';
+import { SettingsRepository } from 'src/app/data/repositories/settings.repository';
+import { ExchangeRepository } from 'src/app/data/repositories/exchange.repository';
 
 @Component({
     selector: 'app-dashboard-transactions',
@@ -24,12 +26,14 @@ export class DashboardTransactionsComponent implements OnInit {
     filteredMin: number = 0;
     filteredMax: number = 0;
 
-    constructor(private dataService: DataService) {
+    constructor(private dataService: DataService,
+                private settingsRepository: SettingsRepository,
+                private exchangeRepository: ExchangeRepository) {
     }
 
     ngOnInit() {
         this.dataService.transactionsChanged.subscribe(e => this.updateDisplayedTransactions(e));
-        this.dataService.selectedCurrencyChanged.subscribe(e => {
+        this.settingsRepository.changed.subscribe(e => {
             this.updateDisplayedTransactions(this.dataService.getTransactions());
         });
 
@@ -94,9 +98,9 @@ export class DashboardTransactionsComponent implements OnInit {
         x.displayAmount = t.amount;
         x.displayCurrencyCode = Currency[t.currency];
 
-        let selectedCurrency = this.dataService.getSelectedCurrency();
+        let selectedCurrency = this.settingsRepository.getSelectedCurrency();
         if(selectedCurrency != t.currency) {
-            let rate = this.dataService.getExchangeRate(t.currency, selectedCurrency);
+            let rate = this.exchangeRepository.getRate(t.currency, selectedCurrency);
             if(rate) {
                 x.displayAmount = t.amount * rate;
                 x.displayCurrencyCode = Currency[selectedCurrency];
