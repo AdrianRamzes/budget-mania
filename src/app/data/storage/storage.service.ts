@@ -5,6 +5,7 @@ import { environment } from 'src/environments/environment';
 import { HttpStorageHelper } from './httpStorage';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from "@angular/core";
+import { S3StorageHelper } from './s3Storage';
 
 @Injectable()
 export class StorageService implements StorageHelper {
@@ -18,6 +19,9 @@ export class StorageService implements StorageHelper {
                 break;
             case "local":
                 this._service = new LocalStorageHelper();
+                break;
+            case "s3":
+                this._service = new S3StorageHelper();
                 break;
             default:
                 this._service = new FakeStorageHelper();

@@ -6,6 +6,10 @@ import { HttpClient } from '@angular/common/http';
 import * as moment from 'moment';
 import * as Papa from 'papaparse';
 import { AuthService } from '../auth/auth.service';
+import { BetterDataService } from '../data/betterdata.service';
+import { AccountsRepository } from '../data/repositories/accounts.repository';
+import { TransactionsRepository } from '../data/repositories/transactions.repository';
+import { SettingsRepository, SettingsKeys } from '../data/repositories/settings.repository';
 
 @Component({
     selector: 'app-header',
@@ -24,6 +28,10 @@ export class HeaderComponent implements OnInit {
 
     constructor(
         private dataService: DataService,
+        private betterDataService: BetterDataService,
+        private accountsRepository: AccountsRepository,
+        private transactionsRepository: TransactionsRepository,
+        private settingsRepository: SettingsRepository,
         private http: HttpClient,
         private authService: AuthService) {
     }
@@ -40,6 +48,7 @@ export class HeaderComponent implements OnInit {
         });
 
         let c = this.dataService.getSelectedCurrency();
+        // let cx = this.settingsRepository.get(SettingsKeys.SELECTED_CURRENCY);
         this.selectedCurrency = new CurrencyDisplayItem(Currency[c], c);
 
         this.http.get("https://api.exchangeratesapi.io/latest").subscribe(
@@ -129,6 +138,14 @@ export class HeaderComponent implements OnInit {
             //this.isDirty = false;
         }
         fr.readAsText(file, "utf-8");
+    }
+
+    test() {
+        let x = this.accountsRepository.list();
+        console.log(x);
+        let y = this.transactionsRepository.list();
+        console.log(y);
+        let z = this.settingsRepository.all();
     }
 }
 
