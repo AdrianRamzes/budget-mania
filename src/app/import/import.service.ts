@@ -1,5 +1,4 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { DataService } from '../data/data.service';
 import { Transaction } from '../models/transaction.model';
 import { StagedTransaction } from '../import/stagedTransaction.model';
 
@@ -57,9 +56,8 @@ export class ImportService {
         new RevolutParser()
     ];
 
-    constructor(private dataService: DataService,
-        private transactionsRepository: TransactionsRepository,
-        private accountsRepository: AccountsRepository) {
+    constructor(private transactionsRepository: TransactionsRepository,
+                private accountsRepository: AccountsRepository) {
         this.accountsRepository.changed.subscribe((e) => this.accounts = e);
         this.accounts = this.accountsRepository.list();
     }

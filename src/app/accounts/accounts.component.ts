@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { DataService } from '../data/data.service';
 import { UserAccount } from '../models/user-account.model';
 import { NgForm } from '@angular/forms';
 import { Currency } from '../models/currency.enum';
@@ -16,8 +15,7 @@ export class AccountsComponent implements OnInit {
 
     currencies: CurrencyDisplayItem[] = [];
 
-    constructor(private dataService: DataService,
-                private accountsRepository: AccountsRepository) { }
+    constructor(private accountsRepository: AccountsRepository) { }
 
     ngOnInit() {
         this.accountsRepository.changed.subscribe((a) => this.accounts = a);

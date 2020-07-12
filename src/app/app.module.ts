@@ -4,7 +4,6 @@ import { FormsModule } from "@angular/forms";
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { DataService } from './data/data.service';
 import { ImportComponent } from './import/import.component';
 import { SelectFileComponent } from './import/select-file/select-file.component';
 import { TransactionsListComponent } from './import/transactions-list/transactions-list.component';
@@ -71,7 +70,6 @@ Amplify.configure({
     AmplifyUIAngularModule
   ],
   providers: [
-    DataService,
     ImportService,
     StorageService,
     AuthService

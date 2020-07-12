@@ -3,7 +3,6 @@ import * as $ from 'jquery';
 
 import { Component, OnInit } from '@angular/core';
 import { Transaction } from '../models/transaction.model';
-import { DataService } from '../data/data.service';
 import { Category } from '../models/category.model';
 import { UserAccount } from '../models/user-account.model';
 import { environment } from 'src/environments/environment';
@@ -29,8 +28,7 @@ export class CategoriesComponent implements OnInit {
 
     displayCount: number = 10;
 
-    constructor(private dataService: DataService,
-                private transactionsRepository: TransactionsRepository,
+    constructor(private transactionsRepository: TransactionsRepository,
                 private categoriesRepository: CategoriesRepository,
                 private accountsRepository: AccountsRepository) { }
 
@@ -133,8 +131,8 @@ export class CategoriesComponent implements OnInit {
     }
 
     onDumpAllDataClick(): void {
-        if (!this.isProduction)
-            this.dataService.dump();
+        // if (!this.isProduction)
+        //     this.dataService.dump();
     }
 
     private acceptSuggestedCategory(t: TransactionDisplayItem) {

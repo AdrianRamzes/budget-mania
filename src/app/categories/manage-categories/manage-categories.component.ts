@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { DataService } from 'src/app/data/data.service';
 import { Category } from 'src/app/models/category.model';
 import { NgForm } from '@angular/forms';
 import { CategoriesRepository } from 'src/app/data/repositories/categories.repository';

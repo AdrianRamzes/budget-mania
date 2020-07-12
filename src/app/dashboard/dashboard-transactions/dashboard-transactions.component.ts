@@ -5,7 +5,6 @@ import { Component, OnInit } from '@angular/core';
 import { Transaction } from 'src/app/models/transaction.model';
 import { Category } from 'src/app/models/category.model';
 import { UserAccount } from 'src/app/models/user-account.model';
-import { DataService } from 'src/app/data/data.service';
 import { Currency } from 'src/app/models/currency.enum';
 import { SettingsRepository } from 'src/app/data/repositories/settings.repository';
 import { ExchangeRepository } from 'src/app/data/repositories/exchange.repository';
@@ -29,8 +28,7 @@ export class DashboardTransactionsComponent implements OnInit {
     filteredMin: number = 0;
     filteredMax: number = 0;
 
-    constructor(private dataService: DataService,
-                private transactionsRepository: TransactionsRepository,
+    constructor(private transactionsRepository: TransactionsRepository,
                 private accountsRepository: AccountsRepository,
                 private categoriesRepository: CategoriesRepository,
                 private settingsRepository: SettingsRepository,

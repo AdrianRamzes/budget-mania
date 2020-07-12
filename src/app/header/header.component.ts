@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { saveAs } from 'file-saver'
-import { DataService } from '../data/data.service';
 import { Currency } from '../models/currency.enum';
 import * as moment from 'moment';
 import * as Papa from 'papaparse';
@@ -23,7 +22,7 @@ export class HeaderComponent implements OnInit {
     private _filenamePrefix = "budget_mania_";
 
     constructor(
-        private dataService: DataService,
+        //private dataService: DataService,
         //private betterDataService: BetterDataService,
         private accountsRepository: AccountsRepository,
         private transactionsRepository: TransactionsRepository,
@@ -55,7 +54,7 @@ export class HeaderComponent implements OnInit {
     }
 
     onSave() {
-        this.save(this.dataService.getSerializedData());
+        //this.save(this.dataService.getSerializedData());
     }
 
     loadFile(event: EventTarget) {
@@ -113,13 +112,13 @@ export class HeaderComponent implements OnInit {
     }
 
     private load(file: File) {
-        let fr: FileReader = new FileReader();
-        fr.onload = (data) => {
-            let jsonString = fr.result as string;
-            this.dataService.setDataFromString(jsonString);
-            //this.isDirty = false;
-        }
-        fr.readAsText(file, "utf-8");
+        // let fr: FileReader = new FileReader();
+        // fr.onload = (data) => {
+        //     let jsonString = fr.result as string;
+        //     this.dataService.setDataFromString(jsonString);
+        //     //this.isDirty = false;
+        // }
+        // fr.readAsText(file, "utf-8");
     }
 
     test() {

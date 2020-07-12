@@ -3,7 +3,6 @@ import * as _ from 'lodash'
 import * as moment from 'moment'
 
 import { Component, OnInit } from '@angular/core';
-import { DataService } from 'src/app/data/data.service';
 import { Transaction } from 'src/app/models/transaction.model';
 import { SettingsRepository } from 'src/app/data/repositories/settings.repository';
 import { ExchangeRepository } from 'src/app/data/repositories/exchange.repository';
@@ -24,8 +23,7 @@ export class DashboardCashFlowComponent implements OnInit {
     private maxDate: moment.Moment = moment();
     private buckets = {};
 
-    constructor(private dataService: DataService,
-                private transactionsRepository: TransactionsRepository,
+    constructor(private transactionsRepository: TransactionsRepository,
                 private accountsRepository: AccountsRepository,
                 private settingsRepository: SettingsRepository,
                 private exchangeRepository: ExchangeRepository) { }
