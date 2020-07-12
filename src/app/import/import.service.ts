@@ -14,6 +14,7 @@ import { MBankPolskaParser } from './parsers/mbankPolskaParser';
 import { INGLuxembourgParser } from './parsers/ingLuxembourgParser';
 import { RevolutParser } from './parsers/revolutParser';
 import { AccountsRepository } from '../data/repositories/accounts.repository';
+import { TransactionsRepository } from '../data/repositories/transactions.repository';
 
 @Injectable()
 export class ImportService {
@@ -57,6 +58,7 @@ export class ImportService {
     ];
 
     constructor(private dataService: DataService,
+        private transactionsRepository: TransactionsRepository,
         private accountsRepository: AccountsRepository) {
         this.accountsRepository.changed.subscribe((e) => this.accounts = e);
         this.accounts = this.accountsRepository.list();
@@ -87,7 +89,7 @@ export class ImportService {
     }
 
     import(): void {
-        this.dataService.addTransactions(
+        this.transactionsRepository.addMany(
             this.stagedTransactions
                 .filter(t => t.checked)
                 .map((t) => {
@@ -103,7 +105,7 @@ export class ImportService {
     }
 
     private isDuplicate(t: Transaction): boolean {
-        return !!this.dataService.getTransactions()
+        return !!this.transactionsRepository.list()
             .find((x) => Transaction.equals(t, x));
     }
 }

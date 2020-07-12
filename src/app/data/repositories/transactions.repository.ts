@@ -31,25 +31,35 @@ export class TransactionsRepository {
         return this._transactions.slice();
     }
 
+    add(transaction: Transaction) {
+        let transactions = this.list();
+        transactions.push(transaction);
+        this.set(transactions);
+    }
+
     addMany(arr: Transaction[]) {
         let transactions = this.list();
         transactions.push(...arr);
         this.set(transactions);
     }
+
     edit(t: Transaction) {
         let transactions = this.list();
         let i = _.findIndex(transactions, {guid: t.guid});
         transactions[i] = t;
         this.set(transactions);
     }
+
     editMany(arr: Transaction[]) {
         //TODO: implementation
     }
+
     remove(t: Transaction) {
         let transactions = this.list();
         _.remove(transactions, (x) => x.guid === t.guid);
         this.set(transactions);
     }
+    
     removeMany(arr: Transaction[]) {
         let transactions = this.list();
         _.remove(transactions, (x) => !!_.find(arr, (t) => t.guid === x.guid));

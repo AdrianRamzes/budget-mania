@@ -8,6 +8,7 @@ import { Transaction } from 'src/app/models/transaction.model';
 import { SettingsRepository } from 'src/app/data/repositories/settings.repository';
 import { ExchangeRepository } from 'src/app/data/repositories/exchange.repository';
 import { AccountsRepository } from 'src/app/data/repositories/accounts.repository';
+import { TransactionsRepository } from 'src/app/data/repositories/transactions.repository';
 
 @Component({
     selector: 'app-dashboard-cash-flow',
@@ -24,19 +25,20 @@ export class DashboardCashFlowComponent implements OnInit {
     private buckets = {};
 
     constructor(private dataService: DataService,
+                private transactionsRepository: TransactionsRepository,
                 private accountsRepository: AccountsRepository,
                 private settingsRepository: SettingsRepository,
                 private exchangeRepository: ExchangeRepository) { }
 
     ngOnInit() {
 
-        this.dataService.transactionsChanged.subscribe(e => {
+        this.transactionsRepository.changed.subscribe(e => {
             this.updateBuckets(e);
             this.reloadChart();
         });
 
         this.exchangeRepository.changed.subscribe(e => {
-            this.updateBuckets(this.dataService.getTransactions());
+            this.updateBuckets(this.transactionsRepository.list());
             this.reloadChart();
         })
 
@@ -44,7 +46,7 @@ export class DashboardCashFlowComponent implements OnInit {
             this.reloadChart();
         });
 
-        this.updateBuckets(this.dataService.getTransactions());
+        this.updateBuckets(this.transactionsRepository.list());
         this.reloadChart();
     }
 

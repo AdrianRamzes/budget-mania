@@ -11,6 +11,7 @@ import { SettingsRepository } from 'src/app/data/repositories/settings.repositor
 import { ExchangeRepository } from 'src/app/data/repositories/exchange.repository';
 import { CategoriesRepository } from 'src/app/data/repositories/categories.repository';
 import { AccountsRepository } from 'src/app/data/repositories/accounts.repository';
+import { TransactionsRepository } from 'src/app/data/repositories/transactions.repository';
 
 @Component({
     selector: 'app-dashboard-transactions',
@@ -29,6 +30,7 @@ export class DashboardTransactionsComponent implements OnInit {
     filteredMax: number = 0;
 
     constructor(private dataService: DataService,
+                private transactionsRepository: TransactionsRepository,
                 private accountsRepository: AccountsRepository,
                 private categoriesRepository: CategoriesRepository,
                 private settingsRepository: SettingsRepository,
@@ -36,12 +38,12 @@ export class DashboardTransactionsComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.dataService.transactionsChanged.subscribe(e => this.updateDisplayedTransactions(e));
+        this.transactionsRepository.changed.subscribe(e => this.updateDisplayedTransactions(e));
         this.settingsRepository.changed.subscribe(e => {
-            this.updateDisplayedTransactions(this.dataService.getTransactions());
+            this.updateDisplayedTransactions(this.transactionsRepository.list());
         });
 
-        this.updateDisplayedTransactions(this.dataService.getTransactions());
+        this.updateDisplayedTransactions(this.transactionsRepository.list());
         window.addEventListener('scroll', this.onScroll.bind(this));
     }
 

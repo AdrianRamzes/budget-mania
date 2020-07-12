@@ -10,6 +10,7 @@ import { environment } from 'src/environments/environment';
 import { Currency } from '../models/currency.enum';
 import { CategoriesRepository } from '../data/repositories/categories.repository';
 import { AccountsRepository } from '../data/repositories/accounts.repository';
+import { TransactionsRepository } from '../data/repositories/transactions.repository';
 
 @Component({
     selector: 'app-categories',
@@ -29,11 +30,12 @@ export class CategoriesComponent implements OnInit {
     displayCount: number = 10;
 
     constructor(private dataService: DataService,
+                private transactionsRepository: TransactionsRepository,
                 private categoriesRepository: CategoriesRepository,
                 private accountsRepository: AccountsRepository) { }
 
     ngOnInit() {
-        this.dataService.transactionsChanged.subscribe((e) => {
+        this.transactionsRepository.changed.subscribe((e) => {
             //this.allTransactions = e;
             this.categories = this.categoriesRepository.list();
             this.allTransactionDisplayItems = this.getTransactionDisplayItems(e);
@@ -42,7 +44,7 @@ export class CategoriesComponent implements OnInit {
         });
 
         //this.allTransactions = this.dataService.getTransactions();
-        this.allTransactionDisplayItems = this.getTransactionDisplayItems(this.dataService.getTransactions());
+        this.allTransactionDisplayItems = this.getTransactionDisplayItems(this.transactionsRepository.list());
         this.filteredTransactions = this.filterTransactions(this.allTransactionDisplayItems, this.filter);
 
         this.categoriesRepository.changed.subscribe(c => this.categories = c);
@@ -61,7 +63,7 @@ export class CategoriesComponent implements OnInit {
 
     onCategoryChange(t: Transaction, e: string) {
         t.categoryGuid = e;
-        this.dataService.editTransaction(t);
+        this.transactionsRepository.edit(t);
     }
 
     onSuggestedCategoryClick(t: TransactionDisplayItem) {
@@ -127,7 +129,7 @@ export class CategoriesComponent implements OnInit {
 
     onRemoveAllTransactionsClick(): void {
         if (!this.isProduction)
-            this.dataService.removeTransactions(this.dataService.getTransactions());
+            this.transactionsRepository.removeMany(this.transactionsRepository.list());
     }
 
     onDumpAllDataClick(): void {
@@ -138,12 +140,12 @@ export class CategoriesComponent implements OnInit {
     private acceptSuggestedCategory(t: TransactionDisplayItem) {
         if (!t.transaction.categoryGuid) {
             t.transaction.categoryGuid = t.suggestedCategory.guid;
-            this.dataService.editTransaction(t.transaction);
+            this.transactionsRepository.edit(t.transaction);
         }
     }
 
     private updateSuggestedCategories() {
-        let withCategory = _.filter(this.dataService.getTransactions(), x => !!x.categoryGuid);
+        let withCategory = _.filter(this.transactionsRepository.list(), x => !!x.categoryGuid);
         this.allTransactionDisplayItems.forEach(t => {
             if (!t.transaction.categoryGuid) {
                 let candidate = _.find(withCategory, x => x.title == t.transaction.title)
