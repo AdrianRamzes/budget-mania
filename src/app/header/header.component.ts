@@ -8,6 +8,7 @@ import { AccountsRepository } from '../data/repositories/accounts.repository';
 import { TransactionsRepository } from '../data/repositories/transactions.repository';
 import { SettingsRepository, SettingsKeys } from '../data/repositories/settings.repository';
 import { CategoriesRepository } from '../data/repositories/categories.repository';
+import { BetterDataService } from '../data/betterdata.service';
 
 @Component({
     selector: 'app-header',
@@ -19,11 +20,13 @@ export class HeaderComponent implements OnInit {
     currencies: CurrencyDisplayItem[] = [];
     selectedCurrency: any = null;
 
+    isDirty: boolean = false;
+
     private _filenamePrefix = "budget_mania_";
 
     constructor(
         //private dataService: DataService,
-        //private betterDataService: BetterDataService,
+        private betterDataService: BetterDataService,
         private accountsRepository: AccountsRepository,
         private transactionsRepository: TransactionsRepository,
         private settingsRepository: SettingsRepository,
@@ -42,6 +45,9 @@ export class HeaderComponent implements OnInit {
             }
         });
 
+        this.betterDataService.isDirtyChanged.subscribe(x => this.isDirty = x);
+        this.isDirty = this.betterDataService.isDirty;
+
         let c = this.settingsRepository.getSelectedCurrency();
         this.selectedCurrency = new CurrencyDisplayItem(Currency[c], c);
     }
@@ -55,6 +61,7 @@ export class HeaderComponent implements OnInit {
 
     onSave() {
         //this.save(this.dataService.getSerializedData());
+        this.betterDataService.save();
     }
 
     loadFile(event: EventTarget) {

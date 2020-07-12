@@ -7,7 +7,6 @@ import { Router } from '@angular/router';
     templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {
-    loadedFeature: string = 'dashboard';
     isLogedIn: boolean = false;
 
     constructor(private authService: AuthService, private router: Router) { }
