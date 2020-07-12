@@ -21,12 +21,15 @@ export class CategoriesRepository {
         this.betterDataService.dataChanged.subscribe(key => {
             if(key == this._KEY) {
                 this.load();
-                this.changed.emit(this._categories.slice());
+                this.changed.emit(this.list());
             }
         })
     }
 
     list(): Category[] {
+        if(this._categories == null) {
+            this.load();
+        }
         return this._categories.slice();
     }
     
@@ -62,17 +65,16 @@ export class CategoriesRepository {
 
     private load(): void {
         if(this.betterDataService.containsKey(this._KEY)) {
-            let jsonStr = this.betterDataService.get(this._KEY);
-            this._categories = this.deserialize(jsonStr);
+            let deserialized = this.betterDataService.get(this._KEY);
+            this._categories = this.deserialize(deserialized);
         } else {
             this._categories = [];
         }
     }
 
     private set(value: Category[]) {
-        this._categories = value.slice();
-        let serialized = JSON.stringify(this._categories);
-        this.betterDataService.set(this._KEY, serialized);
+        this._categories = (value || []).slice();
+        this.betterDataService.set(this._KEY, this._categories);
     }
 
     private deserialize(deserialized: any[]): Category[] {

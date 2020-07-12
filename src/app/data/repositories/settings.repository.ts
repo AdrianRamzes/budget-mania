@@ -32,8 +32,10 @@ export class SettingsRepository {
         return null;
     }
 
-    set(name: string, value: string): void {
+    set(name: string, value: any): void {
         this._settings[name] = value;
+        this.betterDataService.set(this._KEY, this._settings);
+        //this.changed.emit(name);//TODO: remove it and build mechanism to compare changes emited from dataservice
     }
 
     remove(name: string) {
@@ -50,13 +52,7 @@ export class SettingsRepository {
         if(!this._settings) {
             this._settings = {};
         }
-        this._settings[SettingsKeys.SELECTED_CURRENCY] = c;
-        this.save();
-        this.changed.emit(SettingsKeys.SELECTED_CURRENCY);
-    }
-
-    private save(): void {
-        this.betterDataService.set(this._KEY, this._settings);
+        this.set(SettingsKeys.SELECTED_CURRENCY, c);
     }
 
     private load(): void {

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DataService } from 'src/app/data/data.service';
 import { Category } from 'src/app/models/category.model';
 import { NgForm } from '@angular/forms';
+import { CategoriesRepository } from 'src/app/data/repositories/categories.repository';
 
 @Component({
     selector: 'app-manage-categories',
@@ -9,14 +10,14 @@ import { NgForm } from '@angular/forms';
 })
 export class ManageCategoriesComponent implements OnInit {
 
-    constructor(private dataService: DataService) { }
+    constructor(private categoriesRepository: CategoriesRepository) { }
 
     categories: Category[];
     selectedCategory: Category;
 
     ngOnInit() {
-        this.dataService.categoriesChanged.subscribe(c => this.categories = c);
-        this.categories = this.dataService.getCategories();
+        this.categoriesRepository.changed.subscribe(c => this.categories = c);
+        this.categories = this.categoriesRepository.list();
     }
 
     onCategorySelected(c): void {
@@ -34,7 +35,7 @@ export class ManageCategoriesComponent implements OnInit {
         let cat = new Category();
         cat.name = v.name;
 
-        this.dataService.addCategory(cat);
+        this.categoriesRepository.add(cat);
 
         form.resetForm();
     }
@@ -45,11 +46,11 @@ export class ManageCategoriesComponent implements OnInit {
                 ...this.selectedCategory,
                 ...form.value
             } as Category;
-            this.dataService.editCategory(edited);
+            this.categoriesRepository.edit(edited);
         }
     }
 
     onRemoveCategoryClick(): void {
-        this.dataService.removeCategory(this.selectedCategory);
+        this.categoriesRepository.remove(this.selectedCategory);
     }
 }

@@ -8,6 +8,7 @@ import { AuthService } from '../auth/auth.service';
 import { AccountsRepository } from '../data/repositories/accounts.repository';
 import { TransactionsRepository } from '../data/repositories/transactions.repository';
 import { SettingsRepository, SettingsKeys } from '../data/repositories/settings.repository';
+import { CategoriesRepository } from '../data/repositories/categories.repository';
 
 @Component({
     selector: 'app-header',
@@ -27,6 +28,7 @@ export class HeaderComponent implements OnInit {
         private accountsRepository: AccountsRepository,
         private transactionsRepository: TransactionsRepository,
         private settingsRepository: SettingsRepository,
+        private categoriesRepository: CategoriesRepository,
         //private exchangeRepository: ExchangeRepository,
         //private http: HttpClient,
         private authService: AuthService) {
@@ -66,7 +68,7 @@ export class HeaderComponent implements OnInit {
     onExportToCSVClick() {
         let transactions = this.dataService.getTransactions().map(t => {
             let account = this.dataService.getAccount(t.accountGuid);
-            let category = this.dataService.getCategory(t.categoryGuid);
+            let category = this.categoriesRepository.get(t.categoryGuid);
             return {
                 guid: t.guid,
                 date: t.date ? moment(t.date).format("YYYY-MM-DD") : null,
@@ -123,9 +125,15 @@ export class HeaderComponent implements OnInit {
     test() {
         let x = this.accountsRepository.list();
         console.log(x);
+
         let y = this.transactionsRepository.list();
         console.log(y);
+
         let z = this.settingsRepository.all();
+        console.log(z);
+
+        let v = this.categoriesRepository.list();
+        console.log(v);
     }
 }
 

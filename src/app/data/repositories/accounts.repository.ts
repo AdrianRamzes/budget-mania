@@ -21,12 +21,15 @@ export class AccountsRepository {
         this.betterDataService.dataChanged.subscribe(key => {
             if(key == this._KEY) {
                 this.load();
-                this.changed.emit(this._accounts.slice());
+                this.changed.emit(this.list());
             }
         })
     }
 
     list(): UserAccount[] {
+        if(this._accounts == null) {
+            this.load();
+        }
         return this._accounts.slice();
     }
 
@@ -70,9 +73,9 @@ export class AccountsRepository {
     }
 
     private set(value: UserAccount[]) {
-        this._accounts = value.slice();
-        let serialized = JSON.stringify(this._accounts);
-        this.betterDataService.set(this._KEY, serialized);
+        this._accounts = (value || []).slice();
+        //let serialized = JSON.stringify(this._accounts);
+        this.betterDataService.set(this._KEY, this._accounts);
     }
 
     private deserialize(deserialized: any[]): UserAccount[] {

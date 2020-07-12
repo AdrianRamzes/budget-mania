@@ -15,7 +15,7 @@ export class DataService {
 
     accountsChanged = new EventEmitter<UserAccount[]>();
     transactionsChanged = new EventEmitter<Transaction[]>();
-    categoriesChanged = new EventEmitter<Category[]>();
+    // categoriesChanged = new EventEmitter<Category[]>();
     // selectedCurrencyChanged = new EventEmitter<Currency>();
     // exchangeChanged =  new EventEmitter<any>();
 
@@ -98,42 +98,42 @@ export class DataService {
         this.setTransactions(transactions);
     }
 
-    getCategories(): Category[] {
-        return this._data.categories.slice();
-    }
-    getCategory(guid: string): Category {
-        return _.find(this.getCategories(), c => c.guid === guid) || null;
-    }
-    private setCategories(value: Category[]) {
-        this._data = {
-            ...this._data,
-            categories: value.slice(),
-        };
-        this.updateStorage();
-        this.categoriesChanged.emit(this.getCategories());
-    }
-    addCategory(c: Category) {
-        let categories = this.getCategories();
-        categories.push(c);
-        this.setCategories(categories);
-    }
-    editCategory(c: Category) {
-        let categories = this.getCategories();
-        let i = _.findIndex(categories, { guid: c.guid });
-        categories[i] = c;
-        this.setCategories(categories);
-    }
-    removeCategory(a: Category) {
-        let categories = this.getCategories();
-        _.remove(categories, (x) => x.guid === a.guid);
-        this.setCategories(categories);
-        let transactions = this.getTransactions().map((x) => {
-            if(x.categoryGuid == a.guid)
-                x.categoryGuid = null;
-            return x;
-        });
-        this.setTransactions(transactions);
-    }
+    // getCategories(): Category[] {
+    //     return this._data.categories.slice();
+    // }
+    // getCategory(guid: string): Category {
+    //     return _.find(this.getCategories(), c => c.guid === guid) || null;
+    // }
+    // private setCategories(value: Category[]) {
+    //     this._data = {
+    //         ...this._data,
+    //         categories: value.slice(),
+    //     };
+    //     this.updateStorage();
+    //     this.categoriesChanged.emit(this.getCategories());
+    // }
+    // addCategory(c: Category) {
+    //     let categories = this.getCategories();
+    //     categories.push(c);
+    //     this.setCategories(categories);
+    // }
+    // editCategory(c: Category) {
+    //     let categories = this.getCategories();
+    //     let i = _.findIndex(categories, { guid: c.guid });
+    //     categories[i] = c;
+    //     this.setCategories(categories);
+    // }
+    // removeCategory(a: Category) {
+    //     let categories = this.getCategories();
+    //     _.remove(categories, (x) => x.guid === a.guid);
+    //     this.setCategories(categories);
+    //     let transactions = this.getTransactions().map((x) => {
+    //         if(x.categoryGuid == a.guid)
+    //             x.categoryGuid = null;
+    //         return x;
+    //     });
+    //     this.setTransactions(transactions);
+    // }
 
     // getSelectedCurrency(): Currency {
     //     return this._data.settings && this._data.settings.selectedCurrency || Currency.EUR;
@@ -175,7 +175,7 @@ export class DataService {
 
         this.accountsChanged.emit(this.getAccounts());
         this.transactionsChanged.emit(this.getTransactions());
-        this.categoriesChanged.emit(this.getCategories());
+        //this.categoriesChanged.emit(this.getCategories());
         //this.selectedCurrencyChanged.emit(this.getSelectedCurrency());
     }
 

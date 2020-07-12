@@ -18,7 +18,7 @@ export class TransactionsRepository {
         betterDataService.dataChanged.subscribe((key) => {
             if (key == this._KEY) {
                 this.load();
-                this.changed.emit(this._transactions.slice());
+                this.changed.emit(this.list());
             }
         });
     }
@@ -66,9 +66,9 @@ export class TransactionsRepository {
     }
 
     private set(value: Transaction[]) {
-        this._transactions = value.slice();
-        let serialized = JSON.stringify(this._transactions);
-        this.betterDataService.set(this._KEY, serialized);
+        this._transactions = (value || []).slice();
+        //let serialized = JSON.stringify(this._transactions);
+        this.betterDataService.set(this._KEY, this._transactions);
     }
 
     private deserialize(deserialized: any[]): Transaction[] {
