@@ -13,6 +13,7 @@ import { SantanderBankPolskaParser } from './parsers/santanderPolskaParser';
 import { MBankPolskaParser } from './parsers/mbankPolskaParser';
 import { INGLuxembourgParser } from './parsers/ingLuxembourgParser';
 import { RevolutParser } from './parsers/revolutParser';
+import { AccountsRepository } from '../data/repositories/accounts.repository';
 
 @Injectable()
 export class ImportService {
@@ -43,7 +44,7 @@ export class ImportService {
     get accounts() {
         return this._accounts;
     }
-    set accounts(v: UserAccount[]){
+    set accounts(v: UserAccount[]) {
         this._accounts = v;
         this.accountsChanges.next(this.accounts)
     }
@@ -55,9 +56,10 @@ export class ImportService {
         new RevolutParser()
     ];
 
-    constructor(private dataService: DataService) {
-        dataService.accountsChanged.subscribe((e) => this.accounts = e );
-        this.accounts = dataService.getAccounts();
+    constructor(private dataService: DataService,
+        private accountsRepository: AccountsRepository) {
+        this.accountsRepository.changed.subscribe((e) => this.accounts = e);
+        this.accounts = this.accountsRepository.list();
     }
 
     tryParse(input: File): void {
@@ -90,8 +92,8 @@ export class ImportService {
                 .filter(t => t.checked)
                 .map((t) => {
                     let trans = t.transaction;
-                    if(this.selectedAccount) {
-                        trans.accountGuid = this.selectedAccount 
+                    if (this.selectedAccount) {
+                        trans.accountGuid = this.selectedAccount
                             ? this.selectedAccount.guid : trans.accountGuid;
                     }
                     return trans;

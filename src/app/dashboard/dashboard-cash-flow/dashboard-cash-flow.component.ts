@@ -7,6 +7,7 @@ import { DataService } from 'src/app/data/data.service';
 import { Transaction } from 'src/app/models/transaction.model';
 import { SettingsRepository } from 'src/app/data/repositories/settings.repository';
 import { ExchangeRepository } from 'src/app/data/repositories/exchange.repository';
+import { AccountsRepository } from 'src/app/data/repositories/accounts.repository';
 
 @Component({
     selector: 'app-dashboard-cash-flow',
@@ -23,6 +24,7 @@ export class DashboardCashFlowComponent implements OnInit {
     private buckets = {};
 
     constructor(private dataService: DataService,
+                private accountsRepository: AccountsRepository,
                 private settingsRepository: SettingsRepository,
                 private exchangeRepository: ExchangeRepository) { }
 
@@ -84,7 +86,7 @@ export class DashboardCashFlowComponent implements OnInit {
             this.maxDate = moment(_.maxBy(transactions, t => t.date).date) || moment();
         }
 
-        let accounts = this.dataService.getAccounts();
+        let accounts = this.accountsRepository.list();
         let allDays = this.getAllDaysBetween(this.minDate, this.maxDate);
 
         let selectedCurrency = this.settingsRepository.getSelectedCurrency();
@@ -122,7 +124,7 @@ export class DashboardCashFlowComponent implements OnInit {
     private getDatasets(from: moment.Moment, to: moment.Moment) {
 
         let keys = _.uniq(this.getAllDaysBetween(from, to).map(d => d.format(this.resolution)));
-        let accounts = this.dataService.getAccounts();
+        let accounts = this.accountsRepository.list();
 
         let total = {};
         let datasets = [];

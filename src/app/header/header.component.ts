@@ -67,7 +67,7 @@ export class HeaderComponent implements OnInit {
 
     onExportToCSVClick() {
         let transactions = this.dataService.getTransactions().map(t => {
-            let account = this.dataService.getAccount(t.accountGuid);
+            let account = this.accountsRepository.get(t.accountGuid);
             let category = this.categoriesRepository.get(t.categoryGuid);
             return {
                 guid: t.guid,

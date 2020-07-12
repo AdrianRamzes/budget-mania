@@ -13,7 +13,7 @@ import { Currency } from '../models/currency.enum';
 @Injectable()
 export class DataService {
 
-    accountsChanged = new EventEmitter<UserAccount[]>();
+    //accountsChanged = new EventEmitter<UserAccount[]>();
     transactionsChanged = new EventEmitter<Transaction[]>();
     // categoriesChanged = new EventEmitter<Category[]>();
     // selectedCurrencyChanged = new EventEmitter<Currency>();
@@ -61,42 +61,42 @@ export class DataService {
         this.setTransactions(transactions);
     }
 
-    getAccounts(): UserAccount[] {
-        return this._data.accounts.slice();
-    }
-    getAccount(guid: string): UserAccount {
-        return _.find(this.getAccounts(), a => a.guid === guid) || null;
-    }
-    private setAccounts(value: UserAccount[]) {
-        this._data = {
-            ...this._data,
-            accounts: value.slice(),
-        };
-        this.updateStorage();
-        this.accountsChanged.emit(this.getAccounts());
-    }
-    addAccount(a: UserAccount) {
-        let accounts = this.getAccounts();
-        accounts.push(a);
-        this.setAccounts(accounts);
-    }
-    editAccount(a: UserAccount) {
-        let accounts = this.getAccounts();
-        let i = _.findIndex(accounts, { guid: a.guid });
-        accounts[i] = a;
-        this.setAccounts(accounts);
-    }
-    removeAccount(a: UserAccount) {
-        let accounts = this.getAccounts();
-        _.remove(accounts, (x) => x.guid === a.guid);
-        this.setAccounts(accounts);
-        let transactions = this.getTransactions().map((x) => {
-            if(x.accountGuid == a.guid)
-                x.accountGuid = null;
-            return x;
-        });
-        this.setTransactions(transactions);
-    }
+    // getAccounts(): UserAccount[] {
+    //     return this._data.accounts.slice();
+    // }
+    // getAccount(guid: string): UserAccount {
+    //     return _.find(this.getAccounts(), a => a.guid === guid) || null;
+    // }
+    // private setAccounts(value: UserAccount[]) {
+    //     this._data = {
+    //         ...this._data,
+    //         accounts: value.slice(),
+    //     };
+    //     this.updateStorage();
+    //     this.accountsChanged.emit(this.getAccounts());
+    // }
+    // addAccount(a: UserAccount) {
+    //     let accounts = this.getAccounts();
+    //     accounts.push(a);
+    //     this.setAccounts(accounts);
+    // }
+    // editAccount(a: UserAccount) {
+    //     let accounts = this.getAccounts();
+    //     let i = _.findIndex(accounts, { guid: a.guid });
+    //     accounts[i] = a;
+    //     this.setAccounts(accounts);
+    // }
+    // removeAccount(a: UserAccount) {
+    //     let accounts = this.getAccounts();
+    //     _.remove(accounts, (x) => x.guid === a.guid);
+    //     this.setAccounts(accounts);
+    //     let transactions = this.getTransactions().map((x) => {
+    //         if(x.accountGuid == a.guid)
+    //             x.accountGuid = null;
+    //         return x;
+    //     });
+    //     this.setTransactions(transactions);
+    // }
 
     // getCategories(): Category[] {
     //     return this._data.categories.slice();
@@ -173,7 +173,7 @@ export class DataService {
     setDataFromString(jsonString: string): void {
         this._data = this.deserialize(jsonString);
 
-        this.accountsChanged.emit(this.getAccounts());
+        //this.accountsChanged.emit(this.getAccounts());
         this.transactionsChanged.emit(this.getTransactions());
         //this.categoriesChanged.emit(this.getCategories());
         //this.selectedCurrencyChanged.emit(this.getSelectedCurrency());

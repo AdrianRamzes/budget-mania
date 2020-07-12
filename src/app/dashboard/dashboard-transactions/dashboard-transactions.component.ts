@@ -10,6 +10,7 @@ import { Currency } from 'src/app/models/currency.enum';
 import { SettingsRepository } from 'src/app/data/repositories/settings.repository';
 import { ExchangeRepository } from 'src/app/data/repositories/exchange.repository';
 import { CategoriesRepository } from 'src/app/data/repositories/categories.repository';
+import { AccountsRepository } from 'src/app/data/repositories/accounts.repository';
 
 @Component({
     selector: 'app-dashboard-transactions',
@@ -28,6 +29,7 @@ export class DashboardTransactionsComponent implements OnInit {
     filteredMax: number = 0;
 
     constructor(private dataService: DataService,
+                private accountsRepository: AccountsRepository,
                 private categoriesRepository: CategoriesRepository,
                 private settingsRepository: SettingsRepository,
                 private exchangeRepository: ExchangeRepository) {
@@ -93,7 +95,7 @@ export class DashboardTransactionsComponent implements OnInit {
     private getTransactionDisplayItem(t: Transaction): TransactionDisplayItem {
         let x = new TransactionDisplayItem();
         x.transaction = t;
-        x.account = this.dataService.getAccount(t.accountGuid);
+        x.account = this.accountsRepository.get(t.accountGuid);
         x.category = this.categoriesRepository.get(t.categoryGuid);
 
         x.transactionCurrencyCode = Currency[t.currency];

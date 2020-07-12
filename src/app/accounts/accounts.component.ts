@@ -3,6 +3,7 @@ import { DataService } from '../data/data.service';
 import { UserAccount } from '../models/user-account.model';
 import { NgForm } from '@angular/forms';
 import { Currency } from '../models/currency.enum';
+import { AccountsRepository } from '../data/repositories/accounts.repository';
 
 @Component({
     selector: 'app-accounts',
@@ -15,11 +16,12 @@ export class AccountsComponent implements OnInit {
 
     currencies: CurrencyDisplayItem[] = [];
 
-    constructor(private dataService: DataService) { }
+    constructor(private dataService: DataService,
+                private accountsRepository: AccountsRepository) { }
 
     ngOnInit() {
-        this.dataService.accountsChanged.subscribe((a) => this.accounts = a);
-        this.accounts = this.dataService.getAccounts();
+        this.accountsRepository.changed.subscribe((a) => this.accounts = a);
+        this.accounts = this.accountsRepository.list();
 
         Object.keys(Currency).forEach(k => {
             if (typeof (Currency[k]) === "number") {
@@ -47,7 +49,7 @@ export class AccountsComponent implements OnInit {
         acc.currency = v.currency && parseInt(v.currency);
         acc.bankName = v.bankName;
 
-        this.dataService.addAccount(acc);
+        this.accountsRepository.add(acc);
 
         form.resetForm();
     }
@@ -59,12 +61,12 @@ export class AccountsComponent implements OnInit {
                 ...form.value
             } as UserAccount;
             edited.currency = parseInt(form.value.currency);
-            this.dataService.editAccount(edited);
+            this.accountsRepository.edit(edited);
         }
     }
 
     onRemoveAccountClick() {
-        this.dataService.removeAccount(this.selectedAccount);
+        this.accountsRepository.remove(this.selectedAccount);
     }
 
     currencyToSelectOption(c: Currency): CurrencyDisplayItem {
