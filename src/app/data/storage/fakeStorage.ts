@@ -1,4 +1,3 @@
-import { Data } from "../data.model";
 import { Transaction } from '../../models/transaction.model';
 import { Currency } from "../../models/currency.enum";
 import { StorageHelper } from './storageHelper';
@@ -65,6 +64,6 @@ export class FakeStorageHelper implements StorageHelper{
                     parentName: null
                 }
             ]
-        } as Data));
+        }));
     }
 }
