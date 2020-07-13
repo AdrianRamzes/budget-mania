@@ -40,8 +40,10 @@ export class BetterDataService {
 
     load(): Promise<void> {
         return this.storageService.load()
-            .then(data => this.loadFromString(data))
-            .catch(err => console.log(err))
+            .then(data => {
+                this.loadFromString(data);
+            })
+            .catch(err => console.error(err))
     }
 
     private loadFromString(jsonString: string): void {

@@ -6,7 +6,7 @@ import * as Papa from 'papaparse';
 import { AuthService } from '../auth/auth.service';
 import { AccountsRepository } from '../data/repositories/accounts.repository';
 import { TransactionsRepository } from '../data/repositories/transactions.repository';
-import { SettingsRepository, SettingsKeys } from '../data/repositories/settings.repository';
+import { SettingsRepository } from '../data/repositories/settings.repository';
 import { CategoriesRepository } from '../data/repositories/categories.repository';
 import { BetterDataService } from '../data/betterdata.service';
 
@@ -25,14 +25,11 @@ export class HeaderComponent implements OnInit {
     private _filenamePrefix = "budget_mania_";
 
     constructor(
-        //private dataService: DataService,
         private betterDataService: BetterDataService,
         private accountsRepository: AccountsRepository,
         private transactionsRepository: TransactionsRepository,
         private settingsRepository: SettingsRepository,
         private categoriesRepository: CategoriesRepository,
-        //private exchangeRepository: ExchangeRepository,
-        //private http: HttpClient,
         private authService: AuthService) {
     }
 
@@ -60,7 +57,6 @@ export class HeaderComponent implements OnInit {
     }
 
     onSave() {
-        //this.save(this.dataService.getSerializedData());
         this.betterDataService.save();
     }
 
@@ -115,25 +111,14 @@ export class HeaderComponent implements OnInit {
         saveAs(new Blob([data],
             { type: "text/plain;charset=utf-8" }),
             this._filenamePrefix + moment().format("YYYY-MM-DD-HH-mm-ss"));
-        //this.isDirty = false;
     }
 
     private load(file: File) {
-        // let fr: FileReader = new FileReader();
-        // fr.onload = (data) => {
-        //     let jsonString = fr.result as string;
-        //     this.dataService.setDataFromString(jsonString);
-        //     //this.isDirty = false;
-        // }
-        // fr.readAsText(file, "utf-8");
     }
 
     test() {
         let x = this.accountsRepository.list();
         console.log(x);
-
-        let y = this.transactionsRepository.list();
-        console.log(y);
 
         let z = this.settingsRepository.all();
         console.log(z);

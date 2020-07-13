@@ -1,13 +1,12 @@
 import { StorageHelper } from './storageHelper';
 
 import { Storage } from 'aws-amplify'
-import { reject } from 'lodash';
 
 export class S3StorageHelper implements StorageHelper {
 
     constructor() { }
 
-    private readonly FILE_NAME = "test123.txt";
+    private readonly FILE_NAME = "user-data.json";
 
     private readonly customPrefix = {
         public: '',
@@ -21,38 +20,44 @@ export class S3StorageHelper implements StorageHelper {
     }
 
     load(): Promise<string> {
-        return Storage.list('', this.requestConfig)
-        .then(data => {
-            if (data.find(f => f.key === this.FILE_NAME)) {
-                return Storage.get(this.FILE_NAME, {
-                    ...this.requestConfig,
-                    download: true
-                }).then(data => {
-                    console.log(data);
-                    return this.readFile(data);
-                })
-                .catch(err => {
-                    console.log(err);
-                    return err;
-                });
-            }
-        })
-        .catch(err => console.log(err));
+        return new Promise<string>((resolve, reject) => {
+            Storage.list('', this.requestConfig)
+            .then(list => {
+                if (list.find(f => f.key === this.FILE_NAME)) {
+                    return Storage.get(this.FILE_NAME, {
+                        ...this.requestConfig,
+                        download: true
+                    })
+                    .then(data => {
+                        this.readFile(data)
+                        .then(str => resolve(str))
+                        .catch(err => reject(err));
+                    })
+                    .catch(err => {
+                        reject(err)
+                    });
+                } else {
+                    reject(`File ${this.FILE_NAME} not found.`)
+                }
+            })
+            .catch(err => {
+                reject(err)
+            });
+        });
     }
 
     save(data: string): Promise<any> {
-        console.log("s3Storage dummy SAVE()");
-        console.log(data);
-        return Promise.resolve(true);
-        // return Storage.put(this.FILE_NAME, data, this.requestConfig)
-        // .then(data => {
-        //     console.log(data);
-        //     return data;
-        // })
-        // .catch(err => {
-        //     console.log(err);
-        //     reject(err);
-        // });
+        return new Promise<any>((resolve, reject) => {
+            Storage.put(this.FILE_NAME, data, this.requestConfig)
+            .then(data => {
+                console.log("Saved");
+                console.log(data);
+                resolve(data);
+            })
+            .catch(err => {
+                reject(err);
+            });
+        });
     }
 
     private readFile(data): Promise<string> {
