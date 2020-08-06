@@ -1,3 +1,9 @@
+<div class="alert alert-info"  *ngIf="isLoading" role="alert">
+    Loading data...
+</div>
+<div class="alert alert-info"  *ngIf="isSaving" role="alert">
+    Saving data...
+</div>
 <div class="alert alert-danger"  *ngIf="isDirty" role="alert">
     Remember to save your changes!
 </div>
@@ -14,6 +20,7 @@
         </div>
         <button *ngIf="isDirty" class="btn btn-danger" (click)="onSave()">Save to file</button>
     </div> -->
+    <span class="navbar-text" *ngIf="!isDirty">Saved</span>
     <button class="btn btn-danger" *ngIf="isDirty" (click)="onSave()">Save</button>
     <!-- <button class="btn btn-outline-primary" (click)="onExportToCSVClick()">Export to CSV</button> -->
     <div class="dropdown">

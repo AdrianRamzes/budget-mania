@@ -34,7 +34,7 @@ export class AccountsRepository {
     }
 
     get(guid: string): UserAccount {
-        return _.find(this.list(), a => a.guid === guid) || null;
+        return _.find(this._accounts, a => a.guid === guid) || null;
     }
 
     add(a: UserAccount): void {

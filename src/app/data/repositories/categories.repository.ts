@@ -34,7 +34,7 @@ export class CategoriesRepository {
     }
     
     get(guid: string): Category {
-        return _.find(this.list(), c => c.guid === guid) || null;
+        return _.find(this._categories, c => c.guid === guid) || null;
     }
 
     add(c: Category) {

@@ -20,6 +20,8 @@ export class HeaderComponent implements OnInit {
     currencies: CurrencyDisplayItem[] = [];
     selectedCurrency: any = null;
 
+    isLoading: boolean = false;
+    isSaving: boolean = false;
     isDirty: boolean = false;
 
     private _filenamePrefix = "budget_mania_";
@@ -42,8 +44,9 @@ export class HeaderComponent implements OnInit {
             }
         });
 
-        this.betterDataService.isDirtyChanged.subscribe(x => this.isDirty = x);
         this.isDirty = this.betterDataService.isDirty;
+        this.isLoading = this.betterDataService.loading;
+        this.isSaving = this.betterDataService.saving;
 
         let c = this.settingsRepository.getSelectedCurrency();
         this.selectedCurrency = new CurrencyDisplayItem(Currency[c], c);
@@ -54,6 +57,10 @@ export class HeaderComponent implements OnInit {
             let c = this.settingsRepository.getSelectedCurrency();
             this.selectedCurrency = new CurrencyDisplayItem(Currency[c], c);
         });
+
+        this.betterDataService.isDirtyChanged.subscribe(x => this.isDirty = x);
+        this.betterDataService.savingChanged.subscribe(x => this.isSaving = x);
+        this.betterDataService.loadingChanged.subscribe(x => this.isLoading = x);
     }
 
     onSave() {

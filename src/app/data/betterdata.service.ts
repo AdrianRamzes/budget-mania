@@ -5,7 +5,12 @@ import { EventEmitter, Injectable } from '@angular/core';
 export class BetterDataService {
 
     isDirty: boolean = false;
-    isDirtyChanged: EventEmitter<boolean> = new EventEmitter<boolean>();
+    isDirtyChanged: EventEmitter<boolean> = new EventEmitter();
+
+    loading: boolean = false;
+    loadingChanged: EventEmitter<boolean> = new EventEmitter();
+    saving: boolean = false;
+    savingChanged: EventEmitter<boolean> = new EventEmitter();
 
     dataChanged: EventEmitter<string> = new EventEmitter();
 
@@ -31,19 +36,31 @@ export class BetterDataService {
     }
 
     save(): Promise<any> {
+        this.saving = true;
+        this.savingChanged.emit(true);
         return this.storageService.save(JSON.stringify(this._data))
             .then(x => {
                 this.isDirty = false;
                 this.isDirtyChanged.emit(false);
+            })
+            .finally(() => {
+                this.saving = false;
+                this.savingChanged.emit(false);
             });
     }
 
     load(): Promise<void> {
+        this.loading = true;
+        this.loadingChanged.emit(true);
         return this.storageService.load()
             .then(data => {
                 this.loadFromString(data);
             })
             .catch(err => console.error(err))
+            .finally(() => {
+                this.loading = false;
+                this.loadingChanged.emit(false);
+            })
     }
 
     private loadFromString(jsonString: string): void {
