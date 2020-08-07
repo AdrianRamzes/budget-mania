@@ -22,7 +22,7 @@ export class DashboardTransactionsComponent implements OnInit {
     filteredTransactions: TransactionDisplayItem[] = [];
 
     filterText: string = "";
-    displayCount: number = 10;
+    displayCount: number = 15;
     totalSum: number = 0;
     filteredAvg: number = 0;
     filteredMin: number = 0;

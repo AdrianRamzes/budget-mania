@@ -60,6 +60,7 @@ export class SettingsRepository {
             let settings = this.betterDataService.get(this._KEY);
             this._settings = settings;
             // TODO: check differentce and emit changes
+            // for now - emit change for every key
             for(let key in this._settings) {
                 this.changed.emit(key);
             }
