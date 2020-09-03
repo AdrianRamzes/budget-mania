@@ -33,15 +33,21 @@ export class INGLuxembourgParser extends TransactionParserBase implements Transa
 
             let result = Papa.parse(prepared, this.config);
 
-            //console.log(result.data);
-
             return result.data.map((t, i) => {
                 let trans = new Transaction();
-                trans.amount = Number.parseFloat(t[6].replace(/\s/g, '').replace(',', '.'));
+                trans.transactionIdentifier = t[1];
                 trans.date = moment(t[3], "DD/MM/YY").toDate();
-                trans.title = t[2];
-                trans.currency = Currency[t[7] as string] ;
-                //trans.raw = rawLines[i];
+                trans.valueDate = moment(t[4], "DD/MM/YY").toDate();
+                trans.accountingDate = moment(t[5], "DD/MM/YY").toDate();
+                trans.amount = Number.parseFloat(t[6].replace(/\s/g, '').replace(',', '.'));
+                trans.currency = Currency[t[7] as string];
+                trans.beneficiaryName = t[8];
+                trans.destinationIBAN = t[9];
+                if(t[10] != null && t[10].length > 0) {
+                    trans.title = `${t[10]} [${t[2]}]`;
+                } else {
+                    trans.title = `[${t[2]}]`;
+                }
                 return trans;
             });
         };
