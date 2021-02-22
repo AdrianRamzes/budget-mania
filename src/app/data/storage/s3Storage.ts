@@ -16,48 +16,26 @@ export class S3StorageHelper implements StorageHelper {
 
     private readonly requestConfig = {
         customPrefix: this.customPrefix,
-        level: 'private'
+        level: 'private',
+        cacheControl: 'no-cache',
     }
 
-    load(): Promise<string> {
-        return new Promise<string>((resolve, reject) => {
-            Storage.list('', this.requestConfig)
-            .then(list => {
-                if (list.find(f => f.key === this.FILE_NAME)) {
-                    return Storage.get(this.FILE_NAME, {
-                        ...this.requestConfig,
-                        download: true
-                    })
-                    .then(data => {
-                        this.readFile(data)
-                        .then(str => resolve(str))
-                        .catch(err => reject(err));
-                    })
-                    .catch(err => {
-                        reject(err)
-                    });
-                } else {
-                    reject(`File ${this.FILE_NAME} not found.`)
-                }
-            })
-            .catch(err => {
-                reject(err)
-            });
+    async load() {
+        let list = await Storage.list('', this.requestConfig);
+
+        if(!list.find(f => f.key === this.FILE_NAME)) {
+            throw new Error(`File ${this.FILE_NAME} not found.`)
+        }
+
+        let data = await Storage.get(this.FILE_NAME, {
+            ...this.requestConfig,
+            download: true,
         });
+        return await this.readFile(data);
     }
 
-    save(data: string): Promise<any> {
-        return new Promise<any>((resolve, reject) => {
-            Storage.put(this.FILE_NAME, data, this.requestConfig)
-            .then(data => {
-                console.log("Saved");
-                console.log(data);
-                resolve(data);
-            })
-            .catch(err => {
-                reject(err);
-            });
-        });
+    async save(data: string): Promise<any> {
+        return await Storage.put(this.FILE_NAME, data, this.requestConfig);
     }
 
     private readFile(data): Promise<string> {
@@ -67,6 +45,7 @@ export class S3StorageHelper implements StorageHelper {
                 let result = fr.result as string;
                 resolve(result);
             };
+            fr.onerror = reject;
             fr.readAsText((data as any).Body as Blob);
         });
     }
