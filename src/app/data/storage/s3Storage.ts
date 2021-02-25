@@ -21,12 +21,6 @@ export class S3StorageHelper implements StorageHelper {
     }
 
     async load() {
-        let list = await Storage.list('', this.requestConfig);
-
-        if(!list.find(f => f.key === this.FILE_NAME)) {
-            throw new Error(`File ${this.FILE_NAME} not found.`)
-        }
-
         let data = await Storage.get(this.FILE_NAME, {
             ...this.requestConfig,
             download: true,
