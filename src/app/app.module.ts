@@ -14,7 +14,6 @@ import { CategoriesComponent } from './categories/categories.component';
 import { ManageCategoriesComponent } from './categories/manage-categories/manage-categories.component';
 import { DashboardTransactionsComponent } from './dashboard/dashboard-transactions/dashboard-transactions.component';
 import { SelectAccountComponent } from './import/select-account/select-account.component';
-import { StorageService } from './data/storage/storage.service';
 import { AccountsComponent } from './accounts/accounts.component';
 import { HttpClientModule } from '@angular/common/http';
 import { DashboardCashFlowComponent } from './dashboard/dashboard-cash-flow/dashboard-cash-flow.component';
@@ -53,7 +52,6 @@ Amplify.configure(awsconfig);
   ],
   providers: [
     ImportService,
-    StorageService,
     AuthService
   ],
   bootstrap: [AppComponent]

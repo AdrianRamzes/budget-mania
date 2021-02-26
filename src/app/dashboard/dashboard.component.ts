@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Transaction } from '../models/transaction.model';
-import { TransactionsRepository } from '../data/repositories/transactions.repository';
+import { TransactionsRepository } from '../repositories/transactions.repository';
 
 @Component({
     selector: 'app-dashboard',

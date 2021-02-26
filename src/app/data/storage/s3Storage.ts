@@ -1,8 +1,9 @@
-import { StorageHelper } from './storageHelper';
+import { Injectable } from '@angular/core';
+import { Storage } from './storage.interface';
+import { Storage as S3} from 'aws-amplify';
 
-import { Storage } from 'aws-amplify'
-
-export class S3StorageHelper implements StorageHelper {
+@Injectable({providedIn: 'root'})
+export class S3Storage implements Storage {
 
     constructor() { }
 
@@ -20,16 +21,16 @@ export class S3StorageHelper implements StorageHelper {
         cacheControl: 'no-cache',
     }
 
-    async load() {
-        let data = await Storage.get(this.FILE_NAME, {
+    async get() {
+        let data = await S3.get(this.FILE_NAME, {
             ...this.requestConfig,
             download: true,
         });
         return await this.readFile(data);
     }
 
-    async save(data: string): Promise<any> {
-        return await Storage.put(this.FILE_NAME, data, this.requestConfig);
+    async put(data: string): Promise<any> {
+        return await S3.put(this.FILE_NAME, data, this.requestConfig);
     }
 
     private readFile(data): Promise<string> {

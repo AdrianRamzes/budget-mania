@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UserAccount } from '../models/user-account.model';
 import { NgForm } from '@angular/forms';
 import { Currency } from '../models/currency.enum';
-import { AccountsRepository } from '../data/repositories/accounts.repository';
+import { AccountsRepository } from '../repositories/accounts.repository';
 
 @Component({
     selector: 'app-accounts',

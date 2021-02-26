@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Category } from 'src/app/models/category.model';
 import { NgForm } from '@angular/forms';
-import { CategoriesRepository } from 'src/app/data/repositories/categories.repository';
+import { CategoriesRepository } from 'src/app/repositories/categories.repository';
 
 @Component({
     selector: 'app-manage-categories',

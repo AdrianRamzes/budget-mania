@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 
-import { BetterDataService } from '../betterdata.service';
+import { DataService } from '../data/data.service';
 import { EventEmitter, Injectable } from '@angular/core';
 import { Currency } from 'src/app/models/currency.enum';
 
@@ -13,7 +13,7 @@ export class SettingsRepository {
 
     private _settings: { [name: string]: any } = null;
 
-    constructor(private betterDataService: BetterDataService) {
+    constructor(private betterDataService: DataService) {
         this.betterDataService.dataChanged.subscribe(key => {
             if (key == this._KEY) {
                 this.load();

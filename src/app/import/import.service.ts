@@ -12,8 +12,8 @@ import { SantanderBankPolskaParser } from './parsers/santanderPolskaParser';
 import { MBankPolskaParser } from './parsers/mbankPolskaParser';
 import { INGLuxembourgParser } from './parsers/ingLuxembourgParser';
 import { RevolutParser } from './parsers/revolutParser';
-import { AccountsRepository } from '../data/repositories/accounts.repository';
-import { TransactionsRepository } from '../data/repositories/transactions.repository';
+import { AccountsRepository } from '../repositories/accounts.repository';
+import { TransactionsRepository } from '../repositories/transactions.repository';
 
 @Injectable()
 export class ImportService {

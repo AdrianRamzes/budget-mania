@@ -6,11 +6,11 @@ import { Transaction } from 'src/app/models/transaction.model';
 import { Category } from 'src/app/models/category.model';
 import { UserAccount } from 'src/app/models/user-account.model';
 import { Currency } from 'src/app/models/currency.enum';
-import { SettingsRepository } from 'src/app/data/repositories/settings.repository';
-import { ExchangeRepository } from 'src/app/data/repositories/exchange.repository';
-import { CategoriesRepository } from 'src/app/data/repositories/categories.repository';
-import { AccountsRepository } from 'src/app/data/repositories/accounts.repository';
-import { TransactionsRepository } from 'src/app/data/repositories/transactions.repository';
+import { SettingsRepository } from 'src/app/repositories/settings.repository';
+import { ExchangeRepository } from 'src/app/repositories/exchange.repository';
+import { CategoriesRepository } from 'src/app/repositories/categories.repository';
+import { AccountsRepository } from 'src/app/repositories/accounts.repository';
+import { TransactionsRepository } from 'src/app/repositories/transactions.repository';
 
 @Component({
     selector: 'app-dashboard-transactions',

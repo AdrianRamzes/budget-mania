@@ -7,9 +7,9 @@ import { Category } from '../models/category.model';
 import { UserAccount } from '../models/user-account.model';
 import { environment } from 'src/environments/environment';
 import { Currency } from '../models/currency.enum';
-import { CategoriesRepository } from '../data/repositories/categories.repository';
-import { AccountsRepository } from '../data/repositories/accounts.repository';
-import { TransactionsRepository } from '../data/repositories/transactions.repository';
+import { CategoriesRepository } from '../repositories/categories.repository';
+import { AccountsRepository } from '../repositories/accounts.repository';
+import { TransactionsRepository } from '../repositories/transactions.repository';
 
 @Component({
     selector: 'app-categories',

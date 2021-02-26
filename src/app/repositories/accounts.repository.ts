@@ -1,8 +1,8 @@
 import * as _ from "lodash";
 
 import { EventEmitter, Injectable } from '@angular/core';
-import { BetterDataService } from '../betterdata.service';
-import { UserAccount } from '../../models/user-account.model';
+import { DataService } from '../data/data.service';
+import { UserAccount } from '../models/user-account.model';
 import { Guid } from "guid-typescript";
 import { TransactionsRepository } from './transactions.repository';
 
@@ -15,7 +15,7 @@ export class AccountsRepository {
 
     private _accounts: UserAccount[] = null;
 
-    constructor(private betterDataService: BetterDataService,
+    constructor(private betterDataService: DataService,
                 private transactionsRepository: TransactionsRepository) {
 
         this.betterDataService.dataChanged.subscribe(key => {

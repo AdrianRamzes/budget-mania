@@ -1,8 +1,8 @@
-import { StorageService } from './storage/storage.service';
+import { Storage } from "./storage/storage.interface";
 import { EventEmitter, Injectable } from '@angular/core';
 
 @Injectable({providedIn: 'root'})
-export class BetterDataService {
+export class DataService {
 
     isDirty: boolean = false;
     isDirtyChanged: EventEmitter<boolean> = new EventEmitter();
@@ -16,8 +16,8 @@ export class BetterDataService {
 
     private _data: {[key: string]: any} = {};
 
-    constructor(private storageService: StorageService) {
-        this.load();
+    constructor(private storage: Storage) {
+        //this.load();
     }
 
     containsKey(key: string): boolean {
@@ -25,6 +25,9 @@ export class BetterDataService {
     }
 
     get(key: string): any {
+        if(!this.containsKey(key)) {
+            return null;
+        }
         return this._data[key];
     }
 
@@ -38,7 +41,7 @@ export class BetterDataService {
     save(): Promise<any> {
         this.saving = true;
         this.savingChanged.emit(true);
-        return this.storageService.save(JSON.stringify(this._data))
+        return this.storage.put(JSON.stringify(this._data))
             .then(x => {
                 this.isDirty = false;
                 this.isDirtyChanged.emit(false);
@@ -52,7 +55,7 @@ export class BetterDataService {
     load(): Promise<void> {
         this.loading = true;
         this.loadingChanged.emit(true);
-        return this.storageService.load()
+        return this.storage.get()
             .then(data => {
                 this.loadFromString(data);
             })

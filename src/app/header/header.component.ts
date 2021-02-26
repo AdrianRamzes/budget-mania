@@ -4,11 +4,11 @@ import { Currency } from '../models/currency.enum';
 import * as moment from 'moment';
 import * as Papa from 'papaparse';
 import { AuthService } from '../auth/auth.service';
-import { AccountsRepository } from '../data/repositories/accounts.repository';
-import { TransactionsRepository } from '../data/repositories/transactions.repository';
-import { SettingsRepository } from '../data/repositories/settings.repository';
-import { CategoriesRepository } from '../data/repositories/categories.repository';
-import { BetterDataService } from '../data/betterdata.service';
+import { AccountsRepository } from '../repositories/accounts.repository';
+import { TransactionsRepository } from '../repositories/transactions.repository';
+import { SettingsRepository } from '../repositories/settings.repository';
+import { CategoriesRepository } from '../repositories/categories.repository';
+import { DataService } from '../data/data.service';
 
 @Component({
     selector: 'app-header',
@@ -27,7 +27,7 @@ export class HeaderComponent implements OnInit {
     private _filenamePrefix = "budget_mania_";
 
     constructor(
-        private betterDataService: BetterDataService,
+        private betterDataService: DataService,
         private accountsRepository: AccountsRepository,
         private transactionsRepository: TransactionsRepository,
         private settingsRepository: SettingsRepository,

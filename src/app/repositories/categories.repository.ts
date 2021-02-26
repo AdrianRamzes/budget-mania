@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 
-import { BetterDataService } from '../betterdata.service';
+import { DataService } from '../data/data.service';
 import { Category } from 'src/app/models/category.model';
 import { Guid } from "guid-typescript";
 import { EventEmitter, Injectable } from '@angular/core';
@@ -15,7 +15,7 @@ export class CategoriesRepository {
 
     private _categories: Category[] = null;
 
-    constructor(private betterDataService: BetterDataService,
+    constructor(private betterDataService: DataService,
                 private transactionsRepository: TransactionsRepository) {
 
         this.betterDataService.dataChanged.subscribe(key => {

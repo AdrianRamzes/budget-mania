@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 
-import { BetterDataService } from '../betterdata.service';
-import { Transaction } from '../../models/transaction.model';
+import { DataService } from '../data/data.service';
+import { Transaction } from '../models/transaction.model';
 import { Guid } from "guid-typescript";
 import { EventEmitter, Injectable } from '@angular/core';
 
@@ -14,7 +14,7 @@ export class TransactionsRepository {
 
     private _transactions: Transaction[] = null;
 
-    constructor(private betterDataService: BetterDataService) {
+    constructor(private betterDataService: DataService) {
         betterDataService.dataChanged.subscribe((key) => {
             if (key == this._KEY) {
                 this.load();

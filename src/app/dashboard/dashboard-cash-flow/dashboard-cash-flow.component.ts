@@ -4,10 +4,10 @@ import * as moment from 'moment'
 
 import { Component, OnInit } from '@angular/core';
 import { Transaction } from 'src/app/models/transaction.model';
-import { SettingsRepository } from 'src/app/data/repositories/settings.repository';
-import { ExchangeRepository } from 'src/app/data/repositories/exchange.repository';
-import { AccountsRepository } from 'src/app/data/repositories/accounts.repository';
-import { TransactionsRepository } from 'src/app/data/repositories/transactions.repository';
+import { SettingsRepository } from 'src/app/repositories/settings.repository';
+import { ExchangeRepository } from 'src/app/repositories/exchange.repository';
+import { AccountsRepository } from 'src/app/repositories/accounts.repository';
+import { TransactionsRepository } from 'src/app/repositories/transactions.repository';
 
 @Component({
     selector: 'app-dashboard-cash-flow',
