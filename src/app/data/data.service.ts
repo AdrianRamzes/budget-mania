@@ -15,7 +15,7 @@
  */
 
 import { Storage } from './storage/storage.interface';
-import { EventEmitter, Injectable } from '@angular/core';
+import { EventEmitter, Inject, Injectable } from '@angular/core';
 
 @Injectable({providedIn: 'root'})
 export class DataService {
@@ -25,17 +25,10 @@ export class DataService {
     }
     stateChanged: EventEmitter<DataServiceState> = new EventEmitter();
 
-    initialized = false;
-    initializedChanged: EventEmitter<boolean> = new EventEmitter();
-
-    dirty = false;
-    dirtyChanged: EventEmitter<boolean> = new EventEmitter();
-
-    loading = false;
-    loadingChanged: EventEmitter<boolean> = new EventEmitter();
-
-    saving = false;
-    savingChanged: EventEmitter<boolean> = new EventEmitter();
+    private initialized = false;
+    private dirty = false;
+    private loading = false;
+    private saving = false;
 
     dataChanged: EventEmitter<string> = new EventEmitter();
 
@@ -44,7 +37,9 @@ export class DataService {
     private storagePutPromise: Promise<void> = null;
     private changedWhileSaving = false;
 
-    constructor(private storage: Storage, skipInitialization: boolean = false) {
+    constructor(
+            @Inject(Storage) private storage: Storage,
+            @Inject('skipInitialization') skipInitialization: boolean = false) {
         if (!skipInitialization) {
             this.initialize();
         }
@@ -76,7 +71,7 @@ export class DataService {
         this.data[key] = value;
         if (!this.dirty) {
             this.dirty = true;
-            this.dirtyChanged.emit(true);
+            this.stateChanged.emit(this.state);
             this.dataChanged.emit(key);
         }
         if (this.saving) {
@@ -97,6 +92,7 @@ export class DataService {
         }
         if (this.storageGetPromise == null) {
             this.loading = true;
+            this.stateChanged.emit(this.state);
             try {
                 if (this.storageGetPromise == null) {
                     this.storageGetPromise = this.storage.get();
@@ -105,10 +101,11 @@ export class DataService {
                 this.storageGetPromise = null;
                 if (!this.initialized) {
                     this.initialized = true;
-                    this.initializedChanged.emit(true);
+                    this.stateChanged.emit(this.state);
                 }
             } finally {
                 this.loading = false;
+                this.stateChanged.emit(this.state);
             }
         } else {
             await this.storageGetPromise;
@@ -124,15 +121,15 @@ export class DataService {
             this.state === DataServiceState.Saving) {
             if (this.storagePutPromise == null) {
                 this.saving = true;
-                this.savingChanged.emit(true);
+                this.stateChanged.emit(this.state);
                 try {
                     this.storagePutPromise = this.storage.put(JSON.stringify(this.data));
                     await this.storagePutPromise;
                     this.dirty = this.changedWhileSaving;
-                    this.dirtyChanged.emit(false);
+                    this.stateChanged.emit(this.state);
                 } finally {
                     this.saving = false;
-                    this.savingChanged.emit(false);
+                    this.stateChanged.emit(this.state);
                     this.storagePutPromise = null;
                 }
             } else {

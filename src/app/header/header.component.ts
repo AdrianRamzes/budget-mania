@@ -8,7 +8,7 @@ import { AccountsRepository } from '../repositories/accounts.repository';
 import { TransactionsRepository } from '../repositories/transactions.repository';
 import { SettingsRepository } from '../repositories/settings.repository';
 import { CategoriesRepository } from '../repositories/categories.repository';
-import { DataService } from '../data/data.service';
+import { DataService, DataServiceState } from '../data/data.service';
 
 @Component({
     selector: 'app-header',
@@ -16,15 +16,22 @@ import { DataService } from '../data/data.service';
 })
 export class HeaderComponent implements OnInit {
 
-    username: string = "";
+    username = '';
     currencies: CurrencyDisplayItem[] = [];
     selectedCurrency: any = null;
 
-    isLoading: boolean = false;
-    isSaving: boolean = false;
-    isDirty: boolean = false;
+    dataServiceState: DataServiceState = DataServiceState.Uninitialized;
+    get isLoading() {
+        return this.betterDataService.state === DataServiceState.Loading;
+    }
+    get isDirty() {
+        return this.betterDataService.state === DataServiceState.Dirty;
+    }
+    get isSaving() {
+        return this.betterDataService.state === DataServiceState.Saving;
+    }
 
-    private _filenamePrefix = "budget_mania_";
+    private _filenamePrefix = 'budget_mania_';
 
     constructor(
         private betterDataService: DataService,
@@ -44,9 +51,7 @@ export class HeaderComponent implements OnInit {
             }
         });
 
-        this.isDirty = this.betterDataService.dirty;
-        this.isLoading = this.betterDataService.loading;
-        this.isSaving = this.betterDataService.saving;
+        this.dataServiceState = this.betterDataService.state;
 
         let c = this.settingsRepository.getSelectedCurrency();
         this.selectedCurrency = new CurrencyDisplayItem(Currency[c], c);
@@ -58,9 +63,7 @@ export class HeaderComponent implements OnInit {
             this.selectedCurrency = new CurrencyDisplayItem(Currency[c], c);
         });
 
-        this.betterDataService.dirtyChanged.subscribe(x => this.isDirty = x);
-        this.betterDataService.savingChanged.subscribe(x => this.isSaving = x);
-        this.betterDataService.loadingChanged.subscribe(x => this.isLoading = x);
+        this.betterDataService.stateChanged.subscribe(x => this.dataServiceState = x);
     }
 
     onSave() {
