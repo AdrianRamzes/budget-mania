@@ -69,10 +69,10 @@ export class DataService {
             return;
         }
         this.data[key] = value;
+        this.dataChanged.emit(key);
         if (!this.dirty) {
             this.dirty = true;
             this.stateChanged.emit(this.state);
-            this.dataChanged.emit(key);
         }
         if (this.saving) {
             this.changedWhileSaving = true;

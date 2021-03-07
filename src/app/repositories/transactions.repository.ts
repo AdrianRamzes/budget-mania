@@ -12,7 +12,7 @@ export class TransactionsRepository {
 
     private readonly _KEY: string = 'transactions';
 
-    private _transactions: Transaction[] = null;
+    private _TRANSACTIONS: Transaction[] = null;
 
     constructor(private betterDataService: DataService) {
         betterDataService.dataChanged.subscribe((key) => {
@@ -24,11 +24,11 @@ export class TransactionsRepository {
     }
 
     list(): Transaction[] {
-        if (this._transactions == null) {
+        if (this._TRANSACTIONS == null) {
             this.load();
         }
 
-        return this._transactions.slice();
+        return this._TRANSACTIONS.slice();
     }
 
     add(transaction: Transaction) {
@@ -51,7 +51,7 @@ export class TransactionsRepository {
     }
 
     editMany(arr: Transaction[]) {
-        //TODO: implementation
+        // TODO: implementation
     }
 
     remove(t: Transaction) {
@@ -69,15 +69,15 @@ export class TransactionsRepository {
     private load(): void {
         if(this.betterDataService.containsKey(this._KEY)) {
             const jsonStr = this.betterDataService.get(this._KEY);
-            this._transactions = this.deserialize(jsonStr);
+            this._TRANSACTIONS = this.deserialize(jsonStr);
         } else {
-            this._transactions = [];
+            this._TRANSACTIONS = [];
         }
     }
 
     private set(value: Transaction[]) {
-        this._transactions = (value || []).slice();
-        this.betterDataService.set(this._KEY, this._transactions);
+        this._TRANSACTIONS = (value || []).slice();
+        this.betterDataService.set(this._KEY, this._TRANSACTIONS);
     }
 
     private deserialize(deserialized: any[]): Transaction[] {

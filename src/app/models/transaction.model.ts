@@ -1,10 +1,9 @@
-import { Currency } from "./currency.enum";
+import { Currency } from './currency.enum';
 import { Guid } from 'guid-typescript';
-import { parseSelectorToR3Selector } from '@angular/compiler/src/core';
 
 export class Transaction {
     guid: string;
-    transactionIdentifier: string;// some banks assign unique identifier to each transaction within bank
+    transactionIdentifier: string; // some banks assign unique identifier to each transaction within bank
     title: string;
     date: Date;
     valueDate: Date;
@@ -25,13 +24,13 @@ export class Transaction {
         this.guid = Guid.create().toString();
     }
 
-    //TODO: equals with guid
+    // TODO: equals with guid
     static equals(t1: Transaction, t2: Transaction): boolean {
 
-        if(t1.IBAN != null && t2.IBAN != null
-            && t1.IBAN == t2.IBAN
+        if ( t1.IBAN != null && t2.IBAN != null
+            && t1.IBAN === t2.IBAN
             && t1.transactionIdentifier != null && t2.transactionIdentifier != null
-            && t1.transactionIdentifier == t2.transactionIdentifier) {
+            && t1.transactionIdentifier === t2.transactionIdentifier) {
             return true;
         }
 
