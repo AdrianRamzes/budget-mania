@@ -1,59 +1,233 @@
-import { emit } from "process";
-import { DataService } from "./data.service";
-import { Storage } from "./storage/storage.interface";
+import { DataService, DataServiceState } from './data.service';
+import { Storage } from './storage/storage.interface';
 
-describe('DataService', () => {
+describe('DataSevice Uninitialized', () => {
 
-    beforeAll(async () => {
-    })
+    const getDummyStorage = () => {
+        return new TestStorage(async () => {
+            return JSON.stringify({
+                myKey: 'myValue'
+            });
+        }, async () => {});
+    };
 
-    afterAll(async () => {
+    const getDataServiceInUninitializedState =
+        (storage: TestStorage = getDummyStorage()) =>
+            new DataService(storage, /*skipInitialization*/ true);
+
+    it('is in uninitialized state', async () => {
+        const dataService1 = getDataServiceInUninitializedState();
+        const storage2 = getDummyStorage();
+        const dataService2 = getDataServiceInUninitializedState(storage2);
+
+        expect(dataService1.state).toBe(DataServiceState.Uninitialized);
+        expect(dataService2.state).toBe(DataServiceState.Uninitialized);
     });
 
-    beforeEach(async () => {
-    })
+    it('is uninitialized at the beginning', () => {
+        const storage = new TestStorage(async () => '');
+        const dataService = new DataService(storage, /*skipInitialization*/ true);
 
-    it('throws exception when invalid data is stored', async (done) => {
-        let storage = new TestStorage(async () => {
-            return 'INVALID JSON';
-        });
-        let dataService = new DataService(storage);
+        expect(dataService.state).toBe(DataServiceState.Uninitialized);
+    });
 
-        expect(dataService.load).toThrowError();
+    it('changes state to initializing when creating new instance', () => {
+        const storage = new TestStorage(async () => '');
+        spyOn(storage, 'get').and.callThrough();
+        const dataService = new DataService(storage);
 
-        done();
-    })
+        expect(dataService.state).toBe(DataServiceState.Initializing);
+        expect(storage.get).toHaveBeenCalled();
+    });
 
-    it('does not throw exception when invalid data is stored', async (done) => {
-        let storage = new TestStorage(async () => {
-            return JSON.stringify({
-                myKey: 'myValue'
-            });
-        });
-        let dataService = new DataService(storage);
+    it('changes state to initializing when load is called', () => {
+        const storage = getDummyStorage();
+        spyOn(storage, 'get').and.callThrough();
+        const dataService = getDataServiceInUninitializedState(storage);
 
-        expectAsync(dataService.load()).toBeResolved();
+        dataService.load();
+        expect(storage.get).toHaveBeenCalled();
+        expect(dataService.state).toBe(DataServiceState.Initializing);
+    });
 
-        done();
-    })
+    it('changes state to uninitialized when initializing is rejected', async () => {
+        const storage = new TestStorage(() => Promise.reject());
+        const dataService = getDataServiceInUninitializedState(storage);
 
-    it('loads value correctly', async (done) => {
-        let storage = new TestStorage(async () => {
-            return JSON.stringify({
-                myKey: 'myValue'
-            });
-        });
-        let dataService = new DataService(storage);
+        await expectAsync(dataService.load()).toBeRejected();
+        expect(dataService.state).toBe(DataServiceState.Uninitialized);
+    });
+
+    it('returns null when get is called (no data)', () => {
+        const dataService = getDataServiceInUninitializedState();
 
         expect(dataService.get('myKey')).toBeNull();
-        await dataService.load();
+    });
+
+    it('throws error when set is called', () => {
+        const dataService = getDataServiceInUninitializedState();
+
+        expect(() => dataService.set('myKey', 'myValue')).toThrowError('Uninitialized');
+    });
+
+    it('does nothing when save is called (not dirty)', async () => {
+        const storage = getDummyStorage();
+        spyOn(storage, 'put').and.callThrough();
+        const dataService = getDataServiceInUninitializedState(storage);
+
+        await expectAsync(dataService.save()).toBeResolved();
+        expect(storage.put).not.toHaveBeenCalled();
+    });
+});
+
+describe('DataSevice Initializing', () => {
+
+    const getDummyStorage = () => {
+        return new TestStorage(async () => {
+            return JSON.stringify({
+                myKey: 'myValue'
+            });
+        }, async () => {});
+    };
+
+    const getDataServiceInInitializingState =
+        (storage: TestStorage = getDummyStorage()) => new DataService(storage);
+
+    it('is in initializing state', async () => {
+        const dataService1 = getDataServiceInInitializingState();
+        const storage2 = getDummyStorage();
+        const dataService2 = getDataServiceInInitializingState(storage2);
+
+        expect(dataService1.state).toBe(DataServiceState.Initializing);
+        expect(dataService2.state).toBe(DataServiceState.Initializing);
+    });
+
+    it('returns null when get is called (no data)', () => {
+        const dataService = getDataServiceInInitializingState();
+
+        expect(dataService.get('myKey')).toBeNull();
+    });
+
+    it('throws error when set is called', () => {
+        const dataService = getDataServiceInInitializingState();
+
+        expect(() => dataService.set('myKey', 'myValue')).toThrowError('Initializing');
+    });
+
+    it('does not make duplicate requests when load is called multiple times', async () => {
+        const storage = getDummyStorage();
+        spyOn(storage, 'get').and.callThrough();
+        const dataService = getDataServiceInInitializingState(storage);
+
+        await Promise.all([
+            dataService.load(),
+            dataService.load(),
+            dataService.load(),
+        ]);
+
+        expect(storage.get).toHaveBeenCalledTimes(1);
+    });
+
+    it('does nothing when save is called (not dirty)', async () => {
+        const storage = getDummyStorage();
+        spyOn(storage, 'put').and.callThrough();
+        const dataService = getDataServiceInInitializingState();
+
+        await expectAsync(dataService.save()).toBeResolved();
+
+        expect(storage.put).not.toHaveBeenCalled();
+    });
+
+    it('changes state to ready when initializing is resolved', async () => {
+        const dataService = getDataServiceInInitializingState();
+
+        await expectAsync(dataService.load()).toBeResolved();
+
+        expect(dataService.state).toBe(DataServiceState.Ready);
+    });
+
+    it('changes state to uninitialized when initializing is rejected', async () => {
+        const storage = new TestStorage(() => Promise.reject());
+        const dataService = getDataServiceInInitializingState(storage);
+
+        await expectAsync(dataService.load()).toBeRejected();
+
+        expect(dataService.state).toBe(DataServiceState.Uninitialized);
+    });
+});
+
+describe('DataSevice Ready', () => {
+
+    const getDummyStorage = () => {
+        return new TestStorage(async () => {
+            return JSON.stringify({
+                myKey: 'myValue'
+            });
+        }, async () => {});
+    };
+
+    const getDataServiceInReadyState = async (storage: TestStorage = getDummyStorage()) => {
+        const dataService = new DataService(storage);
+        await dataService.load(); // initializing
+        // here is Ready
+        return dataService;
+    };
+
+    it('is in ready state', async () => {
+        const dataService1 = await getDataServiceInReadyState();
+        const storage2 = getDummyStorage();
+        const dataService2 = await getDataServiceInReadyState(storage2);
+
+        expect(dataService1.state).toBe(DataServiceState.Ready);
+        expect(dataService2.state).toBe(DataServiceState.Ready);
+    });
+
+    it('returns correct value when get is called', async () => {
+        const dataService = await getDataServiceInReadyState();
+
         expect(dataService.get('myKey')).toBe('myValue');
+    });
 
-        done();
-    })
+    it('sets correct value when set is called', async () => {
+        const dataService = await getDataServiceInReadyState();
 
-    it('loads complex string correctly', async (done) => {
-        let storage = new TestStorage(async () => {
+        expect(dataService.set('myKey', 'myValue'));
+        expect(dataService.get('myKey')).toBe('myValue');
+    });
+
+    it('returns promise when load is called', async () => {
+        const storage = getDummyStorage();
+        const dataService = await getDataServiceInReadyState(storage);
+        spyOn(storage, 'get').and.callThrough();
+
+        const loadPromise = dataService.load();
+
+        expect(loadPromise instanceof Promise).toBeTruthy();
+        expect(storage.get).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not make duplicate requests when load is called multiple times', async () => {
+        const storage = getDummyStorage();
+        const dataService = await getDataServiceInReadyState(storage);
+        spyOn(storage, 'get').and.callThrough();
+
+        await Promise.all([
+            dataService.load(),
+            dataService.load(),
+            dataService.load(),
+        ]);
+
+        expect(storage.get).toHaveBeenCalledTimes(1);
+    });
+
+    it('loads correct simple json', async () => {
+        const dataService = await getDataServiceInReadyState();
+
+        expect(dataService.get('myKey')).toBe('myValue');
+    });
+
+    it('loads correct complex json', async () => {
+        const storage = new TestStorage(async () => {
             return JSON.stringify({
                 myKey1: ['myValue'],
                 myKey2: {
@@ -61,104 +235,331 @@ describe('DataService', () => {
                     subkey2: 0.123456,
                     subkey3: ['str1', 'str2'],
                     subkey4: null,
-                    subkey5: [1,2,3]
+                    subkey5: [1, 2, 3]
                 }
             });
         });
-        let dataService = new DataService(storage);
+        const dataService = await getDataServiceInReadyState(storage);
 
-        expect(dataService.get('myKey1')).toBeNull();
-        expect(dataService.get('myKey2')).toBeNull();
-        await dataService.load();
         expect(dataService.get('myKey1')).toEqual(['myValue']);
         expect(dataService.get('myKey2')).not.toBeNull();
         expect(dataService.get('myKey2').subkey1).toEqual(123);
         expect(dataService.get('myKey2').subkey2).toEqual(0.123456);
         expect(dataService.get('myKey2').subkey3).toEqual(['str1', 'str2']);
         expect(dataService.get('myKey2').subkey4).toBeNull();
-        expect(dataService.get('myKey2').subkey5).toEqual([1,2,3]);
+        expect(dataService.get('myKey2').subkey5).toEqual([1, 2, 3]);
+    });
 
-        done();
-    })
+    it('does nothing when save is called (not dirty)', async () => {
+        const storage = getDummyStorage();
+        spyOn(storage, 'put').and.callThrough();
+        const dataService = await getDataServiceInReadyState(storage);
 
-    it('has loading state turned on while loading', async (done) => {
-        let storage = new TestStorage(async () => {
+        await dataService.save();
+
+        expect(storage.put).not.toHaveBeenCalled();
+    });
+
+    it('changes state to loading when load is called', async () => {
+        const dataService = await getDataServiceInReadyState();
+
+        dataService.load();
+        expect(dataService.state).toBe(DataServiceState.Loading);
+    });
+
+    it('changes state to dirty when set is called', async () => {
+        const dataService = await getDataServiceInReadyState();
+
+        dataService.set('myKey', 'newValue');
+        expect(dataService.state).toBe(DataServiceState.Dirty);
+    });
+
+    it('does not change state when set does not change value', async () => {
+        const storage = new TestStorage(async () => {
+            return JSON.stringify({
+                myKey: 'oldValue'
+            });
+        });
+        const dataService = await getDataServiceInReadyState(storage);
+
+        dataService.set('myKey', 'oldValue');
+        expect(dataService.state).toBe(DataServiceState.Ready);
+    });
+});
+
+describe('DataSevice Loading', () => {
+
+    const getDummyStorage = () => {
+        return new TestStorage(async () => {
             return JSON.stringify({
                 myKey: 'myValue'
             });
-        });
-        let dataService = new DataService(storage);
-        spyOn(dataService.loadingChanged, 'emit');
-        
-        expect(dataService.loading).toBeFalsy();
-        dataService.load().then(x => {
-            expect(dataService.loadingChanged.emit).toHaveBeenCalledWith(false);
-            expect(dataService.loading).toBeFalsy();
-            done();
-        });
-        expect(dataService.loadingChanged.emit).toHaveBeenCalledWith(true);
-        expect(dataService.loading).toBeTruthy();
-    })
+        }, async () => {});
+    };
 
-    it('has saving state turned on while saving', async (done) => {
-        let storage = new TestStorage(null, async () => {});
-        let dataService = new DataService(storage);
-        spyOn(dataService.savingChanged, 'emit');
+    it('is in the loading state', async () => {
+        const dataService = new DataService(getDummyStorage());
+        await dataService.load(); // initializing
+        dataService.load(); // start loading
 
-        expect(dataService.saving).toBeFalsy();
-        dataService.save().then(x => {
-            expect(dataService.savingChanged.emit).toHaveBeenCalledWith(false);
-            expect(dataService.saving).toBeFalsy();
-            done();
-        });
-        expect(dataService.savingChanged.emit).toHaveBeenCalledWith(true);
-        expect(dataService.saving).toBeTruthy();
-    })
+        expect(dataService.state).toBe(DataServiceState.Loading);
+    });
 
-    it('sets value under given key', async (done) => {
-        let dataService = new DataService(new TestStorage());
+    it('returns correct value when get is called', async () => {
+        const dataService = new DataService(getDummyStorage());
+        await dataService.load(); // initializing
+        dataService.load(); // start loading
 
-        dataService.set('key123', 'ABCabc');
-        expect(dataService.get('key123')).toBe('ABCabc');
+        expect(dataService.get('myKey')).toBe('myValue');
+    });
 
-        done();
-    })
+    it('throws error when set is called', async () => {
+        const dataService = new DataService(getDummyStorage());
+        await dataService.load(); // initializing
+        dataService.load(); // start loading
 
-    it('emits data change event data is set', async (done) => {
-        let dataService = new DataService(new TestStorage());
-        spyOn(dataService.dataChanged, 'emit');
+        expect(dataService.state).toBe(DataServiceState.Loading);
+        expect(() => dataService.set('test', 'test')).toThrowError('Loading');
+    });
 
-        dataService.set('key123', 'ABCabc');
-        expect(dataService.dataChanged.emit).toHaveBeenCalledWith('key123');
+    it('does not make duplicate requests when load is called', async () => {
+        const storage = getDummyStorage();
+        const dataService = new DataService(storage);
+        await dataService.load(); // initializing
+        spyOn(storage, 'get').and.callThrough();
+        dataService.load(); // start loading
 
-        done();
-    })
+        await Promise.all([
+            dataService.load(),
+            dataService.load(),
+            dataService.load(),
+        ]);
 
-    it('turns on dirty state when change is not saved', async (done) => {
-        let dataService = new DataService(new TestStorage());
-        spyOn(dataService.isDirtyChanged, 'emit');
-        
-        expect(dataService.isDirty).toBeFalsy();
-        dataService.set('key123', 'ABCabc');
-        expect(dataService.isDirtyChanged.emit).toHaveBeenCalledWith(true);
-        expect(dataService.isDirty).toBeTruthy();
+        expect(storage.get).toHaveBeenCalledTimes(1);
+    });
 
-        done();
-    })
+    it('does nothing when save is called (not dirty)', async () => {
+        const storage = getDummyStorage();
+        spyOn(storage, 'put').and.callThrough();
+        const dataService = new DataService(storage);
+        await dataService.load(); // initializing
+        dataService.load(); // start loading
 
-    it('turns off dirty state when change is saved', async (done) => {
-        let storage = new TestStorage(null, async () => {});
-        let dataService = new DataService(storage);
-        spyOn(dataService.isDirtyChanged, 'emit');
-
-        dataService.set('key123', 'ABCabc');
-        expect(dataService.isDirty).toBeTruthy();
         await dataService.save();
-        expect(dataService.isDirtyChanged.emit).toHaveBeenCalledWith(false);
-        expect(dataService.isDirty).toBeFalsy();
-        done();
-    })
 
+        expect(storage.put).not.toHaveBeenCalled();
+    });
+
+    it('changes state to ready when promise is rejected', async () => {
+        let firstCall = true;
+        const storage = new TestStorage(() => {
+            if (firstCall) {
+                firstCall = false;
+                return Promise.resolve(JSON.stringify({myKey: 'myValue'}));
+            }
+            return Promise.reject();
+        });
+        const dataService = new DataService(storage);
+        await dataService.load(); // initializing
+        dataService.load(); // start loading
+
+        expect(dataService.state).toBe(DataServiceState.Loading);
+        await expectAsync(dataService.load()).toBeRejected();
+
+        expect(dataService.state).toBe(DataServiceState.Ready);
+    });
+
+    it('changes state to ready when promise is resolved', async () => {
+        const dataService = new DataService(getDummyStorage());
+        await dataService.load(); // initializing
+        dataService.load(); // start loading
+
+        expect(dataService.state).toBe(DataServiceState.Loading);
+        await expectAsync(dataService.load()).toBeResolved();
+
+        expect(dataService.state).toBe(DataServiceState.Ready);
+    });
+});
+
+describe('DataSevice Dirty', () => {
+
+    const getDummyStorage = () => {
+        return new TestStorage(async () => {
+            return JSON.stringify({
+                myKey: 'myValue'
+            });
+        }, async () => {});
+    };
+
+    const getDataServiceInDirtyState = async (storage: TestStorage = getDummyStorage()) => {
+        const dataService = new DataService(storage);
+        await dataService.load(); // initializing
+        dataService.set('myKey', 'newValue');
+        return dataService;
+    };
+
+    it('is in dirty state', async () => {
+        const dataService1 = await getDataServiceInDirtyState();
+        const storage2 = getDummyStorage();
+        const dataService2 = await getDataServiceInDirtyState(storage2);
+
+        expect(dataService1.state).toBe(DataServiceState.Dirty);
+        expect(dataService2.state).toBe(DataServiceState.Dirty);
+    });
+
+    it('returns correct value when get is called', async () => {
+        const dataService = await getDataServiceInDirtyState();
+
+        expect(dataService.get('myKey')).toBe('newValue');
+    });
+
+    it('sets correct value when set is called', async () => {
+        const dataService = await getDataServiceInDirtyState();
+
+        dataService.set('myKey', 'someValue123');
+
+        expect(dataService.get('myKey')).toBe('someValue123');
+    });
+
+    it('throws error when load is called', async () => {
+        const dataService = await getDataServiceInDirtyState();
+
+        await expectAsync(dataService.load()).toBeRejected('Dirty');
+    });
+
+    it('returns promise when save is called', async () => {
+        const storage = getDummyStorage();
+        const dataService = await getDataServiceInDirtyState(storage);
+        spyOn(storage, 'put').and.callThrough();
+
+        await expectAsync(dataService.save()).toBeResolved();
+
+        expect(storage.put).toHaveBeenCalled();
+    });
+
+    it('does not make duplicate requests when save is called multiple times', async () => {
+        const storage = getDummyStorage();
+        const dataService = await getDataServiceInDirtyState(storage);
+        spyOn(storage, 'put').and.callThrough();
+
+        await Promise.all([
+            dataService.save(),
+            dataService.save(),
+            dataService.save(),
+        ]);
+
+        expect(storage.put).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not change state when set is called', async () => {
+        const dataService = await getDataServiceInDirtyState();
+
+        expect(dataService.state).toBe(DataServiceState.Dirty);
+        dataService.set('myKey', 'someValye123');
+
+        expect(dataService.state).toBe(DataServiceState.Dirty);
+    });
+
+    it('changes state to saving when save is called', async () => {
+        const dataService = await getDataServiceInDirtyState();
+
+        dataService.save();
+        expect(dataService.state).toBe(DataServiceState.Saving);
+    });
+});
+
+describe('DataSevice Saving', () => {
+    const getDummyStorage = () => {
+        return new TestStorage(async () => {
+            return JSON.stringify({
+                myKey: 'myValue'
+            });
+        }, async () => {});
+    };
+
+    const getDataServiceInDirtyState = async (storage: TestStorage = getDummyStorage()) => {
+        const dataService = new DataService(storage);
+        await dataService.load(); // initializing
+        dataService.set('myKey', 'newValue');
+        return dataService;
+    };
+
+    it('is in saving state', async () => {
+        const dataService = await getDataServiceInDirtyState();
+        dataService.save();
+
+        expect(dataService.state).toBe(DataServiceState.Saving);
+    });
+
+    it('returns correct value when get is called', async () => {
+        const dataService = await getDataServiceInDirtyState();
+        dataService.save();
+
+        expect(dataService.get('myKey')).toBe('newValue');
+    });
+
+    it('sets correct value when set is called', async () => {
+        const dataService = await getDataServiceInDirtyState();
+        dataService.save();
+
+        dataService.set('myKey', 'someValue123');
+
+        expect(dataService.get('myKey')).toBe('someValue123');
+    });
+
+    it('throws error when load is called', async () => {
+        const dataService = await getDataServiceInDirtyState();
+        dataService.save();
+
+        await expectAsync(dataService.load()).toBeRejected('Saving');
+    });
+
+    it('does not make duplicate requests when save is called', async () => {
+        const storage = getDummyStorage();
+        const dataService = await getDataServiceInDirtyState(storage);
+        spyOn(storage, 'put').and.callThrough();
+        dataService.save();
+
+        await Promise.all([
+            dataService.save(),
+            dataService.save(),
+            dataService.save(),
+        ]);
+
+        expect(storage.put).toHaveBeenCalledTimes(1);
+    });
+
+    it('changes state to ready when promise is resolved', async () => {
+        const dataService = await getDataServiceInDirtyState();
+        dataService.save();
+
+        await expectAsync(dataService.save()).toBeResolved();
+
+        expect(dataService.state).toBe(DataServiceState.Ready);
+    });
+
+    it('changes state to dirty when promise is rejected', async () => {
+        const storage = new TestStorage(
+            async () => JSON.stringify({myKey: 'myValue'}),
+            () => Promise.reject()
+        );
+        const dataService = await getDataServiceInDirtyState(storage);
+        dataService.save();
+
+        await expectAsync(dataService.save()).toBeRejected();
+        expect(dataService.state).toBe(DataServiceState.Dirty);
+    });
+
+    it('changes state to dirty when promise is resolved but set was called', async () => {
+        const dataService = await getDataServiceInDirtyState();
+        dataService.save();
+        expect(dataService.state).toBe(DataServiceState.Saving);
+
+        dataService.set('someKey', 'someValue');
+        await expectAsync(dataService.save()).toBeResolved();
+
+        expect(dataService.state).toBe(DataServiceState.Dirty);
+    });
 });
 
 class TestStorage implements Storage{

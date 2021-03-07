@@ -44,7 +44,7 @@ export class HeaderComponent implements OnInit {
             }
         });
 
-        this.isDirty = this.betterDataService.isDirty;
+        this.isDirty = this.betterDataService.dirty;
         this.isLoading = this.betterDataService.loading;
         this.isSaving = this.betterDataService.saving;
 
@@ -58,7 +58,7 @@ export class HeaderComponent implements OnInit {
             this.selectedCurrency = new CurrencyDisplayItem(Currency[c], c);
         });
 
-        this.betterDataService.isDirtyChanged.subscribe(x => this.isDirty = x);
+        this.betterDataService.dirtyChanged.subscribe(x => this.isDirty = x);
         this.betterDataService.savingChanged.subscribe(x => this.isSaving = x);
         this.betterDataService.loadingChanged.subscribe(x => this.isLoading = x);
     }
