@@ -8,19 +8,20 @@ import { EventEmitter, Injectable } from '@angular/core';
 @Injectable({providedIn: 'root'})
 export class TransactionsRepository {
 
-    changed: EventEmitter<Transaction[]> = new EventEmitter();
+    private static readonly _KEY: string = 'transactions';
 
-    private readonly _KEY: string = 'transactions';
+    changed: EventEmitter<Transaction[]> = new EventEmitter();
 
     private _TRANSACTIONS: Transaction[] = null;
 
-    constructor(private betterDataService: DataService) {
-        betterDataService.dataChanged.subscribe((key) => {
-            if (key === this._KEY) {
+    constructor(private dataService: DataService) {
+        dataService.dataChanged.subscribe((key) => {
+            if (key === TransactionsRepository._KEY) {
                 this.load();
                 this.changed.emit(this.list());
             }
         });
+        this.load();
     }
 
     list(): Transaction[] {
@@ -31,45 +32,43 @@ export class TransactionsRepository {
         return this._TRANSACTIONS.slice();
     }
 
-    add(transaction: Transaction) {
-        const transactions = this.list();
-        transactions.push(transaction);
-        this.set(transactions);
+    add(transaction: Transaction): void {
+        this.addMany([transaction]);
     }
 
-    addMany(arr: Transaction[]) {
+    addMany(arr: Transaction[]): void {
         const transactions = this.list();
         transactions.push(...arr);
         this.set(transactions);
     }
 
     edit(t: Transaction) {
+        this.editMany([t]);
+    }
+
+    editMany(arr: Transaction[]): void {
         const transactions = this.list();
-        const i = _.findIndex(transactions, {guid: t.guid});
-        transactions[i] = t;
+        arr.forEach(t => {
+            const i = _.findIndex(transactions, {guid: t.guid});
+            transactions[i] = t;
+        });
         this.set(transactions);
     }
 
-    editMany(arr: Transaction[]) {
-        // TODO: implementation
+    remove(t: Transaction): void {
+        this.removeMany([t]);
     }
 
-    remove(t: Transaction) {
-        const transactions = this.list();
-        _.remove(transactions, (x) => x.guid === t.guid);
-        this.set(transactions);
-    }
-
-    removeMany(arr: Transaction[]) {
+    removeMany(arr: Transaction[]): void {
         const transactions = this.list();
         _.remove(transactions, (x) => !!_.find(arr, (t) => t.guid === x.guid));
         this.set(transactions);
     }
 
     private load(): void {
-        if(this.betterDataService.containsKey(this._KEY)) {
-            const jsonStr = this.betterDataService.get(this._KEY);
-            this._TRANSACTIONS = this.deserialize(jsonStr);
+        if (this.dataService.containsKey(TransactionsRepository._KEY)) {
+            const data = this.dataService.get(TransactionsRepository._KEY);
+            this._TRANSACTIONS = this.getTransactions(data);
         } else {
             this._TRANSACTIONS = [];
         }
@@ -77,10 +76,10 @@ export class TransactionsRepository {
 
     private set(value: Transaction[]) {
         this._TRANSACTIONS = (value || []).slice();
-        this.betterDataService.set(this._KEY, this._TRANSACTIONS);
+        this.dataService.set(TransactionsRepository._KEY, this._TRANSACTIONS);
     }
 
-    private deserialize(deserialized: any[]): Transaction[] {
+    private getTransactions(deserialized: any[]): Transaction[] {
         return (deserialized || [])
         .map((t) => {
             const newTransaction = new Transaction();
