@@ -1,8 +1,8 @@
 import * as _ from "lodash";
 
+import { Currency } from 'src/app/models/currency.enum';
 import { DataService } from '../data/data.service';
 import { EventEmitter, Injectable } from '@angular/core';
-import { Currency } from 'src/app/models/currency.enum';
 
 @Injectable({providedIn: 'root'})
 export class SettingsRepository {
@@ -13,8 +13,8 @@ export class SettingsRepository {
 
     private _settings: { [name: string]: any } = null;
 
-    constructor(private betterDataService: DataService) {
-        this.betterDataService.dataChanged.subscribe(key => {
+    constructor(private dataService: DataService) {
+        this.dataService.dataChanged.subscribe(key => {
             if (key == this._KEY) {
                 this.load();
             }
@@ -34,7 +34,7 @@ export class SettingsRepository {
 
     set(name: string, value: any): void {
         this._settings[name] = value;
-        this.betterDataService.set(this._KEY, this._settings);
+        this.dataService.set(this._KEY, this._settings);
         //this.changed.emit(name);//TODO: remove it and build mechanism to compare changes emited from dataservice
     }
 
@@ -56,8 +56,8 @@ export class SettingsRepository {
     }
 
     private load(): void {
-        if (this.betterDataService.containsKey(this._KEY)) {
-            let settings = this.betterDataService.get(this._KEY);
+        if (this.dataService.containsKey(this._KEY)) {
+            let settings = this.dataService.get(this._KEY);
             this._settings = settings;
             // TODO: check differentce and emit changes
             // for now - emit change for every key

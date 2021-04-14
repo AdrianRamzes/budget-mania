@@ -1,12 +1,12 @@
 import { DataService } from '../data/data.service';
 import { Storage } from '../data/storage/storage.interface';
 import { Transaction } from '../models/transaction.model';
-import { TransactionsRepository } from './transactions.repository'
+import { TransactionsRepository } from './transactions.repository';
 
 describe('Transactions Repository', () => {
 
     const getTransactionsRepository = (value: any = null) => {
-        return new TransactionsRepository(new DataService(value));
+        return new TransactionsRepository(new TestDataService(value));
     };
 
     it('returns empty list if dataService is empty', () => {

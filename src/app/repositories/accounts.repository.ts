@@ -1,9 +1,9 @@
 import * as _ from "lodash";
 
-import { EventEmitter, Injectable } from '@angular/core';
 import { DataService } from '../data/data.service';
-import { UserAccount } from '../models/user-account.model';
+import { EventEmitter, Injectable } from '@angular/core';
 import { Guid } from "guid-typescript";
+import { UserAccount } from '../models/user-account.model';
 import { TransactionsRepository } from './transactions.repository';
 
 @Injectable({providedIn: 'root'})
@@ -15,10 +15,10 @@ export class AccountsRepository {
 
     private _accounts: UserAccount[] = null;
 
-    constructor(private betterDataService: DataService,
+    constructor(private dataService: DataService,
                 private transactionsRepository: TransactionsRepository) {
 
-        this.betterDataService.dataChanged.subscribe(key => {
+        this.dataService.dataChanged.subscribe(key => {
             if(key == this._KEY) {
                 this.load();
                 this.changed.emit(this.list());
@@ -64,8 +64,8 @@ export class AccountsRepository {
     }
 
     private load(): void {
-        if(this.betterDataService.containsKey(this._KEY)) {
-            let jsonStr = this.betterDataService.get(this._KEY);
+        if(this.dataService.containsKey(this._KEY)) {
+            let jsonStr = this.dataService.get(this._KEY);
             this._accounts = this.deserialize(jsonStr);
         } else {
             this._accounts = [];
@@ -74,12 +74,10 @@ export class AccountsRepository {
 
     private set(value: UserAccount[]) {
         this._accounts = (value || []).slice();
-        //let serialized = JSON.stringify(this._accounts);
-        this.betterDataService.set(this._KEY, this._accounts);
+        this.dataService.set(this._KEY, this._accounts);
     }
 
     private deserialize(deserialized: any[]): UserAccount[] {
-        //let deserialized = JSON.parse(jsonStr);
         return (deserialized || []).map(a => {
             let newAcc = new UserAccount();
             newAcc.guid = a.guid || Guid.create().toString();

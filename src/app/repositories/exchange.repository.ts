@@ -1,9 +1,8 @@
 import * as _ from "lodash";
 
-import { EventEmitter, Injectable } from '@angular/core';
-// import { BetterDataService } from '../betterdata.service';
-import { HttpClient } from '@angular/common/http';
 import { Currency } from 'src/app/models/currency.enum';
+import { EventEmitter, Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({providedIn: 'root'})
 export class ExchangeRepository {

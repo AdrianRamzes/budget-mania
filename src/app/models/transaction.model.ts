@@ -1,6 +1,7 @@
 import { Currency } from './currency.enum';
 import { Guid } from 'guid-typescript';
 
+// TODO: Transaction Model - make sure that contains all the necessary  fields
 export class Transaction {
     guid: string;
     transactionIdentifier: string; // some banks assign unique identifier to each transaction within bank

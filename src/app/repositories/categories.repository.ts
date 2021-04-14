@@ -1,9 +1,9 @@
 import * as _ from "lodash";
 
-import { DataService } from '../data/data.service';
 import { Category } from 'src/app/models/category.model';
-import { Guid } from "guid-typescript";
+import { DataService } from '../data/data.service';
 import { EventEmitter, Injectable } from '@angular/core';
+import { Guid } from "guid-typescript";
 import { TransactionsRepository } from './transactions.repository';
 
 @Injectable({providedIn: 'root'})
@@ -15,10 +15,10 @@ export class CategoriesRepository {
 
     private _categories: Category[] = null;
 
-    constructor(private betterDataService: DataService,
+    constructor(private dataService: DataService,
                 private transactionsRepository: TransactionsRepository) {
 
-        this.betterDataService.dataChanged.subscribe(key => {
+        this.dataService.dataChanged.subscribe(key => {
             if(key == this._KEY) {
                 this.load();
                 this.changed.emit(this.list());
@@ -64,8 +64,8 @@ export class CategoriesRepository {
     }
 
     private load(): void {
-        if(this.betterDataService.containsKey(this._KEY)) {
-            let deserialized = this.betterDataService.get(this._KEY);
+        if(this.dataService.containsKey(this._KEY)) {
+            let deserialized = this.dataService.get(this._KEY);
             this._categories = this.deserialize(deserialized);
         } else {
             this._categories = [];
@@ -74,7 +74,7 @@ export class CategoriesRepository {
 
     private set(value: Category[]) {
         this._categories = (value || []).slice();
-        this.betterDataService.set(this._KEY, this._categories);
+        this.dataService.set(this._KEY, this._categories);
     }
 
     private deserialize(deserialized: any[]): Category[] {

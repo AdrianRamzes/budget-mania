@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
 
 import { DataService } from '../data/data.service';
-import { Transaction } from '../models/transaction.model';
-import { Guid } from 'guid-typescript';
 import { EventEmitter, Injectable } from '@angular/core';
+import { Guid } from 'guid-typescript';
+import { Transaction } from '../models/transaction.model';
 
 @Injectable({providedIn: 'root'})
 export class TransactionsRepository {

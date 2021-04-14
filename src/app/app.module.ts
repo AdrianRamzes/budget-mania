@@ -21,6 +21,7 @@ import { AuthService } from './auth/auth.service';
 import { AuthComponent } from './auth/auth.component';
 import { AmplifyUIAngularModule } from '@aws-amplify/ui-angular';
 import { Amplify } from 'aws-amplify';
+import { S3Storage } from './data/storage/s3Storage';
 
 import { awsconfig } from 'aws-exports';
 
@@ -52,7 +53,9 @@ Amplify.configure(awsconfig);
   ],
   providers: [
     ImportService,
-    AuthService
+    AuthService,
+    { provide: Storage, useClass: S3Storage},
+    { provide: 'skipInitialization', useValue: false},
   ],
   bootstrap: [AppComponent]
 })

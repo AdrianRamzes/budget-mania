@@ -1,6 +1,7 @@
 import { Currency } from './currency.enum';
 import { Guid } from 'guid-typescript';
 
+//TODO: change name and make sure that contains all necessary fields
 export class UserAccount {
     guid: string;
     name: string;
