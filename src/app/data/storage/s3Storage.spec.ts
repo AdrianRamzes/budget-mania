@@ -3,7 +3,16 @@ import { S3Storage } from './s3Storage';
 
 import { testconfig, testusers } from 'aws-exports-test';
 
-xdescribe('S3Storage (uses real S3 connection)', () => {
+fdescribe('S3Storage (uses real S3 connection)', () => {
+    const requestConfig = {
+        customPrefix: {
+            public: '',
+            protected: '',
+            private: ''
+        },
+        level: 'private',
+        cacheControl: 'no-cache',
+    };
 
     let storage: S3Storage;
 
@@ -31,52 +40,70 @@ xdescribe('S3Storage (uses real S3 connection)', () => {
         storage = new S3Storage();
     });
 
-    it('saves string into a file and store it at AWS S3', async (done) => {
-        const result = await storage.put('TEST123');
-        expect(result['key']).not.toBeNull();
-        done();
+    fit('creates file if does not exist when get is called', async () => {
+        let keys = (await S3.list('', requestConfig) as any[]).map(e => e.key);
+        await Promise.all(keys.map(key => S3.remove(key, requestConfig)));
+        keys = await S3.list('', requestConfig) as any[];
+        expect(keys.length).toBe(0);
+
+        const result = await storage.get();
+        keys = await S3.list('', requestConfig) as any[];
+
+        expect(result).toBe('');
+        expect(keys.length).toBe(1);
     });
 
-    it('loads string from files stored at AWS S3', async (done) => {
+    it('creates file if does not exist when put is called', async () => {
+        let keys = (await S3.list('', requestConfig) as any[]).map(e => e.key);
+        await Promise.all(keys.map(key => S3.remove(key, requestConfig)));
+        keys = await S3.list('', requestConfig) as any[];
+        expect(keys.length).toBe(0);
+
+        await storage.put('test');
+
+        keys = await S3.list('', requestConfig) as any[];
+        expect(keys.length).toBe(1);
+    });
+
+    it('saves string into a file and store it at AWS S3', async () => {
+        const result = await storage.put('TEST123');
+        expect(result['key']).not.toBeNull();
+    });
+
+    it('loads string from files stored at AWS S3', async () => {
         await storage.put('TEST MESSAGE!! 123');
         const result = await storage.get();
         expect(result).toBe('TEST MESSAGE!! 123');
-        done();
     });
 
-    it('saves and loads alphabeth', async (done) => {
+    it('saves and loads alphabeth', async () => {
         await storage.put('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
         const result = await storage.get();
         expect(result).toBe('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
-        done();
     });
 
-    it('saves and loads numebrs', async (done) => {
+    it('saves and loads numebrs', async () => {
         await storage.put('0123456789');
         const result = await storage.get();
         expect(result).toBe('0123456789');
-        done();
     });
 
-    it('saves and loads punctuation signs', async (done) => {
+    it('saves and loads punctuation signs', async () => {
         await storage.put('!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~');
         const result = await storage.get();
         expect(result).toBe('!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~');
-        done();
     });
 
-    it('saves and loads whitespace signs', async (done) => {
+    it('saves and loads whitespace signs', async () => {
         await storage.put(' \t\n\r\x0b\x0c');
         const result = await storage.get();
         expect(result).toBe(' \t\n\r\x0b\x0c');
-        done();
     });
 
-    it('saves and loads polish alphabeth', async (done) => {
+    it('saves and loads polish alphabeth', async () => {
         await storage.put('aąbcćdeęfghijklłmnńoóprsśtuwyzźżAĄBCĆDEĘFGHIJKLŁMNŃOÓPRSŚTUWYZŹŻ');
         const result = await storage.get();
         expect(result).toBe('aąbcćdeęfghijklłmnńoóprsśtuwyzźżAĄBCĆDEĘFGHIJKLŁMNŃOÓPRSŚTUWYZŹŻ');
-        done();
     });
 
 });
