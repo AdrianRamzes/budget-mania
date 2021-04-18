@@ -26,6 +26,7 @@ export class S3Storage implements Storage {
         if (this.firstRun) {
             if (!await this.exists()) {
                 await this.put('');
+                return '';
             }
             this.firstRun = false;
         }
@@ -41,7 +42,7 @@ export class S3Storage implements Storage {
     }
 
     private async exists(): Promise<boolean> {
-        const list = await S3.list('', this.requestConfig);
+        const list = await S3.list(this.FILE_NAME, this.requestConfig);
         return (list as any[]).some(e => e.key === this.FILE_NAME);
     }
 

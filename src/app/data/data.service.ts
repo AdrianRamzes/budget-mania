@@ -53,7 +53,7 @@ export class DataService {
         if (!this.containsKey(key)) {
             return null;
         }
-        return this.data[key];
+        return this.deepClone(this.data[key]);
     }
 
     set(key: string, value: any) {
@@ -144,7 +144,6 @@ export class DataService {
 
     private loadFromString(jsonString: string): void {
         this.data = this.deserialize(jsonString);
-
         for (const key in this.data) {
             if (Object.prototype.hasOwnProperty.call(this.data, key)) {
                 this.dataChanged.emit(key);
@@ -153,7 +152,18 @@ export class DataService {
     }
 
     private deserialize(serialized: string): {[key: string]: any} {
-        return JSON.parse(serialized) ?? null;
+        if (serialized.length === 0) {
+            return {};
+        }
+        try {
+            return JSON.parse(serialized) ?? {};
+        } catch (error) {
+            return {};
+        }
+    }
+
+    private deepClone(obj: any): any {
+        return JSON.parse(JSON.stringify(obj));
     }
 
     private areEqual(valueA: any, valueB: any): boolean {

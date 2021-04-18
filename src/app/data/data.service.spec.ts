@@ -103,6 +103,14 @@ describe('DataSevice Uninitialized', () => {
 
 describe('DataSevice Initializing', () => {
 
+    const getEmptyStorage = () => {
+        return new TestStorage(async () => '', async () => {});
+    };
+
+    const getInvalidStorage = () => {
+        return new TestStorage(async () => '}}}', async () => {});
+    };
+
     const getDummyStorage = () => {
         return new TestStorage(async () => {
             return JSON.stringify({
@@ -157,6 +165,22 @@ describe('DataSevice Initializing', () => {
         await expectAsync(dataService.save()).toBeResolved();
 
         expect(storage.put).not.toHaveBeenCalled();
+    });
+
+    it('handles empty storage', async () => {
+        const storage = getEmptyStorage();
+        const dataService = getDataServiceInInitializingState(storage);
+
+        await expectAsync(dataService.load()).toBeResolved();
+        expect(dataService.get('someKey')).toBeNull();
+    });
+
+    it('handles invalid storage', async () => {
+        const storage = getInvalidStorage();
+        const dataService = getDataServiceInInitializingState(storage);
+
+        await expectAsync(dataService.load()).toBeResolved();
+        expect(dataService.get('someKey')).toBeNull();
     });
 
     it('changes state to ready when initializing is resolved', async () => {
@@ -226,6 +250,19 @@ describe('DataSevice Ready', () => {
         const dataService = await getDataServiceInReadyState();
 
         expect(dataService.get('myKey')).toBe('myValue');
+    });
+
+    it('returns a deep copy of the real value when get is called', async () => {
+        const storage = new TestStorage(async () => {
+            return JSON.stringify({myKey: [1, 2, 3]});
+        });
+        const dataService = await getDataServiceInReadyState(storage);
+        let value = dataService.get('myKey');
+
+        value[0] = 4;
+        value = dataService.get('myKey');
+
+        expect(value).toEqual([1, 2, 3]);
     });
 
     it('sets correct value when set is called', async () => {

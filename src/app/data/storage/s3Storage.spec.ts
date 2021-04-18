@@ -3,7 +3,7 @@ import { S3Storage } from './s3Storage';
 
 import { testconfig, testusers } from 'aws-exports-test';
 
-fdescribe('S3Storage (uses real S3 connection)', () => {
+xdescribe('S3Storage (uses real S3 connection)', () => {
     const requestConfig = {
         customPrefix: {
             public: '',
@@ -40,7 +40,7 @@ fdescribe('S3Storage (uses real S3 connection)', () => {
         storage = new S3Storage();
     });
 
-    fit('creates file if does not exist when get is called', async () => {
+    it('creates file if does not exist when get is called', async () => {
         let keys = (await S3.list('', requestConfig) as any[]).map(e => e.key);
         await Promise.all(keys.map(key => S3.remove(key, requestConfig)));
         keys = await S3.list('', requestConfig) as any[];
