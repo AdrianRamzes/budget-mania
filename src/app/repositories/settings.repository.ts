@@ -9,71 +9,70 @@ export class SettingsRepository {
 
     changed: EventEmitter<any> = new EventEmitter();
 
-    private readonly _KEY: string = "settings";
+    private readonly _KEY: string = 'settings';
 
-    private _settings: { [name: string]: any } = null;
+    private _SETTINGS: { [name: string]: any } = null;
 
     constructor(private dataService: DataService) {
         this.dataService.dataChanged.subscribe(key => {
-            if (key == this._KEY) {
+            if (key === this._KEY) {
                 this.load();
             }
         });
     }
 
     all(): { [name: string]: string } {
-        return this._settings;
+        return this._SETTINGS;
     }
 
     get(name: string): string {
-        if(name in this._settings) {
-            return this._settings[name];
+        if (name in this._SETTINGS) {
+            return this._SETTINGS[name];
         }
         return null;
     }
 
     set(name: string, value: any): void {
-        this._settings[name] = value;
-        this.dataService.set(this._KEY, this._settings);
-        //this.changed.emit(name);//TODO: remove it and build mechanism to compare changes emited from dataservice
+        this._SETTINGS[name] = value;
+        this.dataService.set(this._KEY, this._SETTINGS);
     }
 
     remove(name: string) {
-        delete this._settings[name];
+        delete this._SETTINGS[name];
+        this.dataService.set(this._KEY, this._SETTINGS);
     }
 
     getSelectedCurrency(): Currency {
-        if(this._settings && SettingsKeys.SELECTED_CURRENCY in this._settings) {
-            return parseInt(this._settings[SettingsKeys.SELECTED_CURRENCY])
+        if (this._SETTINGS && SettingsKeys.SELECTED_CURRENCY in this._SETTINGS) {
+            return parseInt(this._SETTINGS[SettingsKeys.SELECTED_CURRENCY], 10);
         }
         return Currency.EUR;
     }
     setSelectedCurrency(c: Currency) {
-        if(!this._settings) {
-            this._settings = {};
+        if (!this._SETTINGS) {
+            this._SETTINGS = {};
         }
         this.set(SettingsKeys.SELECTED_CURRENCY, c);
     }
 
     private load(): void {
         if (this.dataService.containsKey(this._KEY)) {
-            let settings = this.dataService.get(this._KEY);
-            this._settings = settings;
+            this._SETTINGS = this.dataService.get(this._KEY);
             // TODO: check differentce and emit changes
             // for now - emit change for every key
-            for(let key in this._settings) {
+            for(const key in this._SETTINGS) {
                 this.changed.emit(key);
             }
         } else {
-            this._settings = {};
+            this._SETTINGS = {};
         }
     }
 
     private deserialize(deserialized: any): { [name: string]: string } {
-        return deserialized || {}
+        return deserialized || {};
     }
 }
 
 export class SettingsKeys {
-    static readonly SELECTED_CURRENCY: string = "selected-currency";
+    static readonly SELECTED_CURRENCY: string = 'selected-currency';
 }
