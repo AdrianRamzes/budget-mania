@@ -41,7 +41,7 @@ export class SantanderBankPolskaParser extends TransactionParserBase implements 
                 let trans = new Transaction();
                 trans.amount = Number.parseFloat(t[5].replace(/\s/g, '').replace(',', '.'));
                 trans.date = moment(t[0], "DD-MM-YYYY").toDate();
-                trans.inforamtion = t[2];
+                trans.information = t[2];
                 trans.currency = currency;
                 trans.IBAN = iban;
                 return trans;

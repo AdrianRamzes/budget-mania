@@ -84,7 +84,7 @@ export class HeaderComponent implements OnInit {
             return {
                 guid: t.guid,
                 date: t.date ? moment(t.date).format("YYYY-MM-DD") : null,
-                title: t.title,
+                information: t.information,
                 accountGuid: t.accountGuid,
                 accountName: account ? account.name : null,
                 amount: t.amount,

@@ -43,7 +43,7 @@ export class Transaction {
      *
      * This is the transaction narrative, which is unstructured text.
      */
-    inforamtion: string;
+    information: string;
 
     /** Information that locates and identifies a specific address for a transaction entry,
      * that is presented in free format text.
@@ -109,7 +109,7 @@ export class Transaction {
             return true;
         }
 
-        return t1.inforamtion === t2.inforamtion &&
+        return t1.information === t2.information &&
             t1.date.getTime() === t2.date.getTime() &&
             t1.amount === t2.amount &&
             t1.currency === t2.currency;

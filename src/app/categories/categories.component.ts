@@ -100,7 +100,7 @@ export class CategoriesComponent implements OnInit {
                     let words = filter.toLocaleLowerCase().split(/\s+/);
                     return words.every((w) => {
                         return false
-                            || (t.transaction.title && t.transaction.title.toLowerCase().includes(w))
+                            || (t.transaction.information && t.transaction.information.toLowerCase().includes(w))
                             || (t.category && t.category.name.toLowerCase().includes(w))
                             || (t.account && t.account.name.toLowerCase().includes(w));
                     });
@@ -146,7 +146,7 @@ export class CategoriesComponent implements OnInit {
         let withCategory = _.filter(this.transactionsRepository.list(), x => !!x.categoryGuid);
         this.allTransactionDisplayItems.forEach(t => {
             if (!t.transaction.categoryGuid) {
-                let candidate = _.find(withCategory, x => x.title == t.transaction.title)
+                let candidate = _.find(withCategory, x => x.information == t.transaction.information)
                 if (candidate) {
                     t.suggestedCategory = this.categoriesRepository.get(candidate.categoryGuid);
                 }

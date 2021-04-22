@@ -73,7 +73,7 @@ export class DashboardTransactionsComponent implements OnInit {
                 let words = this.filterText.toLocaleLowerCase().split(/\s+/);
                 return words.every((w) => {
                     return false
-                        ||  (t.transaction.title && t.transaction.title.toLowerCase().includes(w))
+                        || (t.transaction.information && t.transaction.information.toLowerCase().includes(w))
                         ||  (t.category && t.category.name.toLowerCase().includes(w))
                         ||  (t.account && t.account.name.toLowerCase().includes(w));
                 });

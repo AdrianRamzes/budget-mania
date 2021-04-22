@@ -44,9 +44,9 @@ export class INGLuxembourgParser extends TransactionParserBase implements Transa
                 trans.beneficiaryName = t[8];
                 trans.destinationIBAN = t[9];
                 if(t[10] != null && t[10].length > 0) {
-                    trans.inforamtion = `${t[10]} [${t[2]}]`;
+                    trans.information = `${t[10]} [${t[2]}]`;
                 } else {
-                    trans.inforamtion = `[${t[2]}]`;
+                    trans.information = `[${t[2]}]`;
                 }
                 return trans;
             });

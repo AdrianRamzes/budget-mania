@@ -41,7 +41,7 @@ export class RevolutParser extends TransactionParserBase implements TransactionP
                 let trans = new Transaction();
                 trans.amount = (t[3] ? Number.parseFloat(t[3].replace(/\s/g, '').replace(',', '.')) : 0) - (t[2] ? Number.parseFloat(t[2].replace(/\s/g, '').replace(',', '.')) : 0);
                 trans.date = this.parseRevolutDate(t[0]);
-                trans.inforamtion = t[1];
+                trans.information = t[1];
                 trans.currency = currency;
                 return trans;
             });

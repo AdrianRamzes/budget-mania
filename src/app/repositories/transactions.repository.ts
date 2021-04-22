@@ -84,7 +84,7 @@ export class TransactionsRepository {
         .map((t) => {
             const newTransaction = new Transaction();
             newTransaction.guid = t.guid || Guid.create().toString();
-            newTransaction.inforamtion = t.title;
+            newTransaction.information = t.information;
             newTransaction.beneficiaryName = t.beneficiaryName || null;
             newTransaction.identifier = t.transactionIdentifier || null;
             newTransaction.IBAN = t.IBAN;
