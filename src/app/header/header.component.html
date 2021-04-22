@@ -8,21 +8,23 @@
     Remember to save your changes!
 </div>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" [routerLink]="['/dashboard']" routerLinkActive="router-link-active">Dashboard</a>
-    <a class="navbar-brand" [routerLink]="['/import']" routerLinkActive="router-link-active">Import</a>
-    <a class="navbar-brand" [routerLink]="['/accounts']" routerLinkActive="router-link-active">Accounts</a>
-    <a class="navbar-brand" [routerLink]="['/categories']" routerLinkActive="router-link-active">Categories</a>
-    <a class="navbar-brand" [routerLink]="['/manage-categories']" routerLinkActive="router-link-active">Manage Categories</a>
-    <!-- <div class="form-inline">
-        <div class="custom-file col-sm-7">
-            <input type="file" class="custom-file-input" (change)="loadFile($event)">
-            <label class="custom-file-label">Choose file</label>
-        </div>
-        <button *ngIf="isDirty" class="btn btn-danger" (click)="onSave()">Save to file</button>
-    </div> -->
+    <a class="navbar-brand" [routerLink]="['/dashboard']" routerLinkActive="router-link-active">
+        Dashboard
+    </a>
+    <a class="navbar-brand" [routerLink]="['/import']" routerLinkActive="router-link-active">
+        Import
+    </a>
+    <a class="navbar-brand" [routerLink]="['/accounts']" routerLinkActive="router-link-active">
+        Accounts
+    </a>
+    <a class="navbar-brand" [routerLink]="['/categories']" routerLinkActive="router-link-active">
+        Categories
+    </a>
+    <a class="navbar-brand" [routerLink]="['/manage-categories']" routerLinkActive="router-link-active">
+        Manage Categories
+    </a>
     <span class="navbar-text" *ngIf="!isDirty">Saved</span>
     <button class="btn btn-danger" *ngIf="isDirty" (click)="onSave()">Save</button>
-    <!-- <button class="btn btn-outline-primary" (click)="onExportToCSVClick()">Export to CSV</button> -->
     <div class="dropdown">
         <button class="btn btn-link dropdown-toggle" type="button"data-toggle="dropdown">
             {{selectedCurrency.code}}
@@ -32,5 +34,5 @@
         </div>
     </div>
     <button class="btn btn-outline-primary" (click)="logout()">logout {{username}}</button>
-    <button class="btn btn-danger" (click)="test()">test</button>
+    <button *ngIf="false" class="btn btn-danger">test</button>
 </nav>

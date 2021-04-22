@@ -1,13 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { saveAs } from 'file-saver'
 import { Currency } from '../models/currency.enum';
-import * as moment from 'moment';
-import * as Papa from 'papaparse';
 import { AuthService } from '../auth/auth.service';
-import { AccountsRepository } from '../repositories/accounts.repository';
-import { TransactionsRepository } from '../repositories/transactions.repository';
 import { SettingsRepository } from '../repositories/settings.repository';
-import { CategoriesRepository } from '../repositories/categories.repository';
 import { DataService, DataServiceState } from '../data/data.service';
 
 @Component({
@@ -22,23 +16,18 @@ export class HeaderComponent implements OnInit {
 
     dataServiceState: DataServiceState = DataServiceState.Uninitialized;
     get isLoading() {
-        return this.betterDataService.state === DataServiceState.Loading;
+        return this.dataService.state === DataServiceState.Loading;
     }
     get isDirty() {
-        return this.betterDataService.state === DataServiceState.Dirty;
+        return this.dataService.state === DataServiceState.Dirty;
     }
     get isSaving() {
-        return this.betterDataService.state === DataServiceState.Saving;
+        return this.dataService.state === DataServiceState.Saving;
     }
 
-    private _filenamePrefix = 'budget_mania_';
-
     constructor(
-        private betterDataService: DataService,
-        private accountsRepository: AccountsRepository,
-        private transactionsRepository: TransactionsRepository,
+        private dataService: DataService,
         private settingsRepository: SettingsRepository,
-        private categoriesRepository: CategoriesRepository,
         private authService: AuthService) {
     }
 
@@ -46,67 +35,28 @@ export class HeaderComponent implements OnInit {
         this.subscribe();
 
         Object.keys(Currency).forEach(k => {
-            if (typeof (Currency[k]) === "number") {
+            if (typeof (Currency[k]) === 'number') {
                 this.currencies.push(new CurrencyDisplayItem(k, Currency[k]));
             }
         });
 
-        this.dataServiceState = this.betterDataService.state;
+        this.dataServiceState = this.dataService.state;
 
-        let c = this.settingsRepository.getSelectedCurrency();
+        const c = this.settingsRepository.getSelectedCurrency();
         this.selectedCurrency = new CurrencyDisplayItem(Currency[c], c);
     }
 
     private subscribe(): void {
         this.settingsRepository.changed.subscribe(e => {
-            let c = this.settingsRepository.getSelectedCurrency();
+            const c = this.settingsRepository.getSelectedCurrency();
             this.selectedCurrency = new CurrencyDisplayItem(Currency[c], c);
         });
 
-        this.betterDataService.stateChanged.subscribe(x => this.dataServiceState = x);
+        this.dataService.stateChanged.subscribe(x => this.dataServiceState = x);
     }
 
     onSave() {
-        this.betterDataService.save();
-    }
-
-    loadFile(event: EventTarget) {
-        let eventObj: MSInputMethodContext = <MSInputMethodContext>event;
-        let target: HTMLInputElement = <HTMLInputElement>eventObj.target;
-        let files: FileList = target.files;
-        this.load(files[0]);
-    }
-
-    onExportToCSVClick() {
-        let transactions = this.transactionsRepository.list().map(t => {
-            let account = this.accountsRepository.get(t.accountGuid);
-            let category = this.categoriesRepository.get(t.categoryGuid);
-            return {
-                guid: t.guid,
-                date: t.date ? moment(t.date).format("YYYY-MM-DD") : null,
-                information: t.information,
-                accountGuid: t.accountGuid,
-                accountName: account ? account.name : null,
-                amount: t.amount,
-                categoryGuid: t.categoryGuid,
-                categoryName: category ? category.name : null,
-                currency: Currency[t.currency],
-                IBAN: t.IBAN,
-                sourceIBAN: t.sourceIBAN,
-                destinationIBAN: t.destinationIBAN,
-                importDate: t.importDate ? moment(t.importDate).format("YYYY-MM-DD") : null,
-                importGuid: t.importGuid,
-            }
-        });
-
-        let config: Papa.UnparseConfig = {
-        }
-
-        let unparsed = Papa.unparse(transactions, config);
-
-        saveAs(new Blob([unparsed],
-            { type: "text/csv;charset=utf-8" }),
-            this._filenamePrefix + moment().format("YYYY-MM-DD-HH-mm-ss"));
+        this.dataService.save();
     }
 
     onCurrencyChanged(c: CurrencyDisplayItem) {
@@ -115,26 +65,6 @@ export class HeaderComponent implements OnInit {
 
     logout(): void {
         this.authService.logout();
-    }
-
-    private save(data: string) {
-        saveAs(new Blob([data],
-            { type: "text/plain;charset=utf-8" }),
-            this._filenamePrefix + moment().format("YYYY-MM-DD-HH-mm-ss"));
-    }
-
-    private load(file: File) {
-    }
-
-    test() {
-        let x = this.accountsRepository.list();
-        console.log(x);
-
-        let z = this.settingsRepository.all();
-        console.log(z);
-
-        let v = this.categoriesRepository.list();
-        console.log(v);
     }
 }
 
