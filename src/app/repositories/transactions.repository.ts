@@ -4,6 +4,7 @@ import { DataService } from '../data/data.service';
 import { EventEmitter, Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
 import { Transaction } from '../models/transaction.model';
+import { Currency } from '../models/currency.enum';
 
 @Injectable({providedIn: 'root'})
 export class TransactionsRepository {
@@ -25,6 +26,12 @@ export class TransactionsRepository {
     }
 
     list(): Transaction[] {
+        const t = new Transaction();
+        t.date = new Date();
+        t.information = 'test';
+        t.amount = -1;
+        t.currency = Currency.CHF;
+        return [t];
         if (this._TRANSACTIONS == null) {
             this.load();
         }

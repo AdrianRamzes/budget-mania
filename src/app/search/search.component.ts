@@ -52,7 +52,7 @@ export class SearchComponent implements OnInit {
     }
 
     onScroll(e: any) {
-        if ($(window).scrollTop() + $(window).height() == $(document).height()) {
+        if ($(window).scrollTop() + $(window).height() === $(document).height()) {
             this.loadMoreTransactions();
         }
     }
