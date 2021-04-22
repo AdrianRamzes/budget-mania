@@ -12,7 +12,6 @@ import { HeaderComponent } from './header/header.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { CategoriesComponent } from './categories/categories.component';
 import { ManageCategoriesComponent } from './categories/manage-categories/manage-categories.component';
-import { DashboardTransactionsComponent } from './dashboard/dashboard-transactions/dashboard-transactions.component';
 import { SelectAccountComponent } from './import/select-account/select-account.component';
 import { AccountsComponent } from './accounts/accounts.component';
 import { HttpClientModule } from '@angular/common/http';
@@ -24,6 +23,7 @@ import { Amplify } from 'aws-amplify';
 import { S3Storage } from './data/storage/s3Storage';
 
 import { awsconfig } from 'aws-exports';
+import { SearchComponent } from './search/search.component';
 
 Amplify.configure(awsconfig);
 
@@ -37,12 +37,12 @@ Amplify.configure(awsconfig);
     HeaderComponent,
     DashboardComponent,
     CategoriesComponent,
-    DashboardTransactionsComponent,
     SelectAccountComponent,
     AccountsComponent,
     ManageCategoriesComponent,
     DashboardCashFlowComponent,
-    AuthComponent
+    AuthComponent,
+    SearchComponent
   ],
   imports: [
     BrowserModule,

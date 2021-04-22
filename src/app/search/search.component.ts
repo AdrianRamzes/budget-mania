@@ -13,26 +13,28 @@ import { AccountsRepository } from 'src/app/repositories/accounts.repository';
 import { TransactionsRepository } from 'src/app/repositories/transactions.repository';
 
 @Component({
-    selector: 'app-dashboard-transactions',
-    templateUrl: './dashboard-transactions.component.html'
+    selector: 'app-search',
+    templateUrl: './search.component.html',
+    styleUrls: ['./search.component.css']
 })
-export class DashboardTransactionsComponent implements OnInit {
+export class SearchComponent implements OnInit {
 
     allTransactions: TransactionDisplayItem[] = [];
     filteredTransactions: TransactionDisplayItem[] = [];
 
-    filterText: string = "";
-    displayCount: number = 15;
-    totalSum: number = 0;
-    filteredAvg: number = 0;
-    filteredMin: number = 0;
-    filteredMax: number = 0;
+    filterText = '';
+    displayCount = 15;
+    totalSum = 0;
+    filteredAvg = 0;
+    filteredMin = 0;
+    filteredMax = 0;
 
-    constructor(private transactionsRepository: TransactionsRepository,
-                private accountsRepository: AccountsRepository,
-                private categoriesRepository: CategoriesRepository,
-                private settingsRepository: SettingsRepository,
-                private exchangeRepository: ExchangeRepository) {
+    constructor(
+        private transactionsRepository: TransactionsRepository,
+        private accountsRepository: AccountsRepository,
+        private categoriesRepository: CategoriesRepository,
+        private settingsRepository: SettingsRepository,
+        private exchangeRepository: ExchangeRepository) {
     }
 
     ngOnInit() {
@@ -50,13 +52,13 @@ export class DashboardTransactionsComponent implements OnInit {
     }
 
     onScroll(e: any) {
-        if($(window).scrollTop() + $(window).height() == $(document).height()) {
+        if ($(window).scrollTop() + $(window).height() == $(document).height()) {
             this.loadMoreTransactions();
         }
     }
 
     private loadMoreTransactions(): void {
-        this.displayCount = Math.min(this.displayCount+10, this.filteredTransactions.length);
+        this.displayCount = Math.min(this.displayCount + 10, this.filteredTransactions.length);
     }
 
     private updateDisplayedTransactions(transactions: Transaction[]): void {
@@ -65,26 +67,26 @@ export class DashboardTransactionsComponent implements OnInit {
     }
 
     private updateFilteredTransactions(): void {
-        //TODO: refactor this => similar to categories/transactions list
+        // TODO: refactor this => similar to categories/transactions list
         this.filteredTransactions = this.allTransactions;
-        if(this.filterText.length > 0) {
+        if (this.filterText.length > 0) {
             this.filteredTransactions = this.allTransactions
-            .filter((t) => { // TODO: filter logic
-                let words = this.filterText.toLocaleLowerCase().split(/\s+/);
-                return words.every((w) => {
-                    return false
-                        || (t.transaction.information && t.transaction.information.toLowerCase().includes(w))
-                        ||  (t.category && t.category.name.toLowerCase().includes(w))
-                        ||  (t.account && t.account.name.toLowerCase().includes(w));
+                .filter((t) => { // TODO: filter logic
+                    const words = this.filterText.toLocaleLowerCase().split(/\s+/);
+                    return words.every((w) => {
+                        return false
+                            || (t.transaction.information && t.transaction.information.toLowerCase().includes(w))
+                            || (t.category && t.category.name.toLowerCase().includes(w))
+                            || (t.account && t.account.name.toLowerCase().includes(w));
+                    });
                 });
-            });
         }
 
         this.totalSum = this.filteredTransactions
-            .map(t => Math.round(t.displayAmount*100))
-            .reduce((acc, t) => acc + t, 0)/100;
+            .map(t => Math.round(t.displayAmount * 100))
+            .reduce((acc, t) => acc + t, 0) / 100;
 
-        let count = this.filteredTransactions.length;
+        const count = this.filteredTransactions.length;
 
         this.filteredAvg = count ? (this.totalSum / count) : 0;
 
@@ -93,7 +95,7 @@ export class DashboardTransactionsComponent implements OnInit {
     }
 
     private getTransactionDisplayItem(t: Transaction): TransactionDisplayItem {
-        let x = new TransactionDisplayItem();
+        const x = new TransactionDisplayItem();
         x.transaction = t;
         x.account = this.accountsRepository.get(t.accountGuid);
         x.category = this.categoriesRepository.get(t.categoryGuid);
@@ -102,10 +104,10 @@ export class DashboardTransactionsComponent implements OnInit {
         x.displayAmount = t.amount;
         x.displayCurrencyCode = Currency[t.currency];
 
-        let selectedCurrency = this.settingsRepository.getSelectedCurrency();
-        if(selectedCurrency != t.currency) {
-            let rate = this.exchangeRepository.getRate(t.currency, selectedCurrency);
-            if(rate) {
+        const selectedCurrency = this.settingsRepository.getSelectedCurrency();
+        if (selectedCurrency !== t.currency) {
+            const rate = this.exchangeRepository.getRate(t.currency, selectedCurrency);
+            if (rate) {
                 x.displayAmount = t.amount * rate;
                 x.displayCurrencyCode = Currency[selectedCurrency];
             } else {
@@ -119,14 +121,15 @@ export class DashboardTransactionsComponent implements OnInit {
     private getTransactionDisplayItems(transactions: Transaction[]): TransactionDisplayItem[] {
         return transactions.map(t => this.getTransactionDisplayItem(t));
     }
+
 }
 
 export class TransactionDisplayItem {
     transaction: Transaction;
     category: Category = null;
     account: UserAccount = null;
-    selected: boolean = false;
+    selected = false;
     transactionCurrencyCode: string = null;
-    displayAmount: number = 0;
+    displayAmount = 0;
     displayCurrencyCode: string = null;
 }
