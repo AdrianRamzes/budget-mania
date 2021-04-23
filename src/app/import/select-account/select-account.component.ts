@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ImportService } from '../import.service';
-import { UserAccount } from 'src/app/models/user-account.model';
+import { TransactionsAccount } from 'src/app/models/transactions-account.model';
 import { __importDefault } from 'tslib';
 
 @Component({
@@ -9,9 +9,9 @@ import { __importDefault } from 'tslib';
 })
 export class SelectAccountComponent implements OnInit {
 
-  accounts: UserAccount[] = [];
+  accounts: TransactionsAccount[] = [];
 
-  selectedAccount: UserAccount;
+  selectedAccount: TransactionsAccount;
 
   constructor(private importService: ImportService) {
   }

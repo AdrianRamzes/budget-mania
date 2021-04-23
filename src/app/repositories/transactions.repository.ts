@@ -26,12 +26,6 @@ export class TransactionsRepository {
     }
 
     list(): Transaction[] {
-        const t = new Transaction();
-        t.date = new Date();
-        t.information = 'test';
-        t.amount = -1;
-        t.currency = Currency.CHF;
-        return [t];
         if (this._TRANSACTIONS == null) {
             this.load();
         }

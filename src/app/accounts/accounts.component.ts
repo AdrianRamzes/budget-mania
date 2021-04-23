@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { UserAccount } from '../models/user-account.model';
+import { TransactionsAccount } from '../models/transactions-account.model';
 import { NgForm } from '@angular/forms';
 import { Currency } from '../models/currency.enum';
 import { AccountsRepository } from '../repositories/accounts.repository';
@@ -10,8 +10,8 @@ import { AccountsRepository } from '../repositories/accounts.repository';
 })
 export class AccountsComponent implements OnInit {
 
-    accounts: UserAccount[] = [];
-    selectedAccount: UserAccount;
+    accounts: TransactionsAccount[] = [];
+    selectedAccount: TransactionsAccount;
 
     currencies: CurrencyDisplayItem[] = [];
 
@@ -28,7 +28,7 @@ export class AccountsComponent implements OnInit {
         });
     }
 
-    onAccountSelected(a: UserAccount) {
+    onAccountSelected(a: TransactionsAccount) {
         this.selectedAccount = a;
     }
 
@@ -40,7 +40,7 @@ export class AccountsComponent implements OnInit {
             return;
         }
         
-        let acc = new UserAccount();
+        let acc = new TransactionsAccount();
         acc.IBAN = v.IBAN;
         acc.name = v.name;
         acc.fullName = v.fullName;
@@ -57,7 +57,7 @@ export class AccountsComponent implements OnInit {
             let edited = {
                 ...this.selectedAccount,
                 ...form.value
-            } as UserAccount;
+            } as TransactionsAccount;
             edited.currency = parseInt(form.value.currency);
             this.accountsRepository.edit(edited);
         }

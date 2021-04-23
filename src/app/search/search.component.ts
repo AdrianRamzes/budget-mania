@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import { Component, OnInit } from '@angular/core';
 import { Transaction } from 'src/app/models/transaction.model';
 import { Category } from 'src/app/models/category.model';
-import { UserAccount } from 'src/app/models/user-account.model';
+import { TransactionsAccount } from 'src/app/models/transactions-account.model';
 import { Currency } from 'src/app/models/currency.enum';
 import { SettingsRepository } from 'src/app/repositories/settings.repository';
 import { ExchangeRepository } from 'src/app/repositories/exchange.repository';
@@ -127,7 +127,7 @@ export class SearchComponent implements OnInit {
 export class TransactionDisplayItem {
     transaction: Transaction;
     category: Category = null;
-    account: UserAccount = null;
+    account: TransactionsAccount = null;
     selected = false;
     transactionCurrencyCode: string = null;
     displayAmount = 0;

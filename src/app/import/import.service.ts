@@ -5,7 +5,7 @@ import { StagedTransaction } from '../import/stagedTransaction.model';
 import * as _ from 'lodash';
 
 import { TransactionParser } from './parsers/transactionParser';
-import { UserAccount } from '../models/user-account.model';
+import { TransactionsAccount } from '../models/transactions-account.model';
 import { Subject } from 'rxjs';
 
 import { SantanderBankPolskaParser } from './parsers/santanderPolskaParser';
@@ -19,8 +19,8 @@ import { TransactionsRepository } from '../repositories/transactions.repository'
 export class ImportService {
 
     stagedTransactionsChanged = new EventEmitter<StagedTransaction[]>();
-    selectedAccountChanged = new EventEmitter<UserAccount>();
-    accountsChanges = new Subject<UserAccount[]>();
+    selectedAccountChanged = new EventEmitter<TransactionsAccount>();
+    accountsChanges = new Subject<TransactionsAccount[]>();
 
     private _stagedTransactions: StagedTransaction[] = [];
     get stagedTransactions() {
@@ -31,20 +31,20 @@ export class ImportService {
         this.stagedTransactionsChanged.emit(this.stagedTransactions);
     }
 
-    private _selectedAccount: UserAccount;
+    private _selectedAccount: TransactionsAccount;
     get selectedAccount() {
         return this._selectedAccount;
     }
-    set selectedAccount(v: UserAccount) {
+    set selectedAccount(v: TransactionsAccount) {
         this._selectedAccount = v;
         this.selectedAccountChanged.emit(this.selectedAccount);
     }
 
-    private _accounts: UserAccount[];
+    private _accounts: TransactionsAccount[];
     get accounts() {
         return this._accounts;
     }
-    set accounts(v: UserAccount[]) {
+    set accounts(v: TransactionsAccount[]) {
         this._accounts = v;
         this.accountsChanges.next(this.accounts)
     }

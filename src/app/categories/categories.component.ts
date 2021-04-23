@@ -4,7 +4,7 @@ import * as $ from 'jquery';
 import { Component, OnInit } from '@angular/core';
 import { Transaction } from '../models/transaction.model';
 import { Category } from '../models/category.model';
-import { UserAccount } from '../models/user-account.model';
+import { TransactionsAccount } from '../models/transactions-account.model';
 import { environment } from 'src/environments/environment';
 import { Currency } from '../models/currency.enum';
 import { CategoriesRepository } from '../repositories/categories.repository';
@@ -160,7 +160,7 @@ export class TransactionDisplayItem {
     transaction: Transaction;
     currencyCode: string = null;
     category: Category = null;
-    account: UserAccount = null;
+    account: TransactionsAccount = null;
     suggestedCategory: Category = null;
     selected: boolean = false;
 }

@@ -1,8 +1,7 @@
 import { Currency } from './currency.enum';
 import { Guid } from 'guid-typescript';
 
-//TODO: change name and make sure that contains all necessary fields
-export class UserAccount {
+export class TransactionsAccount {
     guid: string;
     name: string;
     fullName: string;
@@ -11,6 +10,6 @@ export class UserAccount {
     currency: Currency;
 
     constructor() {
-        this.guid = Guid.create().toString();
+        this.guid = Object.freeze(Guid.create().toString());
     }
 }

@@ -54,6 +54,6 @@ export class RevolutParser extends TransactionParserBase implements TransactionP
         // Lazy motherfu***** from revolut don't know how to do csv exports.
         // https://community.revolut.com/t/statement-export-csv-date-formatting/75661
 
-        return moment(revolutGarbageData, "DD MMMM YYYY", "pl").toDate();
+        return moment(revolutGarbageData, "DD MMMM YYYY").toDate();
     }
 }
