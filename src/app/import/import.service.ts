@@ -12,6 +12,7 @@ import { SantanderBankPolskaParser } from './parsers/santanderPolskaParser';
 import { MBankPolskaParser } from './parsers/mbankPolskaParser';
 import { INGLuxembourgParser } from './parsers/ingLuxembourgParser';
 import { RevolutParser } from './parsers/revolutParser';
+import { UBSSwitzerlandParser } from './parsers/ubsSwitzerlandParser';
 import { AccountsRepository } from '../repositories/accounts.repository';
 import { TransactionsRepository } from '../repositories/transactions.repository';
 
@@ -46,14 +47,15 @@ export class ImportService {
     }
     set accounts(v: TransactionsAccount[]) {
         this._accounts = v;
-        this.accountsChanges.next(this.accounts)
+        this.accountsChanges.next(this.accounts);
     }
 
     private parsers: TransactionParser[] = [
         new SantanderBankPolskaParser(),
         new MBankPolskaParser(),
         new INGLuxembourgParser(),
-        new RevolutParser()
+        new RevolutParser(),
+        new UBSSwitzerlandParser(),
     ];
 
     constructor(private transactionsRepository: TransactionsRepository,

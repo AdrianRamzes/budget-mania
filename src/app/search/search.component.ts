@@ -23,7 +23,7 @@ export class SearchComponent implements OnInit {
     filteredTransactions: TransactionDisplayItem[] = [];
 
     filterText = '';
-    displayCount = 15;
+    displayCount = 15; // TODO: Solve it for big screens? Button or detection?
     totalSum = 0;
     filteredAvg = 0;
     filteredMin = 0;
@@ -57,12 +57,16 @@ export class SearchComponent implements OnInit {
         }
     }
 
+    onLoadMoreClick() {
+        this.loadMoreTransactions();
+    }
+
     private loadMoreTransactions(): void {
         this.displayCount = Math.min(this.displayCount + 10, this.filteredTransactions.length);
     }
 
     private updateDisplayedTransactions(transactions: Transaction[]): void {
-        this.allTransactions = _.sortBy(this.getTransactionDisplayItems(transactions), [(o) => o.transaction.date]);
+        this.allTransactions = _.sortBy(this.getTransactionDisplayItems(transactions), [(o) => o.transaction.date]).reverse();
         this.updateFilteredTransactions();
     }
 

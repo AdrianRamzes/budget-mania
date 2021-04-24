@@ -20,12 +20,12 @@
     <a class="navbar-brand" [routerLink]="['/accounts']" routerLinkActive="router-link-active">
         Accounts
     </a>
-    <!-- <a class="navbar-brand" [routerLink]="['/categories']" routerLinkActive="router-link-active">
+    <a class="navbar-brand" [routerLink]="['/categories']" routerLinkActive="router-link-active">
         Categories
     </a>
     <a class="navbar-brand" [routerLink]="['/manage-categories']" routerLinkActive="router-link-active">
         Manage Categories
-    </a> -->
+    </a>
     <span class="navbar-text" *ngIf="!isDirty">Saved</span>
     <button class="btn btn-danger" *ngIf="isDirty" (click)="onSave()">Save</button>
     <div class="dropdown">

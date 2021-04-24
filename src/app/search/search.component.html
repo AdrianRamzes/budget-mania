@@ -26,6 +26,7 @@
         </tr>
     </tbody>
 </table>
-<div *ngIf="displayCount < filteredTransactions.length" class="alert alert-primary" role="alert">
-    Scroll down to load more...
+<div *ngIf="displayCount < filteredTransactions.length" class="alert alert-primary" (click)="onLoadMoreClick()"
+    role="alert">
+    Click or Scroll down to load more...
 </div>

@@ -41,7 +41,6 @@ export abstract class TransactionParserBase {
                 if (typeof (fileReader.result) !== "string") {
                     reject();
                 }
-
                 let result = postProcess(fileReader.result as string);
                 resolve(result);
             };
