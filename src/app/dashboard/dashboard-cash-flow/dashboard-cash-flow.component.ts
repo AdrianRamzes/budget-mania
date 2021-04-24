@@ -1,6 +1,6 @@
-import { Chart } from 'chart.js'
-import * as _ from 'lodash'
-import * as moment from 'moment'
+import { Chart } from 'chart.js';
+import * as _ from 'lodash';
+import * as moment from 'moment';
 
 import { Component, OnInit } from '@angular/core';
 import { Transaction } from 'src/app/models/transaction.model';
@@ -15,7 +15,7 @@ import { TransactionsRepository } from 'src/app/repositories/transactions.reposi
 })
 export class DashboardCashFlowComponent implements OnInit {
 
-    resolution: string = 'YYYY-MM';
+    resolution = 'YYYY-MM';
 
     chart = null;
 
@@ -38,7 +38,7 @@ export class DashboardCashFlowComponent implements OnInit {
         this.exchangeRepository.changed.subscribe(e => {
             this.updateBuckets(this.transactionsRepository.list());
             this.reloadChart();
-        })
+        });
 
         this.settingsRepository.changed.subscribe(e => {
             this.updateBuckets(this.transactionsRepository.list());
@@ -56,18 +56,18 @@ export class DashboardCashFlowComponent implements OnInit {
 
     private reloadChart() {
 
-        let labels = _.uniq(this.getAllDaysBetween(this.minDate, this.maxDate)
+        const labels = _.uniq(this.getAllDaysBetween(this.minDate, this.maxDate)
             .map(d => d.format(this.resolution)));
-        let datasets = this.getDatasets(this.minDate, this.maxDate);
+        const datasets = this.getDatasets(this.minDate, this.maxDate);
 
         this.drawChart(labels, datasets);
     }
 
     private updateBuckets(transactions: Transaction[]) {
-        let changePerDay = {};
+        const changePerDay = {};
         transactions = _.sortBy(transactions, t => t.date);
         transactions.forEach(t => {
-            let dayKey = moment(t.date).format("YYYY-MM-DD");
+            const dayKey = moment(t.date).format('YYYY-MM-DD');
 
             if (!changePerDay[t.accountGuid]) {
                 changePerDay[t.accountGuid] = {};
@@ -82,33 +82,33 @@ export class DashboardCashFlowComponent implements OnInit {
 
         this.minDate = moment();
         this.maxDate = moment();
-        if(transactions.length > 0) {
-            this.minDate = moment(_.minBy(transactions, t => t.date).date) || moment();
-            this.maxDate = moment(_.maxBy(transactions, t => t.date).date) || moment();
+        if (transactions.length > 0) {
+            this.minDate = moment(_.minBy(transactions, t => t.date).date).add(-1, 'days') || moment();
+            this.maxDate = moment(_.maxBy(transactions, t => t.date).date).add(1, 'days') || moment();
         }
 
-        let accounts = this.accountsRepository.list();
-        let allDays = this.getAllDaysBetween(this.minDate, this.maxDate);
+        const accounts = this.accountsRepository.list();
+        const allDays = this.getAllDaysBetween(this.minDate, this.maxDate);
 
-        let selectedCurrency = this.settingsRepository.getSelectedCurrency();
+        const selectedCurrency = this.settingsRepository.getSelectedCurrency();
         this.buckets = {};
         accounts.forEach(a => {
             this.buckets[a.guid] = {};
             let sum = 0;
-            let rate = this.exchangeRepository.getRate(a.currency, selectedCurrency)
+            const rate = this.exchangeRepository.getRate(a.currency, selectedCurrency);
             allDays.forEach(d => {
-                let dayKey = d.format("YYYY-MM-DD");
-                let monthKey = d.format("YYYY-MM");
-                let yearKey = d.format("YYYY");
+                const dayKey = d.format('YYYY-MM-DD');
+                const monthKey = d.format('YYYY-MM');
+                const yearKey = d.format('YYYY');
 
                 if (changePerDay[a.guid] && changePerDay[a.guid][dayKey]) {
                     sum += changePerDay[a.guid][dayKey];
                 }
 
-                let normalizedValue = Math.round(sum * rate * 100) / 100;
+                const normalizedValue = Math.round(sum * rate * 100) / 100;
                 this.buckets[a.guid][dayKey] = normalizedValue;
 
-                //aggregate by month and year
+                // aggregate by month and year
                 if (!this.buckets[a.guid][monthKey]) {
                     this.buckets[a.guid][monthKey] = 0;
                 }
@@ -124,13 +124,13 @@ export class DashboardCashFlowComponent implements OnInit {
 
     private getDatasets(from: moment.Moment, to: moment.Moment) {
 
-        let keys = _.uniq(this.getAllDaysBetween(from, to).map(d => d.format(this.resolution)));
-        let accounts = this.accountsRepository.list();
+        const keys = _.uniq(this.getAllDaysBetween(from, to).map(d => d.format(this.resolution)));
+        const accounts = this.accountsRepository.list();
 
-        let total = {};
-        let datasets = [];
+        const total = {};
+        const datasets = [];
         accounts.forEach(a => {
-            let data = [];
+            const data = [];
             keys.forEach(key => {
                 data.push(this.buckets[a.guid][key]);
 
@@ -140,22 +140,22 @@ export class DashboardCashFlowComponent implements OnInit {
                 total[key] += this.buckets[a.guid][key];
             });
 
-            //TODO: account color, if null then fallback random color
-            let randomR = Math.random() * 255;
-            let randomG = Math.random() * 255;
-            let randomB = Math.random() * 255;
+            // TODO: account color, if null then fallback random color
+            const randomR = Math.random() * 255;
+            const randomG = Math.random() * 255;
+            const randomB = Math.random() * 255;
 
             datasets.push({
                 label: a.name,
                 lineTension: 0,
                 backgroundColor: `rgba(${randomR}, ${randomG}, ${randomB}, 0.5)`,
                 borderColor: `rgb(${randomR}, ${randomG}, ${randomB})`,
-                data: data
+                data
             });
         });
 
         datasets.push({
-            label: "Total",
+            label: 'Total',
             lineTension: 0,
             backgroundColor: 'rgba(255, 0, 0, 0)',
             borderColor: 'rgb(255, 0, 0)',
@@ -166,7 +166,7 @@ export class DashboardCashFlowComponent implements OnInit {
     }
 
     private getAllDaysBetween(min: moment.Moment, max: moment.Moment): moment.Moment[] {
-        let result: moment.Moment[] = [];
+        const result: moment.Moment[] = [];
 
         let d = moment(min).clone();
         while (d <= moment(max)) {
@@ -188,8 +188,8 @@ export class DashboardCashFlowComponent implements OnInit {
                 type: 'line',
                 // The data for our dataset
                 data: {
-                    labels: labels,
-                    datasets: datasets
+                    labels,
+                    datasets
                 },
                 // Configuration options go here
                 options: {}
