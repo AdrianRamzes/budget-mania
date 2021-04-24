@@ -41,11 +41,9 @@ export class UBSSwitzerlandParser extends TransactionParserBase implements Trans
     };
 
     parse(input: File): Promise<Transaction[]> {
-
-        if (!input.name.startsWith('export')) {
-            return Promise.reject(`Not a file from ${this.name}`);
+        if (!input.name.startsWith('export ') && input.name !== 'export.csv') {
+            return Promise.reject(`Not a file for ${this.name} parser.`);
         }
-
         const getTransactions = (fileContent: string): Transaction[] => {
             const prepared = fileContent
                 .split(/\r?\n/)

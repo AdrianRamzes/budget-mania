@@ -34,6 +34,9 @@ export class AccountsRepository {
     }
 
     get(guid: string): TransactionsAccount {
+        if (this.ACCOUNTS == null) {
+            this.load();
+        }
         return _.find(this.ACCOUNTS, a => a.guid === guid) || null;
     }
 

@@ -1,7 +1,6 @@
 import * as _ from "lodash";
 
 import { Currency } from 'src/app/models/currency.enum';
-import { DataService } from '../data/data.service';
 import { EventEmitter, Injectable } from '@angular/core';
 
 @Injectable({providedIn: 'root'})
@@ -13,12 +12,8 @@ export class SettingsRepository {
 
     private _SETTINGS: { [name: string]: any } = null;
 
-    constructor(private dataService: DataService) {
-        this.dataService.dataChanged.subscribe(key => {
-            if (key === this._KEY) {
-                this.load();
-            }
-        });
+    constructor() {
+        this.load();
     }
 
     all(): { [name: string]: string } {
@@ -34,12 +29,14 @@ export class SettingsRepository {
 
     set(name: string, value: any): void {
         this._SETTINGS[name] = value;
-        this.dataService.set(this._KEY, this._SETTINGS);
+        localStorage.setItem(this._KEY, JSON.stringify(this._SETTINGS));
+        this.emitChanges();
     }
 
     remove(name: string) {
         delete this._SETTINGS[name];
-        this.dataService.set(this._KEY, this._SETTINGS);
+        localStorage.setItem(this._KEY, JSON.stringify(this._SETTINGS));
+        this.emitChanges();
     }
 
     getSelectedCurrency(): Currency {
@@ -55,14 +52,18 @@ export class SettingsRepository {
         this.set(SettingsKeys.SELECTED_CURRENCY, c);
     }
 
+    private emitChanges() {
+        // TODO: check differentce and emit changes
+        // for now - emit change for every key
+        for (const key in this._SETTINGS) {
+            this.changed.emit(key);
+        }
+    }
+
     private load(): void {
-        if (this.dataService.containsKey(this._KEY)) {
-            this._SETTINGS = this.dataService.get(this._KEY);
-            // TODO: check differentce and emit changes
-            // for now - emit change for every key
-            for(const key in this._SETTINGS) {
-                this.changed.emit(key);
-            }
+        if (localStorage.getItem(this._KEY) !== null) {
+            this._SETTINGS = JSON.parse(localStorage.getItem(this._KEY));
+            this.emitChanges();
         } else {
             this._SETTINGS = {};
         }

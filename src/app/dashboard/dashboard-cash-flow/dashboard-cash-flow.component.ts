@@ -22,6 +22,7 @@ export class DashboardCashFlowComponent implements OnInit {
     private minDate: moment.Moment = moment();
     private maxDate: moment.Moment = moment();
     private buckets = {};
+    private nonEmptyAccounts = [];
 
     constructor(private transactionsRepository: TransactionsRepository,
                 private accountsRepository: AccountsRepository,
@@ -86,13 +87,12 @@ export class DashboardCashFlowComponent implements OnInit {
             this.minDate = moment(_.minBy(transactions, t => t.date).date).add(-1, 'days') || moment();
             this.maxDate = moment(_.maxBy(transactions, t => t.date).date).add(1, 'days') || moment();
         }
-
-        const accounts = this.accountsRepository.list();
+        this.nonEmptyAccounts = Object.keys(changePerDay).map(e => this.accountsRepository.get(e));
         const allDays = this.getAllDaysBetween(this.minDate, this.maxDate);
 
         const selectedCurrency = this.settingsRepository.getSelectedCurrency();
         this.buckets = {};
-        accounts.forEach(a => {
+        this.nonEmptyAccounts.forEach(a => {
             this.buckets[a.guid] = {};
             let sum = 0;
             const rate = this.exchangeRepository.getRate(a.currency, selectedCurrency);
@@ -125,11 +125,10 @@ export class DashboardCashFlowComponent implements OnInit {
     private getDatasets(from: moment.Moment, to: moment.Moment) {
 
         const keys = _.uniq(this.getAllDaysBetween(from, to).map(d => d.format(this.resolution)));
-        const accounts = this.accountsRepository.list();
 
         const total = {};
         const datasets = [];
-        accounts.forEach(a => {
+        this.nonEmptyAccounts.forEach(a => {
             const data = [];
             keys.forEach(key => {
                 data.push(this.buckets[a.guid][key]);
@@ -150,7 +149,8 @@ export class DashboardCashFlowComponent implements OnInit {
                 lineTension: 0,
                 backgroundColor: `rgba(${randomR}, ${randomG}, ${randomB}, 0.5)`,
                 borderColor: `rgb(${randomR}, ${randomG}, ${randomB})`,
-                data
+                data,
+                hidden: true,
             });
         });
 
@@ -159,7 +159,7 @@ export class DashboardCashFlowComponent implements OnInit {
             lineTension: 0,
             backgroundColor: 'rgba(255, 0, 0, 0)',
             borderColor: 'rgb(255, 0, 0)',
-            data: Object.values(total).map(v => Math.round((v as number) * 100) / 100)
+            data: Object.values(total).map(v => Math.round((v as number) * 100) / 100),
         });
 
         return datasets;
