@@ -31,8 +31,8 @@ export class DashboardCashFlowComponent implements OnInit {
 
     ngOnInit() {
 
-        this.transactionsRepository.changed.subscribe(e => {
-            this.updateBuckets(e);
+        this.transactionsRepository.changed.subscribe(() => {
+            this.updateBuckets(this.transactionsRepository.list());
             this.reloadChart();
         });
 

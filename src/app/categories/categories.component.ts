@@ -33,10 +33,9 @@ export class CategoriesComponent implements OnInit {
                 private accountsRepository: AccountsRepository) { }
 
     ngOnInit() {
-        this.transactionsRepository.changed.subscribe((e) => {
-            //this.allTransactions = e;
+        this.transactionsRepository.changed.subscribe(() => {
             this.categories = this.categoriesRepository.list();
-            this.allTransactionDisplayItems = this.getTransactionDisplayItems(e);
+            this.allTransactionDisplayItems = this.getTransactionDisplayItems(this.transactionsRepository.list());
             this.filteredTransactions = this.filterTransactions(this.allTransactionDisplayItems, this.filter);
             this.updateSuggestedCategories();
         });

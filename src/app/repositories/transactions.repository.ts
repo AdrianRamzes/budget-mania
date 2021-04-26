@@ -2,16 +2,14 @@ import * as _ from 'lodash';
 
 import { DataService } from '../data/data.service';
 import { EventEmitter, Injectable } from '@angular/core';
-import { Guid } from 'guid-typescript';
 import { Transaction } from '../models/transaction.model';
-import { Currency } from '../models/currency.enum';
 
 @Injectable({providedIn: 'root'})
 export class TransactionsRepository {
 
     private static readonly _KEY: string = 'transactions';
 
-    changed: EventEmitter<Transaction[]> = new EventEmitter();
+    changed: EventEmitter<void> = new EventEmitter();
 
     private _TRANSACTIONS: Transaction[] = null;
 
@@ -19,18 +17,27 @@ export class TransactionsRepository {
         dataService.dataChanged.subscribe((key) => {
             if (key === TransactionsRepository._KEY) {
                 this.load();
-                this.changed.emit(this.list());
+                this.changed.emit();
             }
         });
         this.load();
     }
 
-    list(): Transaction[] {
-        if (this._TRANSACTIONS == null) {
-            this.load();
+    get(guid: string): Transaction {
+        if (!this.contains(guid)) {
+            return null;
         }
 
-        return this._TRANSACTIONS.slice();
+        return this._TRANSACTIONS.find(e => e.guid === guid);
+    }
+
+    /** Returns list of all transactions. */
+    list(): Transaction[] {
+        return this.fixTypes(this.deepClone(this._TRANSACTIONS));
+    }
+
+    contains(guid: string): boolean {
+        return this._TRANSACTIONS.findIndex(e => e.guid === guid) >= 0;
     }
 
     add(transaction: Transaction): void {
@@ -38,68 +45,72 @@ export class TransactionsRepository {
     }
 
     addMany(arr: Transaction[]): void {
-        const transactions = this.list();
-        transactions.push(...arr);
-        this.set(transactions);
+        this._TRANSACTIONS.push(...arr);
+        this.update();
     }
 
+    /** Finds existing transaction by guid and then replace it with passed one.
+     *
+     * Throws error if transaction does not exist.
+     */
     edit(t: Transaction) {
         this.editMany([t]);
     }
 
     editMany(arr: Transaction[]): void {
-        const transactions = this.list();
         arr.forEach(t => {
-            const i = _.findIndex(transactions, {guid: t.guid});
-            transactions[i] = t;
+            const i = _.findIndex(this._TRANSACTIONS, { guid: t.guid });
+            this._TRANSACTIONS[i] = t;
         });
-        this.set(transactions);
+        this.update();
     }
 
-    remove(t: Transaction): void {
-        this.removeMany([t]);
+    remove(guid: string): void {
+        this.removeMany([guid]);
     }
 
-    removeMany(arr: Transaction[]): void {
-        const transactions = this.list();
-        _.remove(transactions, (x) => !!_.find(arr, (t) => t.guid === x.guid));
-        this.set(transactions);
+    removeMany(guids: string[]): void {
+        _.remove(this._TRANSACTIONS, (x) => _.find(guids, t => t === x.guid));
+        this.update();
     }
 
     private load(): void {
         if (this.dataService.containsKey(TransactionsRepository._KEY)) {
             const data = this.dataService.get(TransactionsRepository._KEY);
-            this._TRANSACTIONS = this.getTransactions(data);
+            this._TRANSACTIONS = this.fixTypes(data);
         } else {
             this._TRANSACTIONS = [];
         }
     }
 
-    private set(value: Transaction[]) {
-        this._TRANSACTIONS = (value || []).slice();
+    private update() {
         this.dataService.set(TransactionsRepository._KEY, this._TRANSACTIONS);
     }
 
-    private getTransactions(deserialized: any[]): Transaction[] {
-        return (deserialized || [])
-        .map((t) => {
-            const newTransaction = new Transaction();
-            newTransaction.guid = t.guid || Guid.create().toString();
-            newTransaction.information = t.information;
-            newTransaction.beneficiaryName = t.beneficiaryName || null;
-            newTransaction.identifier = t.transactionIdentifier || null;
-            newTransaction.IBAN = t.IBAN;
-            newTransaction.sourceIBAN = t.sourceIBAN || null;
-            newTransaction.destinationIBAN = t.destinationIBAN || null;
-            newTransaction.amount = t.amount;
-            newTransaction.currency = t.currency;
-            newTransaction.date = new Date(t.date);
-            // newTransaction.accountingDate = t.accountingDate ? new Date(t.accountingDate) : null;
-            newTransaction.valueDate = t.valueDate ? new Date(t.valueDate) : null;
-            newTransaction.importDate = t.importDate || null;
-            newTransaction.importGuid = t.importGuid || null;
-            newTransaction.categoryGuid = t.categoryGuid || null;
+    private deepClone(obj: any): any {
+        return JSON.parse(JSON.stringify(obj));
+    }
+
+    private fixTypes(deserialized: any[]): Transaction[] {
+        return deserialized.map((t) => {
+            const newTransaction = new Transaction(t.guid);
+            newTransaction.IBAN = t.IBAN || null;
             newTransaction.accountGuid = t.accountGuid || null;
+            newTransaction.addressLine = t.addressLine || null;
+            newTransaction.amount = t.amount;
+            newTransaction.beneficiaryDetails = t.beneficiaryDetails || null;
+            newTransaction.beneficiaryName = t.beneficiaryName || null;
+            newTransaction.categoryGuid = t.categoryGuid || null;
+            newTransaction.currency = t.currency || null;
+            newTransaction.date = t.date ? new Date(t.date) : null;
+            newTransaction.destinationIBAN = t.destinationIBAN || null;
+            newTransaction.information = t.information || null;
+            newTransaction.identifier = t.identifier || null;
+            newTransaction.importDate = t.importDate ? new Date(t.importDate) : null;
+            newTransaction.importGuid = t.importGuid || null;
+            newTransaction.reference = t.reference || null;
+            newTransaction.sourceIBAN = t.sourceIBAN || null;
+            newTransaction.valueDate = t.valueDate ? new Date(t.valueDate) : null;
             return newTransaction;
         });
     }

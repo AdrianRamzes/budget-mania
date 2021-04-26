@@ -10,7 +10,7 @@ import { Guid } from 'guid-typescript';
  * https://openbanking.atlassian.net/wiki/spaces/DZ/pages/5785171/Account+and+Transaction+API+Specification+-+v1.1.0
  */
 export class Transaction {
-    guid: string;
+    readonly guid: string;
 
     /** Unique identifier for the transaction within an servicing institution.
      * This identifier is both unique and immutable.
@@ -96,8 +96,10 @@ export class Transaction {
     categoryGuid: string = null;
     accountGuid: string = null;
 
-    constructor() {
-        this.guid = Object.freeze(Guid.create().toString());
+    constructor(guid: string = null) {
+        this.guid = guid != null
+            ? Object.freeze(guid)
+            : Object.freeze(Guid.create().toString());
     }
 
     // TODO: equals with guid

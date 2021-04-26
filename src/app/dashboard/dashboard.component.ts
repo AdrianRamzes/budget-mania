@@ -13,7 +13,7 @@ export class DashboardComponent implements OnInit {
     constructor(private transactionsRepository: TransactionsRepository) { }
 
     ngOnInit() {
-        this.transactionsRepository.changed.subscribe((e) => this.transactions = e)
+        this.transactionsRepository.changed.subscribe(() => this.transactions = this.transactionsRepository.list());
         this.transactions = this.transactionsRepository.list();
     }
 }
