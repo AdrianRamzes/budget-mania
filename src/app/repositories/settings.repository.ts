@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import * as _ from 'lodash';
 
 import { Currency } from 'src/app/models/currency.enum';
 import { EventEmitter, Injectable } from '@angular/core';
@@ -10,67 +10,42 @@ export class SettingsRepository {
 
     private readonly _KEY: string = 'settings';
 
-    private _SETTINGS: { [name: string]: any } = null;
+    private _SETTINGS: { [name: string]: any } = {};
 
     constructor() {
         this.load();
     }
 
-    all(): { [name: string]: string } {
-        return this._SETTINGS;
-    }
-
-    get(name: string): string {
-        if (name in this._SETTINGS) {
-            return this._SETTINGS[name];
-        }
-        return null;
-    }
-
-    set(name: string, value: any): void {
-        this._SETTINGS[name] = value;
-        localStorage.setItem(this._KEY, JSON.stringify(this._SETTINGS));
-        this.emitChanges();
-    }
-
-    remove(name: string) {
-        delete this._SETTINGS[name];
-        localStorage.setItem(this._KEY, JSON.stringify(this._SETTINGS));
-        this.emitChanges();
-    }
-
     getSelectedCurrency(): Currency {
-        if (this._SETTINGS && SettingsKeys.SELECTED_CURRENCY in this._SETTINGS) {
-            return parseInt(this._SETTINGS[SettingsKeys.SELECTED_CURRENCY], 10);
-        }
-        return Currency.EUR;
-    }
-    setSelectedCurrency(c: Currency) {
-        if (!this._SETTINGS) {
-            this._SETTINGS = {};
-        }
-        this.set(SettingsKeys.SELECTED_CURRENCY, c);
+        return this.get(SettingsKeys.SELECTED_CURRENCY) || Currency.EUR;
     }
 
-    private emitChanges() {
-        // TODO: check differentce and emit changes
-        // for now - emit change for every key
-        for (const key in this._SETTINGS) {
-            this.changed.emit(key);
-        }
+    setSelectedCurrency(c: Currency) {
+        this.set(SettingsKeys.SELECTED_CURRENCY, c);
     }
 
     private load(): void {
         if (localStorage.getItem(this._KEY) !== null) {
             this._SETTINGS = JSON.parse(localStorage.getItem(this._KEY));
-            this.emitChanges();
+            // Emit change for all keys
+            this.changed.emit(SettingsKeys.SELECTED_CURRENCY);
         } else {
             this._SETTINGS = {};
         }
     }
 
-    private deserialize(deserialized: any): { [name: string]: string } {
-        return deserialized || {};
+    private contains(key: string): boolean {
+        return key in this._SETTINGS;
+    }
+
+    private get(key: string): any {
+        return this.contains(key) ? this._SETTINGS[key] : null;
+    }
+
+    private set(name: string, value: any): void {
+        this._SETTINGS[name] = value;
+        localStorage.setItem(this._KEY, JSON.stringify(this._SETTINGS));
+        this.changed.emit(name);
     }
 }
 

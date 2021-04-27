@@ -94,9 +94,7 @@ export class DataService {
             this.loading = true;
             this.stateChanged.emit(this.state);
             try {
-                if (this.storageGetPromise == null) {
-                    this.storageGetPromise = this.storage.get();
-                }
+                this.storageGetPromise = this.storage.get();
                 this.loadFromString(await this.storageGetPromise);
                 this.storageGetPromise = null;
                 if (!this.initialized) {
@@ -144,10 +142,8 @@ export class DataService {
 
     private loadFromString(jsonString: string): void {
         this.data = this.deserialize(jsonString);
-        for (const key in this.data) {
-            if (Object.prototype.hasOwnProperty.call(this.data, key)) {
-                this.dataChanged.emit(key);
-            }
+        for (const key of Object.keys(this.data)) {
+            this.dataChanged.emit(key);
         }
     }
 

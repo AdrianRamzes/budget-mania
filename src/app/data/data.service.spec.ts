@@ -103,14 +103,6 @@ describe('DataSevice Uninitialized', () => {
 
 describe('DataSevice Initializing', () => {
 
-    const getEmptyStorage = () => {
-        return new TestStorage(async () => '', async () => {});
-    };
-
-    const getInvalidStorage = () => {
-        return new TestStorage(async () => '}}}', async () => {});
-    };
-
     const getDummyStorage = () => {
         return new TestStorage(async () => {
             return JSON.stringify({
@@ -168,18 +160,38 @@ describe('DataSevice Initializing', () => {
     });
 
     it('handles empty storage', async () => {
-        const storage = getEmptyStorage();
+        const storage = new TestStorage(async () => '', async () => { });
         const dataService = getDataServiceInInitializingState(storage);
 
         await expectAsync(dataService.load()).toBeResolved();
+
         expect(dataService.get('someKey')).toBeNull();
     });
 
-    it('handles invalid storage', async () => {
-        const storage = getInvalidStorage();
+    it('handles invalid storage ("}}}")', async () => {
+        const storage = new TestStorage(async () => '}}}', async () => { });
         const dataService = getDataServiceInInitializingState(storage);
 
         await expectAsync(dataService.load()).toBeResolved();
+
+        expect(dataService.get('someKey')).toBeNull();
+    });
+
+    it('handles invalid storage (null)', async () => {
+        const storage = new TestStorage(async () => null, async () => { });
+        const dataService = getDataServiceInInitializingState(storage);
+
+        await expectAsync(dataService.load()).toBeResolved();
+
+        expect(dataService.get('someKey')).toBeNull();
+    });
+
+    it('handles invalid storage ("null")', async () => {
+        const storage = new TestStorage(async () => 'null', async () => { });
+        const dataService = getDataServiceInInitializingState(storage);
+
+        await expectAsync(dataService.load()).toBeResolved();
+
         expect(dataService.get('someKey')).toBeNull();
     });
 
