@@ -53,6 +53,21 @@ xdescribe('S3Storage (uses real S3 connection)', () => {
         expect(keys.length).toBe(1);
     });
 
+    it('creates single file if does not exist when get is multiple called', async () => {
+        let keys = (await S3.list('', requestConfig) as any[]).map(e => e.key);
+        await Promise.all(keys.map(key => S3.remove(key, requestConfig)));
+        keys = await S3.list('', requestConfig) as any[];
+        expect(keys.length).toBe(0);
+
+        const result1 = await storage.get();
+        const result2 = await storage.get();
+
+        keys = await S3.list('', requestConfig) as any[];
+        expect(result1).toBe('');
+        expect(result2).toBe('');
+        expect(keys.length).toBe(1);
+    });
+
     it('creates file if does not exist when put is called', async () => {
         let keys = (await S3.list('', requestConfig) as any[]).map(e => e.key);
         await Promise.all(keys.map(key => S3.remove(key, requestConfig)));

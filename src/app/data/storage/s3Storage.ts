@@ -23,9 +23,13 @@ export class S3Storage implements Storage {
     };
 
     async get() {
+        // firstRun is only needed for optimization purposes.
+        // To call exists() only once.
         if (this.firstRun) {
             if (!await this.exists()) {
                 await this.put('');
+                // settings it here to skip calling exists()
+                this.firstRun = false;
                 return '';
             }
             this.firstRun = false;
