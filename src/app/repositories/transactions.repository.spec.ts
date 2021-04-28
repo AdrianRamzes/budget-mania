@@ -297,7 +297,6 @@ describe('Transactions Repository', () => {
         expect(repository.changed.emit).not.toHaveBeenCalled();
     });
 
-    // TODO: add tests for dataService calls.
     it('calls dataService when suitable key was emitted', async () => {
         const t = new Transaction();
         const dataService = new TestDataService([t]);

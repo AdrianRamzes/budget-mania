@@ -2,64 +2,63 @@ import * as _ from 'lodash';
 
 import { DataService } from '../data/data.service';
 import { EventEmitter, Injectable } from '@angular/core';
-import { Guid } from 'guid-typescript';
 import { TransactionsAccount } from '../models/transactions-account.model';
 import { TransactionsRepository } from './transactions.repository';
 
 @Injectable({providedIn: 'root'})
 export class AccountsRepository {
 
-    changed: EventEmitter<TransactionsAccount[]> = new EventEmitter();
+    private static readonly _KEY: string = 'accounts';
 
-    private readonly _KEY: string = 'accounts';
+    changed: EventEmitter<void> = new EventEmitter();
 
-    private ACCOUNTS: TransactionsAccount[] = null;
+    private _ACCOUNTS: TransactionsAccount[] = null;
 
     constructor(private dataService: DataService,
                 private transactionsRepository: TransactionsRepository) {
 
         this.dataService.dataChanged.subscribe(key => {
-            if (key === this._KEY) {
+            if (key === AccountsRepository._KEY) {
                 this.load();
-                this.changed.emit(this.list());
+                this.changed.emit();
             }
         });
+        this.load();
     }
 
     list(): TransactionsAccount[] {
-        if (this.ACCOUNTS == null) {
-            this.load();
-        }
-        return this.ACCOUNTS.slice();
+        return this.fixTypes(this.deepClone(this._ACCOUNTS));
+    }
+
+    contains(guid: string): boolean {
+        return this._ACCOUNTS.findIndex(e => e.guid === guid) >= 0;
     }
 
     get(guid: string): TransactionsAccount {
-        if (this.ACCOUNTS == null) {
-            this.load();
+        if (!this.contains(guid)) {
+            return null;
         }
-        return _.find(this.ACCOUNTS, a => a.guid === guid) || null;
+
+        return this._ACCOUNTS.find(e => e.guid === guid);
     }
 
     add(a: TransactionsAccount): void {
-        const accounts = this.list();
-        accounts.push(a);
-        this.set(accounts);
+        this._ACCOUNTS.push(a);
+        this.update();
     }
 
     edit(a: TransactionsAccount): void {
-        const accounts = this.list();
-        const i = _.findIndex(accounts, { guid: a.guid });
-        accounts[i] = a;
-        this.set(accounts);
+        const i = _.findIndex(this._ACCOUNTS, { guid: a.guid });
+        this._ACCOUNTS[i] = a;
+        this.update();
     }
 
-    remove(a: TransactionsAccount) {
-        const accounts = this.list();
-        _.remove(accounts, (x) => x.guid === a.guid);
-        this.set(accounts);
+    remove(guid: string): void {
+        _.remove(this._ACCOUNTS, (x) => x.guid === guid);
+        this.update();
 
         const transactions = this.transactionsRepository.list()
-            .filter(x => x.accountGuid === a.guid);
+            .filter(x => x.accountGuid === guid);
 
         _.forEach(transactions, t => t.accountGuid = null);
 
@@ -67,28 +66,30 @@ export class AccountsRepository {
     }
 
     private load(): void {
-        if (this.dataService.containsKey(this._KEY)) {
-            const jsonStr = this.dataService.get(this._KEY);
-            this.ACCOUNTS = this.deserialize(jsonStr);
+        if (this.dataService.containsKey(AccountsRepository._KEY)) {
+            const data = this.dataService.get(AccountsRepository._KEY);
+            this._ACCOUNTS = this.fixTypes(data);
         } else {
-            this.ACCOUNTS = [];
+            this._ACCOUNTS = [];
         }
     }
 
-    private set(value: TransactionsAccount[]) {
-        this.ACCOUNTS = (value || []).slice();
-        this.dataService.set(this._KEY, this.ACCOUNTS);
+    private update() {
+        this.dataService.set(AccountsRepository._KEY, this._ACCOUNTS);
     }
 
-    private deserialize(deserialized: any[]): TransactionsAccount[] {
-        return (deserialized || []).map(a => {
-            const newAcc = new TransactionsAccount();
-            newAcc.guid = a.guid || Guid.create().toString();
-            newAcc.IBAN = a.IBAN;
-            newAcc.bankName = a.bankName;
-            newAcc.currency = a.currency;
-            newAcc.fullName = a.fullName;
-            newAcc.name = a.name;
+    private deepClone(obj: any): any {
+        return JSON.parse(JSON.stringify(obj));
+    }
+
+    private fixTypes(deserialized: any[]): TransactionsAccount[] {
+        return deserialized.map((a) => {
+            const newAcc = new TransactionsAccount(a.guid);
+            newAcc.IBAN = a.IBAN || null;
+            newAcc.bankName = a.bankName || null;
+            newAcc.currency = a.currency || null;
+            newAcc.fullName = a.fullName || null;
+            newAcc.name = a.name || null;
             return newAcc;
         });
     }
