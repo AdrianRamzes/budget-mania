@@ -1,100 +1,88 @@
 import { DataService } from '../data/data.service';
 import { Storage } from '../data/storage/storage.interface';
-import { Currency } from '../models/currency.enum';
-import { TransactionsAccount } from '../models/transactions-account.model';
-import { AccountsRepository } from './accounts.repository';
+import { Category } from '../models/category.model';
+import { CategoriesRepository } from './categories.repository';
 import { TransactionsRepository } from './transactions.repository';
 
-describe('Account Repository', () => {
+fdescribe('Category Repository', () => {
 
-    const getAccountRepository = async (accounts: any = [], transactions: any = []) => {
-        const dataService = new TestDataService(accounts, transactions);
+    const getCategoryRepository = async (categories: any = [], transactions: any = []) => {
+        const dataService = new TestDataService(categories, transactions);
         await dataService.load();
-        return new AccountsRepository(dataService, new TransactionsRepository(dataService));
+        return new CategoriesRepository(dataService, new TransactionsRepository(dataService));
     };
 
     it('returns empty list if dataService is empty', async () => {
-        const repository = await getAccountRepository();
+        const repository = await getCategoryRepository();
 
         expect(repository.list().length).toBe(0);
     });
 
     it('returns empty list if dataService has empty list', async () => {
-        const repository = await getAccountRepository([]);
+        const repository = await getCategoryRepository([]);
 
         expect(repository.list().length).toBe(0);
     });
 
-    it('returns accounts list if dataService is not empty', async () => {
-        const repository = await getAccountRepository([
-            new TransactionsAccount(),
+    it('returns categories list if dataService is not empty', async () => {
+        const repository = await getCategoryRepository([
+            new Category(),
         ]);
 
         expect(repository.list().length).toBe(1);
     });
 
-    it('returns copy of accounts list', async () => {
-        const repository = await getAccountRepository([
+    it('returns copy of trasactions list', async () => {
+        const repository = await getCategoryRepository([
             {
-                bankName: 'original',
-                currency: Currency.DKK
-            } as TransactionsAccount,
+                name: 'original',
+            } as Category,
         ]);
         const list = repository.list();
 
-        list[0].bankName = 'modified!';
-        list[0].currency = Currency.GBP;
+        list[0].name = 'modified!';
 
-        expect(repository.list()[0].bankName).toBe('original');
-        expect(repository.list()[0].currency).toBe(Currency.DKK);
+        expect(repository.list()[0].name).toBe('original');
     });
 
-    it('adds account to empty repository', async () => {
-        const repository = await getAccountRepository();
+    it('adds category to empty repository', async () => {
+        const repository = await getCategoryRepository();
 
-        repository.add(new TransactionsAccount());
+        repository.add(new Category());
 
         expect(repository.list().length).toBe(1);
     });
 
-    it('adds account to non empty repository', async () => {
-        const repository = await getAccountRepository([new TransactionsAccount()]);
+    it('adds category to non empty repository', async () => {
+        const repository = await getCategoryRepository([new Category()]);
 
-        repository.add(new TransactionsAccount());
+        repository.add(new Category());
 
         expect(repository.list().length).toBe(2);
     });
 
-    it('adds account with correct values', async () => {
-        const repository = await getAccountRepository();
-        const account = new TransactionsAccount();
-        account.IBAN = 'IBAN';
-        account.bankName = 'bankName';
-        account.currency = Currency.CZK;
-        account.fullName = 'fullName';
-        account.name = 'name';
+    it('adds category with correct values', async () => {
+        const repository = await getCategoryRepository();
+        const category = new Category();
+        category.name = 'name';
 
-        repository.add(account);
+        repository.add(category);
         const listResult = repository.list();
         const result = listResult[0];
 
-        expect(result.IBAN).toBe('IBAN');
-        expect(result.bankName).toBe('bankName');
-        expect(result.currency).toBe(Currency.CZK);
-        expect(result.fullName).toBe('fullName');
         expect(result.name).toBe('name');
     });
 
-    it('"get" returns account if exists', async () => {
-        const repository = await getAccountRepository([new TransactionsAccount('test-guid')]);
+    it('"get" returns category if exists', async () => {
+        const repository = await getCategoryRepository([new Category('test-guid')]);
 
         const actual = repository.get('test-guid');
 
         expect(actual).not.toBeNull();
     });
 
-    it('"get" returns null if account does not exist', async () => {
-        const repository = await getAccountRepository([new TransactionsAccount('test-guid')]);
+    it('"get" returns null if category does not exist', async () => {
+        const repository = await getCategoryRepository([new Category('test-guid')]);
 
         const actual = repository.get('wrong-guid');
 
@@ -102,41 +90,41 @@ describe('Account Repository', () => {
     });
 
     it('returns false when repository is empty', async () => {
-        const repository = await getAccountRepository();
+        const repository = await getCategoryRepository();
 
         expect(repository.contains('test-guid')).toBe(false);
     });
 
-    it('returns true when account exists in repository', async () => {
-        const repository = await getAccountRepository();
-        repository.add(new TransactionsAccount('test-guid'));
+    it('returns true when category exists in repository', async () => {
+        const repository = await getCategoryRepository();
+        repository.add(new Category('test-guid'));
 
         expect(repository.contains('test-guid')).toBe(true);
     });
 
-    it('returns false when account does not exist in repository', async () => {
-        const repository = await getAccountRepository();
-        repository.add(new TransactionsAccount('test-guid'));
+    it('returns false when category does not exist in repository', async () => {
+        const repository = await getCategoryRepository();
+        repository.add(new Category('test-guid'));
 
         expect(repository.contains('wrong-guid')).toBe(false);
     });
 
-    it('edits account', async () => {
-        let account = new TransactionsAccount();
-        account.name = 'account-name';
-        const repository = await getAccountRepository([account]);
+    it('edits category', async () => {
+        let category = new Category();
+        category.name = 'category-name';
+        const repository = await getCategoryRepository([category]);
 
-        account = repository.get(account.guid);
-        account.name = 'different-name';
-        repository.edit(account);
+        category = repository.get(category.guid);
+        category.name = 'different-name';
+        repository.edit(category);
 
-        expect(repository.get(account.guid).name).toBe('different-name');
+        expect(repository.get(category.guid).name).toBe('different-name');
     });
 
     it('removes acount', async () => {
-        const a1 = new TransactionsAccount();
-        const a2 = new TransactionsAccount();
-        const repository = await getAccountRepository([a1, a2]);
+        const a1 = new Category();
+        const a2 = new Category();
+        const repository = await getCategoryRepository([a1, a2]);
         expect(repository.list().length).toBe(2);
 
         repository.remove(a1.guid);
@@ -146,22 +134,22 @@ describe('Account Repository', () => {
         expect(repository.contains(a2.guid)).toBeTruthy();
     });
 
-    it('emits event when account is added', async () => {
-        const repository = await getAccountRepository();
+    it('emits event when category is added', async () => {
+        const repository = await getCategoryRepository();
         spyOn(repository.changed, 'emit').and.callThrough();
 
-        repository.add(new TransactionsAccount());
-        repository.add(new TransactionsAccount());
+        repository.add(new Category());
+        repository.add(new Category());
 
         expect(repository.changed.emit).toHaveBeenCalledTimes(2);
     });
 
-    it('emits event when account is edited', async () => {
-        const a1 = new TransactionsAccount();
-        const a2 = new TransactionsAccount();
+    it('emits event when category is edited', async () => {
+        const a1 = new Category();
+        const a2 = new Category();
         a1.name = 'a1-name';
         a2.name = 'a2-name';
-        const repository = await getAccountRepository([a1, a2]);
+        const repository = await getCategoryRepository([a1, a2]);
         a1.name = 'modified a1-name';
         a2.name = 'modified a1-name';
         spyOn(repository.changed, 'emit').and.callThrough();
@@ -172,10 +160,10 @@ describe('Account Repository', () => {
         expect(repository.changed.emit).toHaveBeenCalledTimes(2);
     });
 
-    it('emits event when account is removed', async () => {
-        const a1 = new TransactionsAccount();
-        const a2 = new TransactionsAccount();
-        const repository = await getAccountRepository([a1, a2]);
+    it('emits event when category is removed', async () => {
+        const a1 = new Category();
+        const a2 = new Category();
+        const repository = await getCategoryRepository([a1, a2]);
         spyOn(repository.changed, 'emit').and.callThrough();
 
         repository.remove(a1.guid);
@@ -185,8 +173,8 @@ describe('Account Repository', () => {
     });
 
     it('does not emit event when data is not changed', async () => {
-        const a = new TransactionsAccount();
-        const repository = await getAccountRepository([a]);
+        const a = new Category();
+        const repository = await getCategoryRepository([a]);
         spyOn(repository.changed, 'emit').and.callThrough();
 
         repository.get(a.guid);
@@ -197,19 +185,19 @@ describe('Account Repository', () => {
     });
 
     it('calls dataService when suitable key was emitted', async () => {
-        const a = new TransactionsAccount();
+        const a = new Category();
         const dataService = new TestDataService([a], []);
         await dataService.load();
         const repository = new TransactionsRepository(dataService);
         spyOn(dataService, 'get').and.callThrough();
 
-        dataService.emit('accounts', []);
+        dataService.emit('categories', []);
 
-        expect(dataService.get).toHaveBeenCalledWith('accounts');
+        expect(dataService.get).toHaveBeenCalledWith('categories');
     });
 
     it('does not call dataService when not suitable key was emitted', async () => {
-        const a = new TransactionsAccount();
+        const a = new Category();
         const dataService = new TestDataService([a], []);
         await dataService.load();
         const repository = new TransactionsRepository(dataService);
@@ -221,7 +209,7 @@ describe('Account Repository', () => {
     });
 
     it('does not call dataService when data is not changed', async () => {
-        const a = new TransactionsAccount();
+        const a = new Category();
         const dataService = new TestDataService([a], []);
         await dataService.load();
         const repository = new TransactionsRepository(dataService);
@@ -236,24 +224,24 @@ describe('Account Repository', () => {
         expect(dataService.set).not.toHaveBeenCalled();
     });
 
-    it('calls dataService when account is added', async () => {
+    it('calls dataService when category is added', async () => {
         const dataService = new TestDataService();
         await dataService.load();
-        const repository = new AccountsRepository(dataService, new TransactionsRepository(dataService));
+        const repository = new CategoriesRepository(dataService, new TransactionsRepository(dataService));
         spyOn(dataService, 'set').and.callThrough();
 
-        repository.add(new TransactionsAccount());
-        repository.add(new TransactionsAccount());
+        repository.add(new Category());
+        repository.add(new Category());
 
         expect(dataService.set).toHaveBeenCalledTimes(2);
     });
 
-    it('calls dataService when account is edited', async () => {
-        const a1 = new TransactionsAccount();
-        const a2 = new TransactionsAccount();
+    it('calls dataService when category is edited', async () => {
+        const a1 = new Category();
+        const a2 = new Category();
         const dataService = new TestDataService();
         await dataService.load();
-        const repository = new AccountsRepository(dataService, new TransactionsRepository(dataService));
+        const repository = new CategoriesRepository(dataService, new TransactionsRepository(dataService));
         spyOn(dataService, 'set').and.callThrough();
 
         a1.name = 'a1-name';
@@ -264,9 +252,9 @@ describe('Account Repository', () => {
         expect(dataService.set).toHaveBeenCalledTimes(2);
     });
 
-    it('calls dataService when account is removed', async () => {
-        const a1 = new TransactionsAccount();
-        const a2 = new TransactionsAccount();
+    it('calls dataService when category is removed', async () => {
+        const a1 = new Category();
+        const a2 = new Category();
         const dataService = new TestDataService();
         await dataService.load();
         const repository = new TransactionsRepository(dataService);
@@ -280,10 +268,10 @@ describe('Account Repository', () => {
 });
 
 class TestDataService extends DataService {
-    constructor(accounts: any = [], transactions: any = []) {
-        const notNull = accounts != null || transactions != null;
+    constructor(categories: any = [], transactions: any = []) {
+        const notNull = categories != null || transactions != null;
         super(new TestStorage(async () => notNull ? JSON.stringify({
-            accounts: accounts,
+            categories: categories,
             transactions: transactions
         }) : ''), true);
     }

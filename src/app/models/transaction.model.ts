@@ -102,6 +102,7 @@ export class Transaction {
             : Object.freeze(Guid.create().toString());
     }
 
+    // TODO: Check test coverage and add tests for those method
     // TODO: equals with guid
     static equals(t1: Transaction, t2: Transaction): boolean {
         if ( t1.IBAN != null && t2.IBAN != null

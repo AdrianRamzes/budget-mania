@@ -1,6 +1,10 @@
 import { DataService, DataServiceState } from './data.service';
 import { Storage } from './storage/storage.interface';
 
+/** TODO: Check what if starage returns {'key': null}
+ * and check repositoreis how do they react to that?
+ */
+
 describe('DataSevice Uninitialized', () => {
 
     const getDummyStorage = () => {

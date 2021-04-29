@@ -2,12 +2,14 @@ import { Guid } from 'guid-typescript';
 
 // TODO: make sure that contains all necessary fields
 export class Category {
-    guid: string;
+    readonly guid: string;
     name: string;
     color: string;
     parentName: string; // TODO parent guid?
 
-    constructor() {
-        this.guid = Guid.create().toString();
+    constructor(guid: string = null) {
+        this.guid = guid != null
+            ? Object.freeze(guid)
+            : Object.freeze(Guid.create().toString());
     }
 }

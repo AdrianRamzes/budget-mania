@@ -1,89 +1,93 @@
-import * as _ from "lodash";
+import * as _ from 'lodash';
 
 import { Category } from 'src/app/models/category.model';
 import { DataService } from '../data/data.service';
 import { EventEmitter, Injectable } from '@angular/core';
-import { Guid } from "guid-typescript";
 import { TransactionsRepository } from './transactions.repository';
 
 @Injectable({providedIn: 'root'})
 export class CategoriesRepository {
 
-    changed: EventEmitter<Category[]> = new EventEmitter();
+    private static readonly _KEY: string = 'categories';
 
-    private readonly _KEY: string = "categories";
+    changed: EventEmitter<void> = new EventEmitter();
 
-    private _categories: Category[] = null;
+    private _CATEGORIES: Category[] = null;
 
     constructor(private dataService: DataService,
                 private transactionsRepository: TransactionsRepository) {
 
         this.dataService.dataChanged.subscribe(key => {
-            if(key == this._KEY) {
+            if (key === CategoriesRepository._KEY) {
                 this.load();
-                this.changed.emit(this.list());
+                this.changed.emit();
             }
-        })
+        });
+        this.load();
     }
 
     list(): Category[] {
-        if(this._categories == null) {
-            this.load();
-        }
-        return this._categories.slice();
+        return this.fixTypes(this.deepClone(this._CATEGORIES));
     }
-    
+
+    contains(guid: string): boolean {
+        return this._CATEGORIES.findIndex(e => e.guid === guid) >= 0;
+    }
+
     get(guid: string): Category {
-        return _.find(this._categories, c => c.guid === guid) || null;
+        if (!this.contains(guid)) {
+            return null;
+        }
+
+        return this._CATEGORIES.find(e => e.guid === guid);
     }
 
     add(c: Category) {
-        let categories = this.list();
-        categories.push(c);
-        this.set(categories);
+        this._CATEGORIES.push(c);
+        this.update();
     }
 
     edit(c: Category) {
-        let categories = this.list();
-        let i = _.findIndex(categories, { guid: c.guid });
-        categories[i] = c;
-        this.set(categories);
+        const i = _.findIndex(this._CATEGORIES, { guid: c.guid });
+        this._CATEGORIES[i] = c;
+        this.update();
     }
 
-    remove(c: Category) {
-        let categories = this.list();
-        _.remove(categories, (x) => x.guid === c.guid);
-        this.set(categories);
+    remove(guid: string) {
+        _.remove(this._CATEGORIES, (x) => x.guid === guid);
+        this.update();
 
-        let transactions = this.transactionsRepository.list()
-            .filter(x => x.categoryGuid == c.guid);
-        
+        const transactions = this.transactionsRepository.list()
+            .filter(x => x.categoryGuid === guid);
+
         _.forEach(transactions, t => t.categoryGuid = null);
 
         this.transactionsRepository.editMany(transactions);
     }
 
     private load(): void {
-        if(this.dataService.containsKey(this._KEY)) {
-            let deserialized = this.dataService.get(this._KEY);
-            this._categories = this.deserialize(deserialized);
+        if (this.dataService.containsKey(CategoriesRepository._KEY)) {
+            const data = this.dataService.get(CategoriesRepository._KEY);
+            this._CATEGORIES = this.fixTypes(data);
         } else {
-            this._categories = [];
+            this._CATEGORIES = [];
         }
     }
 
-    private set(value: Category[]) {
-        this._categories = (value || []).slice();
-        this.dataService.set(this._KEY, this._categories);
+    private update() {
+        this.dataService.set(CategoriesRepository._KEY, this._CATEGORIES);
     }
 
-    private deserialize(deserialized: any[]): Category[] {
-        return (deserialized || []).map(c => {
-            let cat = new Category();
-            cat.guid = c.guid || Guid.create().toString();
-            cat.color = c.color;
-            cat.name = c.name;
-            cat.parentName = c.parentName;
+    private deepClone(obj: any): any {
+        return JSON.parse(JSON.stringify(obj));
+    }
+
+    private fixTypes(deserialized: any[]): Category[] {
+        return deserialized.map(c => {
+            const cat = new Category(c.guid);
+            cat.color = c.color || null;
+            cat.name = c.name || null;
+            cat.parentName = c.parentName || null;
             return cat;
         });
     }
