@@ -38,8 +38,13 @@ export class SearchComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.transactionsRepository.changed.subscribe(e => this.updateDisplayedTransactions(e));
-        this.settingsRepository.changed.subscribe(e => {
+        this.transactionsRepository.changed.subscribe(() => {
+            this.updateDisplayedTransactions(this.transactionsRepository.list());
+        });
+        this.settingsRepository.changed.subscribe(() => {
+            this.updateDisplayedTransactions(this.transactionsRepository.list());
+        });
+        this.exchangeRepository.changed.subscribe(() => {
             this.updateDisplayedTransactions(this.transactionsRepository.list());
         });
 

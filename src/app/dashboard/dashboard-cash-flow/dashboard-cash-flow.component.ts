@@ -36,7 +36,7 @@ export class DashboardCashFlowComponent implements OnInit {
             this.reloadChart();
         });
 
-        this.exchangeRepository.changed.subscribe(e => {
+        this.exchangeRepository.changed.subscribe(() => {
             this.updateBuckets(this.transactionsRepository.list());
             this.reloadChart();
         });

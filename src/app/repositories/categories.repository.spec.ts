@@ -4,7 +4,7 @@ import { Category } from '../models/category.model';
 import { CategoriesRepository } from './categories.repository';
 import { TransactionsRepository } from './transactions.repository';
 
-fdescribe('Category Repository', () => {
+describe('Category Repository', () => {
 
     const getCategoryRepository = async (categories: any = [], transactions: any = []) => {
         const dataService = new TestDataService(categories, transactions);

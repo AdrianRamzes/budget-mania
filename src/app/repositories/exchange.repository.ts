@@ -1,25 +1,26 @@
 import * as _ from 'lodash';
 
 import { Currency } from 'src/app/models/currency.enum';
-import { EventEmitter, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { accessKeys } from 'access-keys';
+import { EventEmitter, Inject, Injectable } from '@angular/core';
+import { Storage as S3 } from 'aws-amplify';
 import * as moment from 'moment';
-import { DataService } from '../data/data.service';
 
 @Injectable({providedIn: 'root'})
 export class ExchangeRepository {
 
-    constructor(private http: HttpClient, private dataService: DataService) {
-        this.load();
+    constructor(
+        @Inject('skipInitialLoading') skipInitialLoading: boolean = false) {
+        if (!skipInitialLoading) {
+            this.load();
+        }
     }
 
-    private readonly _KEY = 'exchangeratesapi';
+    private static readonly _KEY = 'exchangerates';
 
-    /** Cache TTL in days */
-    private readonly ttl = 7;
+    /** Cache TTL in hours */
+    private readonly ttl = 24;
 
-    changed: EventEmitter<any> = new EventEmitter();
+    changed: EventEmitter<void> = new EventEmitter();
 
     private rates: any = null;
 
@@ -29,48 +30,63 @@ export class ExchangeRepository {
             const toEUR = to !== Currency.EUR ? this.rates[Currency[to]] : 1;
             return toEUR / fromEUR;
         }
-        return -1;
+        throw new Error('Exchange rates are not available.');
     }
 
     private set(rates: any) {
         this.rates = rates;
-        this.changed.emit(rates);
+        this.changed.emit();
     }
 
     /** Gets data from localStorage, dataService, exchange rates provider. */
-    private async load(): Promise<void> {
+    protected async load(): Promise<void> {
         // TODO: Get rid off localStorage (or use localstorage in dataService)
-        const data = JSON.parse(localStorage.getItem(this._KEY));
-        if (data != null
-            && data.date != null
-            && moment(data.date) < moment(data.date).add(this.ttl, 'days')
-            && data.rates != null) {
-            console.log('reading from cache');
-            this.set(data.rates);
+        const localData = JSON.parse(localStorage.getItem(ExchangeRepository._KEY));
+        if (localData?.timestamp != null
+            && moment().add(-this.ttl, 'hours') < moment.unix(localData.timestamp)
+            && localData.rates != null) {
+            this.set(localData.rates);
             return;
         }
-        if (this.dataService.containsKey(this._KEY)) {
-            console.warn('readging from dataService');
-            const result = this.dataService.get(this._KEY) as any;
-            if (moment(result.date) < moment(result.date).add(7, 'days')) {
-                this.rates = result.rates;
-                return;
-            }
-        }
-        console.warn('quering https://api.exchangeratesapi.io');
+        console.warn('quering s3');
         try {
-            const result =
-                await this.http.get(`http://api.exchangeratesapi.io/latest?access_key=${accessKeys.exchange}&base=EUR`)
-                    .toPromise() as any;
-            if (result != null) {
-                if ((result as any)?.success === true) {
-                    this.set((result as any).rates);
-                    localStorage.setItem(this._KEY, JSON.stringify(result));
-                    this.dataService.set(this._KEY, result);
+            const s3Data = await S3.get(
+                'exchange-rate.json',
+                {
+                    bucket: 'budget-mania-exchange-rate',
+                    customPrefix: {
+                        public: '',
+                        protected: '',
+                        private: ''
+                    },
+                    level: 'public',
+                    cacheControl: 'no-cache',
+                    download: true,
                 }
+            );
+            const result = JSON.parse(await this.readFile(s3Data));
+            if ((result as any).success === true) {
+                this.set((result as any).rates);
+                localStorage.setItem(ExchangeRepository._KEY, JSON.stringify(result));
             }
         } catch (error) {
             console.error(error);
+            if (localData?.rates != null) {
+                console.warn(`falling back to localStorage from ${localData.date}`);
+                this.set(localData.rates);
+            }
         }
+    }
+
+    private readFile(data): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            const fr = new FileReader();
+            fr.onload = () => {
+                const result = fr.result as string;
+                resolve(result);
+            };
+            fr.onerror = reject;
+            fr.readAsText((data as any).Body as Blob);
+        });
     }
 }

@@ -126,7 +126,7 @@ export class CategoriesComponent implements OnInit {
 
     onRemoveAllTransactionsClick(): void {
         if (!this.isProduction)
-            this.transactionsRepository.removeMany(this.transactionsRepository.list());
+            this.transactionsRepository.removeMany(this.transactionsRepository.list().map(t => t.guid));
     }
 
     onDumpAllDataClick(): void {

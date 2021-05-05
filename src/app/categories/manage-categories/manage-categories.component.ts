@@ -50,6 +50,6 @@ export class ManageCategoriesComponent implements OnInit {
     }
 
     onRemoveCategoryClick(): void {
-        this.categoriesRepository.remove(this.selectedCategory);
+        this.categoriesRepository.remove(this.selectedCategory.guid);
     }
 }

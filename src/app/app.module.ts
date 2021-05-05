@@ -56,6 +56,7 @@ Amplify.configure(awsconfig);
     AuthService,
     { provide: Storage, useClass: S3Storage},
     { provide: 'skipInitialization', useValue: false},
+    { provide: 'skipInitialLoading', useValue: false },
   ],
   bootstrap: [AppComponent]
 })

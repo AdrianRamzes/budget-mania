@@ -4,7 +4,7 @@ import { testusers } from 'aws-exports-test';
 import { awsconfig } from 'aws-exports';
 import { S3Storage } from './s3Storage';
 
-xdescribe('S3 prod user permissions (uses real S3 connection)', () => {
+describe('S3 prod user permissions (uses real S3 connection)', () => {
     const requestConfig = {
         customPrefix: {
             public: '',
@@ -48,7 +48,13 @@ xdescribe('S3 prod user permissions (uses real S3 connection)', () => {
     });
 
     it('has read permission', async () => {
-        const result = await S3.get('user-data.json', requestConfig);
+        const result = await S3.get(
+            'user-data.json',
+            {
+                ...requestConfig,
+                download: true,
+            }
+        );
 
         expect(result).toBeDefined();
     });
@@ -58,6 +64,20 @@ xdescribe('S3 prod user permissions (uses real S3 connection)', () => {
 
         const result = await storage.put(value);
 
+        expect(result).toBeDefined();
+    });
+
+    it('has read permission for exchange rate bucket', async () => {
+        const result = await S3.get(
+            'exchange-rate.json',
+            {
+                ...requestConfig,
+                bucket: 'budget-mania-exchange-rate',
+                level: 'public',
+                download: true,
+            }
+        );
+        console.log(result);
         expect(result).toBeDefined();
     });
 });

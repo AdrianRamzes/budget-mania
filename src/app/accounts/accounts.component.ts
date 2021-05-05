@@ -64,7 +64,7 @@ export class AccountsComponent implements OnInit {
     }
 
     onRemoveAccountClick() {
-        this.accountsRepository.remove(this.selectedAccount);
+        this.accountsRepository.remove(this.selectedAccount.guid);
     }
 
     currencyToSelectOption(c: Currency): CurrencyDisplayItem {
