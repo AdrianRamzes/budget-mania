@@ -4,7 +4,7 @@ import { testusers } from 'aws-exports-test';
 import { awsconfig } from 'aws-exports';
 import { S3Storage } from './s3Storage';
 
-describe('S3 prod user permissions (uses real S3 connection)', () => {
+xdescribe('S3 prod user permissions (uses real S3 connection)', () => {
     const requestConfig = {
         customPrefix: {
             public: '',

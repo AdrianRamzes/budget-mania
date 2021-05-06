@@ -83,7 +83,7 @@ export class AccountsRepository {
     }
 
     private fixTypes(deserialized: any[]): TransactionsAccount[] {
-        return deserialized.map((a) => {
+        return (deserialized ?? []).map((a) => {
             const newAcc = new TransactionsAccount(a.guid);
             newAcc.IBAN = a.IBAN || null;
             newAcc.bankName = a.bankName || null;

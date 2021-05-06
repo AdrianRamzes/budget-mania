@@ -3,7 +3,7 @@ import { S3Storage } from './s3Storage';
 
 import { testconfig, testusers } from 'aws-exports-test';
 
-describe('S3Storage (uses real S3 connection)', () => {
+xdescribe('S3Storage (uses real S3 connection)', () => {
     const requestConfig = {
         customPrefix: {
             public: '',

@@ -1,20 +1,36 @@
 import { DataService } from '../data/data.service';
 import { Storage } from '../data/storage/storage.interface';
 import { Currency } from '../models/currency.enum';
+import { Transaction } from '../models/transaction.model';
 import { TransactionsAccount } from '../models/transactions-account.model';
 import { AccountsRepository } from './accounts.repository';
 import { TransactionsRepository } from './transactions.repository';
 
 describe('Account Repository', () => {
 
+    let transactionsRepository: TransactionsRepository;
+
     const getAccountRepository = async (accounts: any = [], transactions: any = []) => {
         const dataService = new TestDataService(accounts, transactions);
         await dataService.load();
-        return new AccountsRepository(dataService, new TransactionsRepository(dataService));
+        transactionsRepository = new TransactionsRepository(dataService)
+        return new AccountsRepository(dataService, transactionsRepository);
     };
 
     it('returns empty list if dataService is empty', async () => {
-        const repository = await getAccountRepository();
+        const dataService = new DataService(new TestStorage(async () => ''), true);
+        await dataService.load();
+        const repository = new AccountsRepository(dataService, new TransactionsRepository(dataService));
+
+        expect(repository.list().length).toBe(0);
+    });
+
+    it('returns empty list if dataService contains null value', async () => {
+        const dataService = new DataService(new TestStorage(async () => JSON.stringify({
+            accounts: null
+        })), true);
+        await dataService.load();
+        const repository = new AccountsRepository(dataService, new TransactionsRepository(dataService));
 
         expect(repository.list().length).toBe(0);
     });
@@ -144,6 +160,19 @@ describe('Account Repository', () => {
         expect(repository.list().length).toBe(1);
         expect(repository.contains(a1.guid)).toBeFalsy();
         expect(repository.contains(a2.guid)).toBeTruthy();
+    });
+
+    it('sets accoutn guid to null for transactions with removed account', async () => {
+        const account = new TransactionsAccount();
+        const transaction = new Transaction();
+        transaction.accountGuid = account.guid;
+        const repository = await getAccountRepository([account], [transaction]);
+        expect(repository.list().length).toBe(1);
+        expect(transactionsRepository.get(transaction.guid).accountGuid).toBe(account.guid);
+
+        repository.remove(account.guid);
+
+        expect(transactionsRepository.get(transaction.guid).accountGuid).toBeNull();
     });
 
     it('emits event when account is added', async () => {
@@ -280,7 +309,7 @@ describe('Account Repository', () => {
 });
 
 class TestDataService extends DataService {
-    constructor(accounts: any = [], transactions: any = []) {
+    constructor(accounts: any = [], transactions: any = null) {
         const notNull = accounts != null || transactions != null;
         super(new TestStorage(async () => notNull ? JSON.stringify({
             accounts: accounts,

@@ -83,7 +83,7 @@ export class CategoriesRepository {
     }
 
     private fixTypes(deserialized: any[]): Category[] {
-        return deserialized.map(c => {
+        return (deserialized ?? []).map(c => {
             const cat = new Category(c.guid);
             cat.color = c.color || null;
             cat.name = c.name || null;

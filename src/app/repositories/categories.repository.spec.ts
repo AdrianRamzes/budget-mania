@@ -1,19 +1,35 @@
 import { DataService } from '../data/data.service';
 import { Storage } from '../data/storage/storage.interface';
 import { Category } from '../models/category.model';
+import { Transaction } from '../models/transaction.model';
 import { CategoriesRepository } from './categories.repository';
 import { TransactionsRepository } from './transactions.repository';
 
 describe('Category Repository', () => {
 
+    let transactionsRepository: TransactionsRepository;
+
     const getCategoryRepository = async (categories: any = [], transactions: any = []) => {
         const dataService = new TestDataService(categories, transactions);
         await dataService.load();
-        return new CategoriesRepository(dataService, new TransactionsRepository(dataService));
+        transactionsRepository = new TransactionsRepository(dataService);
+        return new CategoriesRepository(dataService, transactionsRepository);
     };
 
     it('returns empty list if dataService is empty', async () => {
-        const repository = await getCategoryRepository();
+        const dataService = new DataService(new TestStorage(async () => ''), true);
+        await dataService.load();
+        const repository = new CategoriesRepository(dataService, new TransactionsRepository(dataService));
+
+        expect(repository.list().length).toBe(0);
+    });
+
+    it('returns empty list if dataService contains null value', async () => {
+        const dataService = new DataService(new TestStorage(async () => JSON.stringify({
+            categories: null
+        })), true);
+        await dataService.load();
+        const repository = new CategoriesRepository(dataService, new TransactionsRepository(dataService));
 
         expect(repository.list().length).toBe(0);
     });
@@ -121,7 +137,7 @@ describe('Category Repository', () => {
         expect(repository.get(category.guid).name).toBe('different-name');
     });
 
-    it('removes acount', async () => {
+    it('removes category', async () => {
         const a1 = new Category();
         const a2 = new Category();
         const repository = await getCategoryRepository([a1, a2]);
@@ -132,6 +148,19 @@ describe('Category Repository', () => {
         expect(repository.list().length).toBe(1);
         expect(repository.contains(a1.guid)).toBeFalsy();
         expect(repository.contains(a2.guid)).toBeTruthy();
+    });
+
+    it('sets category guid to null for transactions with removed category', async () => {
+        const category = new Category();
+        const transaction = new Transaction();
+        transaction.categoryGuid = category.guid;
+        const repository = await getCategoryRepository([category], [transaction]);
+        expect(repository.list().length).toBe(1);
+        expect(transactionsRepository.get(transaction.guid).categoryGuid).toBe(category.guid);
+
+        repository.remove(category.guid);
+
+        expect(transactionsRepository.get(transaction.guid).categoryGuid).toBeNull();
     });
 
     it('emits event when category is added', async () => {
@@ -268,7 +297,7 @@ describe('Category Repository', () => {
 });
 
 class TestDataService extends DataService {
-    constructor(categories: any = [], transactions: any = []) {
+    constructor(categories: any = [], transactions: any = null) {
         const notNull = categories != null || transactions != null;
         super(new TestStorage(async () => notNull ? JSON.stringify({
             categories: categories,

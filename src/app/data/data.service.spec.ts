@@ -284,7 +284,7 @@ describe('DataSevice Ready', () => {
     it('sets correct value when set is called', async () => {
         const dataService = await getDataServiceInReadyState();
 
-        expect(dataService.set('myKey', 'someValue123'));
+        dataService.set('myKey', 'someValue123');
         expect(dataService.get('myKey')).toBe('someValue123');
     });
 
@@ -292,7 +292,7 @@ describe('DataSevice Ready', () => {
         const dataService = await getDataServiceInReadyState();
         spyOn(dataService.dataChanged, 'emit').and.callThrough();
 
-        expect(dataService.set('myKey', 'someValue123'));
+        dataService.set('myKey', 'someValue123');
 
         expect(dataService.dataChanged.emit).toHaveBeenCalledWith('myKey');
     });

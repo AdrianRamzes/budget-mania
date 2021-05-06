@@ -189,14 +189,6 @@ describe('Exchange Repository', () => {
         return response;
     }
 
-    function asyncData<T>(data: T) {
-        return defer(() => Promise.resolve(data));
-    }
-
-    function asyncError<T>(errorObject: any) {
-        return defer(() => Promise.reject(errorObject));
-    }
-
     beforeAll(async () => {
         Auth.configure(testconfig.Auth);
         S3.configure(testconfig.Storage);
