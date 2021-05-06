@@ -60,7 +60,7 @@ export class ImportService {
 
     constructor(private transactionsRepository: TransactionsRepository,
                 private accountsRepository: AccountsRepository) {
-        this.accountsRepository.changed.subscribe((e) => this.accounts = e);
+        this.accountsRepository.changed.subscribe(() => this.accounts = this.accountsRepository.list());
         this.accounts = this.accountsRepository.list();
     }
 

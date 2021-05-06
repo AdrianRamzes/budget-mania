@@ -44,7 +44,7 @@ export class CategoriesComponent implements OnInit {
         this.allTransactionDisplayItems = this.getTransactionDisplayItems(this.transactionsRepository.list());
         this.filteredTransactions = this.filterTransactions(this.allTransactionDisplayItems, this.filter);
 
-        this.categoriesRepository.changed.subscribe(c => this.categories = c);
+        this.categoriesRepository.changed.subscribe(() => this.categories = this.categoriesRepository.list());
         this.categories = this.categoriesRepository.list();
 
         this.isProduction = environment.production;

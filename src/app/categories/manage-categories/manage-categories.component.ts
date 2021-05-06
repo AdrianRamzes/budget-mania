@@ -15,7 +15,7 @@ export class ManageCategoriesComponent implements OnInit {
     selectedCategory: Category;
 
     ngOnInit() {
-        this.categoriesRepository.changed.subscribe(c => this.categories = c);
+        this.categoriesRepository.changed.subscribe(() => this.categories = this.categoriesRepository.list());
         this.categories = this.categoriesRepository.list();
     }
 

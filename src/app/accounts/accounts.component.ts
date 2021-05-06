@@ -18,11 +18,11 @@ export class AccountsComponent implements OnInit {
     constructor(private accountsRepository: AccountsRepository) { }
 
     ngOnInit() {
-        this.accountsRepository.changed.subscribe((a) => this.accounts = a);
+        this.accountsRepository.changed.subscribe(() => this.accounts = this.accountsRepository.list());
         this.accounts = this.accountsRepository.list();
 
         Object.keys(Currency).forEach(k => {
-            if (typeof (Currency[k]) === "number") {
+            if (typeof (Currency[k]) === 'number') {
                 this.currencies.push(new CurrencyDisplayItem(k, Currency[k]));
             }
         });
@@ -33,18 +33,18 @@ export class AccountsComponent implements OnInit {
     }
 
     onSubmitNewAccount(form: NgForm) {
-        let v = form.value;
+        const v = form.value;
 
-        if(form.invalid) {
-            //TODO: SET ERROR; migrate to reactive forms https://angular.io/guide/reactive-forms
+        if (form.invalid) {
+            // TODO: SET ERROR; migrate to reactive forms https://angular.io/guide/reactive-forms
             return;
         }
-        
-        let acc = new TransactionsAccount();
+
+        const acc = new TransactionsAccount();
         acc.IBAN = v.IBAN;
         acc.name = v.name;
         acc.fullName = v.fullName;
-        acc.currency = v.currency && parseInt(v.currency);
+        acc.currency = v.currency && parseInt(v.currency,);
         acc.bankName = v.bankName;
 
         this.accountsRepository.add(acc);
@@ -54,7 +54,7 @@ export class AccountsComponent implements OnInit {
 
     onEditAccountClick(form: NgForm) {
         if (form.dirty) {
-            let edited = {
+            const edited = {
                 ...this.selectedAccount,
                 ...form.value
             } as TransactionsAccount;
