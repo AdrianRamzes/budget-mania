@@ -217,20 +217,24 @@ describe('DataSevice Initializing', () => {
     });
 
     it('changes state to uninitialized when initializing is rejected', async () => {
-        const storage = new TestStorage(() => Promise.reject());
-        const dataService = getDataServiceInInitializingState(storage);
+        const storage = new TestStorage(() => Promise.reject(new Error('Some Error 123')));
+        const dataService = new DataService(storage, true);
+        const loadingPromise = dataService.load();
+        expect(dataService.state).toBe(DataServiceState.Initializing);
 
-        await expectAsync(dataService.load()).toBeRejected();
+        await expectAsync(loadingPromise).toBeRejected();
 
         expect(dataService.state).toBe(DataServiceState.Uninitialized);
     });
 
     it('emits event when state has been changed to uninitialized', async () => {
-        const storage = new TestStorage(() => Promise.reject());
-        const dataService = getDataServiceInInitializingState(storage);
+        const storage = new TestStorage(() => Promise.reject(new Error('Some Error 456')));
+        const dataService = new DataService(storage, true);
+        const loadingPromise = dataService.load();
+        expect(dataService.state).toBe(DataServiceState.Initializing);
         spyOn(dataService.stateChanged, 'emit').and.callThrough();
 
-        await expectAsync(dataService.load()).toBeRejected();
+        await expectAsync(loadingPromise).toBeRejected();
 
         expect(dataService.stateChanged.emit).toHaveBeenCalledWith(DataServiceState.Uninitialized);
     });
