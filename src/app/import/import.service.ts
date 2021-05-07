@@ -65,8 +65,8 @@ export class ImportService {
     }
 
     tryParse(input: File): void {
-        let results: { name: string, transactions: Transaction[] }[] = [];
-        let promises = this.parsers.map(p => {
+        const results: { name: string, transactions: Transaction[] }[] = [];
+        const promises = this.parsers.map(p => {
             return p.parse(input)
                 .then((data) => {
                     if (data.length > 0) {
@@ -76,9 +76,9 @@ export class ImportService {
         });
 
         Promise.all(promises.map((p) => p.catch(e => e))).then(() => {
-            //What if more then 1 result??
+            // What if more then 1 result??
             this.stagedTransactions = results.find((r) => r.transactions.length > 0).transactions.map((t) => {
-                let found = this.isDuplicate(t);
+                const found = this.isDuplicate(t);
                 return {
                     transaction: t,
                     foundDuplicate: found,
@@ -93,7 +93,7 @@ export class ImportService {
             this.stagedTransactions
                 .filter(t => t.checked)
                 .map((t) => {
-                    let trans = t.transaction;
+                    const trans = t.transaction;
                     if (this.selectedAccount) {
                         trans.accountGuid = this.selectedAccount
                             ? this.selectedAccount.guid : trans.accountGuid;
@@ -105,7 +105,7 @@ export class ImportService {
     }
 
     private isDuplicate(t: Transaction): boolean {
-        return !!this.transactionsRepository.list()
-            .find((x) => Transaction.equals(t, x));
+        return !!(this.transactionsRepository.list()
+            .find((x) => Transaction.equals(t, x)));
     }
 }

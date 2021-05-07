@@ -24,6 +24,7 @@ import { S3Storage } from './data/storage/s3Storage';
 
 import { awsconfig } from 'aws-exports';
 import { SearchComponent } from './search/search.component';
+import { TransactionComponent } from './components/transaction/transaction.component';
 
 Amplify.configure(awsconfig);
 
@@ -42,7 +43,8 @@ Amplify.configure(awsconfig);
     ManageCategoriesComponent,
     DashboardCashFlowComponent,
     AuthComponent,
-    SearchComponent
+    SearchComponent,
+    TransactionComponent
   ],
   imports: [
     BrowserModule,

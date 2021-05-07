@@ -25,6 +25,7 @@ describe('UBS Switzerland CSV parser', () => {
                 expect(result[0].date).toEqual(new Date(2021, 3, 23));
                 expect(result[0].valueDate).toEqual(new Date(2021, 3, 23));
                 expect(result[0].information).toEqual('Payment UBS TWINT | SBB EasyRide App | - NA, 3000 BERN, TWINT-ACC.:+41788000000, 9906113GK3218208');
+                expect(result[3].information).toEqual('Salary Payment | TEST SWITZERLAND GMBH | 8004 ZUERICH, /ABC/00000000/000000/0000, SALARY /');
                 expect(result[2].amount).toEqual(0);
                 expect(result[3].amount).toEqual(1001.65);
                 done();

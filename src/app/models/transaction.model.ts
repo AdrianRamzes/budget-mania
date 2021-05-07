@@ -112,6 +112,10 @@ export class Transaction {
             return true;
         }
 
+        if (t1.reference != null && t2.reference != null) {
+            return t1.reference === t2.reference;
+        }
+
         return t1.information === t2.information &&
             t1.date.getTime() === t2.date.getTime() &&
             t1.amount === t2.amount &&

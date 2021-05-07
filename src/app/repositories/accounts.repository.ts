@@ -87,7 +87,7 @@ export class AccountsRepository {
             const newAcc = new TransactionsAccount(a.guid);
             newAcc.IBAN = a.IBAN || null;
             newAcc.bankName = a.bankName || null;
-            newAcc.currency = a.currency || a.currency === 0 ? 0 : null;
+            newAcc.currency = a.currency || (a.currency === 0 ? 0 : null);
             newAcc.fullName = a.fullName || null;
             newAcc.name = a.name || null;
             return newAcc;

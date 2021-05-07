@@ -101,7 +101,7 @@ export class TransactionsRepository {
             newTransaction.beneficiaryDetails = t.beneficiaryDetails || null;
             newTransaction.beneficiaryName = t.beneficiaryName || null;
             newTransaction.categoryGuid = t.categoryGuid || null;
-            newTransaction.currency = t.currency || t.currency === 0 ? 0 : null;
+            newTransaction.currency = t.currency || (t.currency === 0 ? 0 : null);
             newTransaction.date = t.date ? new Date(t.date) : null;
             newTransaction.destinationIBAN = t.destinationIBAN || null;
             newTransaction.information = t.information || null;
