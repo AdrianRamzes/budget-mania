@@ -1,0 +1,22 @@
+<div *ngIf="selectable" class="column select"><input type="checkbox" [checked]="displayItem.selected"
+        (change)="onSelectionChange($event)">
+</div>
+<div class="column date">{{displayItem.dateString}}</div>
+<div class="column account">{{displayItem.accountName}}</div>
+<div class="column category" [ngClass]="{'hide-on-hover': editable}">category</div>
+<div *ngIf="editable" class="column category-editor show-on-hover">
+    <select>
+        <option>test1</option>
+        <option>test2</option>
+    </select>
+</div>
+<div class="column information">{{displayItem.information}}</div>
+<div class="column amount" title="{{displayItem.originalAmount | number: '1.2-2'}} {{displayItem.originalCurrencyCode}}"
+    [ngClass]="{debit: displayItem.amount <= 0, credit: displayItem.amount > 0}">
+    {{displayItem.amount | number: '1.2-2'}}
+</div>
+<div class="column currency"
+    title="{{displayItem.originalAmount | number: '1.2-2'}} {{displayItem.originalCurrencyCode}}">
+    {{displayItem.currencyCode}}
+</div>
+<div *ngIf="removable" class="column remove show-on-hover"><i class="bi bi-trash-fill"></i></div>

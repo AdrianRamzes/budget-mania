@@ -3,29 +3,9 @@
 <p>result: {{displayCount}}/{{filteredTransactions.length}} total: {{allTransactions.length}}</p>
 <p>sum: {{totalSum | number: '1.2-2'}} avg: {{filteredAvg | number: '1.2-2'}} min: {{filteredMin | number: '1.2-2'}}
     max: {{filteredMax | number: '1.2-2'}}</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Date</th>
-            <th scope="col">Amount</th>
-            <th scope="col">Title</th>
-            <th scope="col">Account</th>
-            <th scope="col">Category</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr class="table" *ngFor="let t of filteredTransactions.slice(0, displayCount)">
-            <td nowrap>{{t.transaction.date | date: 'yyyy-MM-dd' }}</td>
-            <td nowrap [ngStyle]="{color: t.displayAmount < 0 ? 'red' : 'black'}"
-                title="{{t.transaction.amount}} {{t.transactionCurrencyCode}}" class="text-right">{{t.displayAmount |
-                number: '1.2-2'}} {{t.displayCurrencyCode}}</td>
-            <td>{{t.transaction.information}}</td>
-            <td>{{t.account ? t.account.name : ""}}</td>
-            <!-- TODO: DisplayItems -->
-            <td>{{t.category ? t.category.name : ""}}</td>
-        </tr>
-    </tbody>
-</table>
+<app-transactions-list [transactions]="transactions2.slice(0, displayCount)" [selectable]="true" [editable]="true"
+    [removable]="true">
+</app-transactions-list>
 <div *ngIf="displayCount < filteredTransactions.length" class="alert alert-primary" (click)="onLoadMoreClick()"
     role="alert">
     Click or Scroll down to load more...

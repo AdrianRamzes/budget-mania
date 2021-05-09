@@ -6,7 +6,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ImportComponent } from './import/import.component';
 import { SelectFileComponent } from './import/select-file/select-file.component';
-import { TransactionsListComponent } from './import/transactions-list/transactions-list.component';
+import { TransactionsList2Component } from './import/transactions-list2/transactions-list2.component';
+import { TransactionsListComponent } from './components/transactions-list/transactions-list.component';
 import { ImportService } from './import/import.service';
 import { HeaderComponent } from './header/header.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -34,6 +35,7 @@ Amplify.configure(awsconfig);
     AppComponent,
     ImportComponent,
     SelectFileComponent,
+    TransactionsList2Component,
     TransactionsListComponent,
     HeaderComponent,
     DashboardComponent,

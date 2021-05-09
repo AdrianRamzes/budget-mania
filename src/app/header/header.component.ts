@@ -16,7 +16,8 @@ export class HeaderComponent implements OnInit {
 
     dataServiceState: DataServiceState = DataServiceState.Uninitialized;
     get isLoading() {
-        return this.dataService.state === DataServiceState.Loading;
+        return this.dataService.state === DataServiceState.Loading
+            || this.dataService.state === DataServiceState.Initializing;
     }
     get isDirty() {
         return this.dataService.state === DataServiceState.Dirty;

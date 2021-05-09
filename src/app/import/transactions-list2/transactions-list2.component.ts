@@ -4,14 +4,14 @@ import { StagedTransaction } from '../stagedTransaction.model';
 import * as _ from "lodash";
 
 @Component({
-  selector: 'app-transactions-list',
-  templateUrl: './transactions-list.component.html'
+  selector: 'app-transactions-list2',
+  templateUrl: './transactions-list2.component.html'
 })
-export class TransactionsListComponent implements OnInit {
+export class TransactionsList2Component implements OnInit {
 
   stagedTransactions: StagedTransaction[] = [];
 
-  private setStagedTransactions(arr: StagedTransaction[]){
+  private setStagedTransactions(arr: StagedTransaction[]) {
     this.stagedTransactions = arr;//_.sortBy(arr, (t) => !t.foundDuplicate);
   }
 

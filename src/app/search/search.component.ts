@@ -22,8 +22,12 @@ export class SearchComponent implements OnInit {
     allTransactions: TransactionDisplayItem[] = [];
     filteredTransactions: TransactionDisplayItem[] = [];
 
+    get transactions2(): Transaction[] {
+        return this.filteredTransactions.map(x => x.transaction);
+    }
+
     filterText = '';
-    displayCount = 15; // TODO: Solve it for big screens? Button or detection?
+    displayCount = 25; // TODO: Solve it for big screens? Button or detection?
     totalSum = 0;
     filteredAvg = 0;
     filteredMin = 0;
@@ -41,12 +45,12 @@ export class SearchComponent implements OnInit {
         this.transactionsRepository.changed.subscribe(() => {
             this.updateDisplayedTransactions(this.transactionsRepository.list());
         });
-        this.settingsRepository.changed.subscribe(() => {
-            this.updateDisplayedTransactions(this.transactionsRepository.list());
-        });
-        this.exchangeRepository.changed.subscribe(() => {
-            this.updateDisplayedTransactions(this.transactionsRepository.list());
-        });
+        // this.settingsRepository.changed.subscribe(() => {
+        //     this.updateDisplayedTransactions(this.transactionsRepository.list());
+        // });
+        // this.exchangeRepository.changed.subscribe(() => {
+        //     this.updateDisplayedTransactions(this.transactionsRepository.list());
+        // });
 
         this.updateDisplayedTransactions(this.transactionsRepository.list());
         window.addEventListener('scroll', this.onScroll.bind(this));

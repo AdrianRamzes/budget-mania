@@ -1,0 +1,78 @@
+:host {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+}
+:host(:hover) {
+    background-color: #e0e0e0;
+    box-shadow: 1px 1px 4px #000000;
+}
+
+.show-on-hover {
+    display: none;
+}
+:host(:hover) .show-on-hover {
+    display: block;
+}
+:host(:hover) .hide-on-hover {
+    display: none;
+}
+
+.bi { 
+    opacity: 50%;
+}
+.bi:hover {
+    opacity: 100%;
+    cursor: pointer;
+} 
+
+.date {
+    width: auto;
+    padding: 0 2px;
+}
+
+.account {
+    min-width: 120px;
+    max-width: 120px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.category {
+    min-width: 120px;
+} 
+.category-editor>select {
+    min-width: 120px;
+}
+
+.information {
+    flex-grow: 1;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.remove {
+    width: auto;
+}
+
+.amount {
+    text-align: right;
+    min-width: 100px;
+    max-width: 100px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.column {
+    white-space: nowrap;
+    margin: 0 5px;
+}
+
+.debit {
+    color: red;
+}
+
+.credit {
+    color: green;
+    font-weight: bold;
+}
