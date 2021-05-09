@@ -1,9 +1,8 @@
 <input type="text" placeholder="search..." class="form-control" [(ngModel)]="filterText"
     (ngModelChange)="onFilterChange($event)" />
 <p>result: {{displayCount}}/{{filteredTransactions.length}} total: {{allTransactions.length}}</p>
-<p>sum: {{totalSum | number: '1.2-2'}} avg: {{filteredAvg | number: '1.2-2'}} min: {{filteredMin | number: '1.2-2'}}
-    max: {{filteredMax | number: '1.2-2'}}</p>
-<app-transactions-list [transactions]="transactions2.slice(0, displayCount)" [selectable]="true" [editable]="true"
+<app-transactions-list [transactions]="filteredTransactions.slice(0, displayCount)" [selectable]="true"
+    [editable]="true"
     [removable]="true">
 </app-transactions-list>
 <div *ngIf="displayCount < filteredTransactions.length" class="alert alert-primary" (click)="onLoadMoreClick()"
