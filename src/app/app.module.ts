@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from "@angular/forms";
+import { FormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -11,8 +11,6 @@ import { TransactionsListComponent } from './components/transactions-list/transa
 import { ImportService } from './import/import.service';
 import { HeaderComponent } from './header/header.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { CategoriesComponent } from './categories/categories.component';
-import { ManageCategoriesComponent } from './categories/manage-categories/manage-categories.component';
 import { SelectAccountComponent } from './import/select-account/select-account.component';
 import { AccountsComponent } from './accounts/accounts.component';
 import { HttpClientModule } from '@angular/common/http';
@@ -39,10 +37,8 @@ Amplify.configure(awsconfig);
     TransactionsListComponent,
     HeaderComponent,
     DashboardComponent,
-    CategoriesComponent,
     SelectAccountComponent,
     AccountsComponent,
-    ManageCategoriesComponent,
     DashboardCashFlowComponent,
     AuthComponent,
     SearchComponent,

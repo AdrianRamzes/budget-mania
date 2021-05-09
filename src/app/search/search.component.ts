@@ -3,12 +3,11 @@ import * as _ from 'lodash';
 
 import { Component, OnInit } from '@angular/core';
 import { Transaction } from 'src/app/models/transaction.model';
-import { Category } from 'src/app/models/category.model';
+import { Categories, Category } from 'src/app/models/category.model';
 import { TransactionsAccount } from 'src/app/models/transactions-account.model';
 import { Currency } from 'src/app/models/currency.enum';
 import { SettingsRepository } from 'src/app/repositories/settings.repository';
 import { ExchangeRepository } from 'src/app/repositories/exchange.repository';
-import { CategoriesRepository } from 'src/app/repositories/categories.repository';
 import { AccountsRepository } from 'src/app/repositories/accounts.repository';
 import { TransactionsRepository } from 'src/app/repositories/transactions.repository';
 
@@ -36,7 +35,6 @@ export class SearchComponent implements OnInit {
     constructor(
         private transactionsRepository: TransactionsRepository,
         private accountsRepository: AccountsRepository,
-        private categoriesRepository: CategoriesRepository,
         private settingsRepository: SettingsRepository,
         private exchangeRepository: ExchangeRepository) {
     }
@@ -111,7 +109,7 @@ export class SearchComponent implements OnInit {
         const x = new TransactionDisplayItem();
         x.transaction = t;
         x.account = this.accountsRepository.get(t.accountGuid);
-        x.category = this.categoriesRepository.get(t.categoryGuid);
+        x.category = Categories.get(t.categoryGuid);
 
         x.transactionCurrencyCode = Currency[t.currency];
         x.displayAmount = t.amount;
