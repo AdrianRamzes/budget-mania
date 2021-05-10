@@ -1,0 +1,24 @@
+.category-no-category {
+    background-color: dimgray;
+    color: white;
+}
+
+.category-transport {
+    background-color:blue;
+    color: white;
+}
+
+.category-public-transport {
+    background-color: darkblue;
+    color: white;
+}
+
+.category-food {
+    background-color: green;
+    color: white;
+}
+
+.category-grocery {
+    background-color: darkgreen;
+    color: white;
+}

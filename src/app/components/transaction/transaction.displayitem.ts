@@ -1,5 +1,7 @@
+import { Transaction } from 'src/app/models/transaction.model';
+
 export class TransactionDisplayItem {
-    selected: boolean = false;
+    selected = false;
     dateString: string;
     information: string;
     accountName: string;

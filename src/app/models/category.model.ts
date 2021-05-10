@@ -1,9 +1,9 @@
-import * as _ from "lodash";
+import * as _ from 'lodash';
 
 export class Category {
     guid: string;
     name: string;
-    color: string;
+    className: string;
     subcategories: Category[];
 }
 
@@ -12,12 +12,12 @@ export class Categories {
     public static Transport: Category = {
         guid: 'ce86e0cf-7f56-4ec8-a005-transport000',
         name: 'Transport',
-        color: 'somecolor',
+        className: 'category-transport',
         subcategories: [
             {
                 guid: 'ce86e0cf-7f56-4ec8-a005-transport010',
                 name: 'Public Transport',
-                color: 'somecolor',
+                className: 'category-public-transport',
                 subcategories: []
             }
         ],
@@ -25,12 +25,12 @@ export class Categories {
     public static Food: Category = {
         guid: 'ce86e0cf-7f56-4ec8-a005-00000food000',
         name: 'Food',
-        color: 'somecolor',
+        className: 'category-food',
         subcategories: [
             {
                 guid: 'groceryf-7f56-4ec8-a005-00000food010',
                 name: 'Grocery',
-                color: 'somecolor',
+                className: 'category-grocery',
                 subcategories: []
             }
         ],

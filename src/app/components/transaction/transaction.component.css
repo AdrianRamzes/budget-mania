@@ -40,9 +40,11 @@
 
 .category {
     min-width: 120px;
+    max-width: 120px;
 } 
 .category-editor>select {
     min-width: 120px;
+    max-width: 120px;
 }
 
 .information {
